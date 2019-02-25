@@ -23,7 +23,7 @@ function draw() {
   
   pointLight(255, 230, 200, 0,0,0);
   
-  fill(255, 230, 200)
+  fill(255, 230, 200);
   sphere(50);
   rotateY(t/50);
   translate(100, 0, 0);
