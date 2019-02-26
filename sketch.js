@@ -1,9 +1,10 @@
 square = x => x*x;
+exp10 = x => Math.pow(10,x);
 
 var t = 0;
 var counter = 0; // for selecting different colors
 
-var SF = 1e7; // scale factor
+var SF = 1e9; // scale factor
 var SF_MIN_EXP = 5;
 var SF_MAX_EXP = 12;
 
@@ -11,9 +12,13 @@ var DT = 1e5; // timestep
 var DT_MIN_EXP = 3;
 var DT_MAX_EXP = 8;
 
-var planetVisualScale = 1; //1000.0; // visual scale for planets to make them more seeable
-var starVisualScale = 1; // 10.0;
+var FD = 4e11; // forcal distance
+
+var planetVisualScale = 1e4; //1000.0; // visual scale for planets to make them more seeable
+var starVisualScale = 1e2; // 10.0;
 var G = 6.674e-11;
+
+var ecliptic = 0;
 
 var zero3 = new Vector3(0, 0, 0);
 
@@ -59,15 +64,26 @@ function CelObj({radius, density, color=null,
     return this.position.dist(other.position);
   };
 
+  this.project = function(ecliptic) {
+
+  }
+
   this.draw = function(minRadius) {
     fill(this.color);
 
-    ellipse(this.position.x / SF, this.position.y / SF, this.radius / SF * planetVisualScale);
+    var norm = new Vector3(0, Math.sin(ecliptic), Math.cos(ecliptic));
+    var inline = norm.scale(this.position.dot(norm));
+    var planar =  this.position.sub(inline);
+    var perspectiveScale = FD/(FD+inline.dot(norm));
+    console.log(perspectiveScale);
+
+    ellipse(planar.x / SF, planar.y / SF, this.radius * perspectiveScale / SF * planetVisualScale);
     if (this.name != null) {
       fill(255);
       text(this.name, this.position.x / SF + 15, this.position.y / SF + 15);
     }
   };
+
 
   this.starDraw = function() {
     fill(this.color);
@@ -179,6 +195,13 @@ function setup() {
   scaleSlider.changed(function(e) {
     SF = Math.pow(10, Number(e.target.value));
   });
+
+  eclipticSlider = createSlider(0, PI/2, ecliptic, 0.01);
+  eclipticSlider.position(50, 61);
+  eclipticSlider.style('width', '80px');
+  eclipticSlider.changed(function(e) {
+    ecliptic = Number(e.target.value);
+  });
   // start = millis();
   // create a canvas the same size the window
   createCanvas(window.innerWidth, window.innerHeight);
@@ -224,7 +247,7 @@ function draw() {
   noStroke();
   t += 1;
   fill(255);
-  text('Distances to scale, planets drawn ' + planetVisualScale + ' times bigger', -150, window.innerHeight / 2 - 20);
+  text('Distances to scale, planets drawn ' + planetVisualScale + ' times bigger.' + ' Stars drawn ' + starVisualScale + ' times bigger.', -230, window.innerHeight / 2 - 20);
   text('Scale', -window.innerWidth / 2 + 15, -window.innerHeight / 2 + 47);
   text('Time', -window.innerWidth / 2 + 15, -window.innerHeight / 2 + 20);
   fill(0);
