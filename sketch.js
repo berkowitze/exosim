@@ -1,8 +1,19 @@
+square = x => x*x;
+
 var t = 0;
-counter = 0;
-square = function(x) {return x * x;};
-SF = 3.0; // scale factor
-var dt = 0.1;
+var counter = 0; // for selecting different colors
+
+var SF = 1e7; // scale factor
+var SF_MIN_EXP = 5;
+var SF_MAX_EXP = 12;
+
+var DT = 1e5; // timestep
+var DT_MIN_EXP = 3;
+var DT_MAX_EXP = 8;
+
+var planetVisualScale = 1; //1000.0; // visual scale for planets to make them more seeable
+var starVisualScale = 1; // 10.0;
+var G = 6.674e-11;
 
 var zero3 = new Vector3(0, 0, 0);
 
@@ -39,8 +50,8 @@ function CelObj({radius, density, color=null,
   };
 
   this.force = function(other) {
-    scale = other.mass / square(this.dist(other));
-    f = this.position.sub(other.position).normalized().scale(scale * -0.01);
+    scale = -G * other.mass / square(this.dist(other));
+    f = this.position.sub(other.position).normalized().scale(scale);
     return f;
   };
 
@@ -50,11 +61,17 @@ function CelObj({radius, density, color=null,
 
   this.draw = function(minRadius) {
     fill(this.color);
-    ellipse(this.position.x / SF, this.position.y / SF, this.radius / SF);
+
+    ellipse(this.position.x / SF, this.position.y / SF, this.radius / SF * planetVisualScale);
     if (this.name != null) {
       fill(255);
-      text(this.name, this.position.x / SF + 20, this.position.y / SF + 20);
+      text(this.name, this.position.x / SF + 15, this.position.y / SF + 15);
     }
+  };
+
+  this.starDraw = function() {
+    fill(this.color);
+    ellipse(this.position.x / SF, this.position.y / SF, this.radius / SF * starVisualScale);
   };
 
   this.setDensity = function(newDensity) {
@@ -67,10 +84,10 @@ function CelObj({radius, density, color=null,
     this.updateMassAndVolume();
   };
 
-  this.update = function(force, dt) {
-    dv = force.scale(dt);
+  this.update = function(force, DT) {
+    dv = force.scale(DT);
     this.velocity = this.velocity.plus(dv);
-    dx = this.velocity.scale(dt);
+    dx = this.velocity.scale(DT);
     this.position = this.position.plus(dx);
   };
 
@@ -105,18 +122,18 @@ function Model(planets, star) {
 
   this.zeroMomentum = function() {
     planetMomentum = zero3;
-    for (i = 0; i < this.planets.length; i++) {
-      planet = this.planets[i];
+    for (i = 0; i < this.objects.length; i++) {
+      planet = this.objects[i];
       planetMomentum = planetMomentum.plus(planet.momentum());
     }
-    dv = planetMomentum.scale(1/this.star.mass);
-    this.star.velocity = this.star.velocity.sub(dv);
+    dv = planetMomentum.scale(-1/this.star.mass);
+    this.star.velocity = dv;
   };
 
-  this.zeroMomentum();
+  // this.zeroMomentum();
   this.updateMomentum();
 
-  this.update = function(dt) {
+  this.update = function(DT) {
     forces = [];
     for (var i = 0; i < this.objects.length; i++) {
       obj = this.objects[i];
@@ -134,32 +151,33 @@ function Model(planets, star) {
     for (i = 0; i < this.objects.length; i++) {
       obj = this.objects[i];
       force = forces[i];
-      obj.update(force, dt);
+      obj.update(force, DT);
     }
   };
 
   this.draw = function() {
-    for (var i = 0; i < this.objects.length; i++) {
-      obj = this.objects[i];
-      obj.draw(this.minRadius);
+    for (var i = 0; i < this.planets.length; i++) {
+      planet = this.planets[i];
+      planet.draw(this.minRadius);
     }
+    this.star.starDraw(this.minRadius);
   };
 }
 
 function setup() {
-  timeSlider = createSlider(0.001, 1.1, dt, 0.001);
+  timeSlider = createSlider(DT_MIN_EXP, DT_MAX_EXP, Math.log10(DT), 0.1);
   timeSlider.position(50, 7);
   timeSlider.style('width', '80px');
   timeSlider.id('timeSlider');
   timeSlider.changed(function(e) {
-    dt = Number(e.target.value);
+    DT = Math.pow(10, Number(e.target.value));
   });
 
-  scaleSlider = createSlider(0.5, 200, SF, 0.2);
+  scaleSlider = createSlider(SF_MIN_EXP, SF_MAX_EXP, Math.log10(SF), 0.1);
   scaleSlider.position(50, 34);
   scaleSlider.style('width', '80px');
   scaleSlider.changed(function(e) {
-    SF = Number(e.target.value);
+    SF = Math.pow(10, Number(e.target.value));
   });
   // start = millis();
   // create a canvas the same size the window
@@ -172,23 +190,24 @@ function setup() {
             color(249, 36,  114),
             color(231, 219, 116)];
 
-  mars = new CelObj({radius: 45, // 1 is real scale
-                     density: 4,
-                     initVelocity: new Vector3(60, 0, 0), 
-                     position: new Vector3(0, 500, 0), // 70800 is real scale
+  mars = new CelObj({radius: 3.389e6, // 1 is real scale
+                     density: 4000,
+                     initVelocity: new Vector3(24100, 0, 0), 
+                     position: new Vector3(0, 227.9e9, 0),
                      name: 'Mars'
                  });
-  p2 = new CelObj({radius: 10,
-                   density: 4,
-                   initVelocity: new Vector3(-55, 15, 0),
-                   position: new Vector3(0, -600, 0),
-                   name: 'Other planet'
-                 });
+  // p2 = new CelObj({radius: 10,
+  //                  density: 4,
+  //                  initVelocity: new Vector3(-55, 15, 0),
+  //                  position: new Vector3(0, -600, 0),
+  //                  name: 'Other planet'
+  //                });
   
   star = new CelObj({color: 'orange',
-                     radius: 203,
-                     density: 5});
-  planets = [mars, p2];
+                     radius: 695.508e6,
+                     density: 1410,
+                     name: 'Star'});
+  planets = [mars];
   // p3 = new CelObj({color: 'yellow',
   //                  radius: 10,
   //                  density: 10,
@@ -205,12 +224,12 @@ function draw() {
   noStroke();
   t += 1;
   fill(255);
-  text('Not to scale', 0, window.innerHeight / 2 - 20);
+  text('Distances to scale, planets drawn ' + planetVisualScale + ' times bigger', -150, window.innerHeight / 2 - 20);
   text('Scale', -window.innerWidth / 2 + 15, -window.innerHeight / 2 + 47);
   text('Time', -window.innerWidth / 2 + 15, -window.innerHeight / 2 + 20);
   fill(0);
   model.draw();
-  model.update(dt);
+  model.update(DT);
 }
 
 function popup(x, y) {
