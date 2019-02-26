@@ -2,50 +2,11 @@ var t = 0;
 counter = 0;
 square = function(x) {return x * x;};
 SF = 3.0; // scale factor
+var dt = 0.1;
 
-function Vector3(x, y, z) {
-  this.x = x;
-  this.y = y;
-  this.z = z;
-  this.length = Math.sqrt(square(x) + square(y) + square(z));
-
-  this.dot = function(other) {
-    return this.x * other.x + this.y * other.y + this.z * other.z;
-  };
-
-  this.dist = function(other) {
-    return Math.sqrt(square(this.x - other.x) + 
-                square(this.y - other.y) +
-                square(this.z - other.z));
-  };
-
-  this.plus = function(other) {
-    return new Vector3(this.x + other.x,
-                       this.y + other.y,
-                       this.z + other.z);
-  };
-
-  this.sub = function(other) {
-    return new Vector3(this.x - other.x,
-                       this.y - other.y,
-                       this.z - other.z);
-  };
-
-  this.scale = function(scale) {
-    return new Vector3(scale * this.x,
-                       scale * this.y,
-                       scale * this.z);
-  };
-
-  this.normalize = function() {
-    return new Vector3(this.x / this.length,
-                       this.y / this.length,
-                       this.z / this.length);
-  };
-}
 var zero3 = new Vector3(0, 0, 0);
 
-function CelObj({color=null, radius, density,
+function CelObj({radius, density, color=null,
                  position=null, initVelocity=null, name=null}) {
   if (color == null) {
     this.color = colors[counter % colors.length];
@@ -54,8 +15,10 @@ function CelObj({color=null, radius, density,
   else {
     this.color = color;
   }
+
   this.radius = radius;
   this.density = density;
+  this.name = name;
 
   if (position == null) {
     this.position = zero3;
@@ -70,11 +33,6 @@ function CelObj({color=null, radius, density,
     this.velocity = initVelocity;
   }
 
-  this.name = name;
-  // console.log(this.velocity);
-  // console.log(this.position);
-  // console.log('done');
-
   this.updateMassAndVolume = function() {
     this.volume = 4/3 * PI * Math.pow(this.radius, 3);
     this.mass = this.volume * this.density;
@@ -82,7 +40,7 @@ function CelObj({color=null, radius, density,
 
   this.force = function(other) {
     scale = other.mass / square(this.dist(other));
-    f = this.position.sub(other.position).normalize().scale(scale * 0.1);
+    f = this.position.sub(other.position).normalized().scale(scale * -0.01);
     return f;
   };
 
@@ -90,7 +48,7 @@ function CelObj({color=null, radius, density,
     return this.position.dist(other.position);
   };
 
-  this.draw = function() {
+  this.draw = function(minRadius) {
     fill(this.color);
     ellipse(this.position.x / SF, this.position.y / SF, this.radius / SF);
     if (this.name != null) {
@@ -116,45 +74,94 @@ function CelObj({color=null, radius, density,
     this.position = this.position.plus(dx);
   };
 
+  this.momentum = function() {
+    return this.velocity.scale(this.mass);
+  };
+
   this.updateMassAndVolume();
 
 }
 
-function Model(objects) {
-  this.objects = objects;
+function Model(planets, star) {
+  this.planets = planets;
+  this.star = star;
+  this.objects = planets.concat(star);
+
+  this.minRadius = this.objects
+                   .map(obj => obj.radius)
+                   .reduce((rad, rst) => Math.min(rad, rst), Infinity);
+  this.maxRadius = this.objects
+                   .map(obj => obj.radius)
+                   .reduce((rad, rst) => Math.max(rad, rst), -Infinity);
+
+  this.updateMomentum = function() {
+    momentum = zero3;
+    for (var i = 0; i < this.objects.length; i++) {
+      obj = this.objects[i];
+      momentum = momentum.plus(obj.momentum());
+    }
+    this.momentum = momentum;
+  };
+
+  this.zeroMomentum = function() {
+    planetMomentum = zero3;
+    for (i = 0; i < this.planets.length; i++) {
+      planet = this.planets[i];
+      planetMomentum = planetMomentum.plus(planet.momentum());
+    }
+    dv = planetMomentum.scale(1/this.star.mass);
+    this.star.velocity = this.star.velocity.sub(dv);
+  };
+
+  this.zeroMomentum();
+  this.updateMomentum();
 
   this.update = function(dt) {
-    // console.log('updating');
-    dt = 0.08;
     forces = [];
-    for (var i = 0; i < objects.length; i++) {
-      obj = objects[i];
+    for (var i = 0; i < this.objects.length; i++) {
+      obj = this.objects[i];
       force = new Vector3(0, 0, 0);
-      for (var j = 0; j < objects.length; j++) {
+      for (var j = 0; j < this.objects.length; j++) {
         if (i == j) {
           continue;
         }
-        from = objects[j];
-        force = force.plus(obj.force(from)).scale(-0.5);
-        // force = zero3;
+        from = this.objects[j];
+        force = force.plus(obj.force(from));
       }
       forces.push(force);
     }
 
-    for (i = 0; i < objects.length; i++) {
-      obj = objects[i];
+    for (i = 0; i < this.objects.length; i++) {
+      obj = this.objects[i];
       force = forces[i];
       obj.update(force, dt);
+    }
+  };
+
+  this.draw = function() {
+    for (var i = 0; i < this.objects.length; i++) {
+      obj = this.objects[i];
+      obj.draw(this.minRadius);
     }
   };
 }
 
 function setup() {
+  timeSlider = createSlider(0.001, 1.1, dt, 0.001);
+  timeSlider.position(50, 7);
+  timeSlider.style('width', '80px');
+  timeSlider.id('timeSlider');
+  timeSlider.changed(function(e) {
+    dt = Number(e.target.value);
+  });
+
+  scaleSlider = createSlider(0.5, 200, SF, 0.2);
+  scaleSlider.position(50, 34);
+  scaleSlider.style('width', '80px');
+  scaleSlider.changed(function(e) {
+    SF = Number(e.target.value);
+  });
   // start = millis();
-  // b1 = color(255);
-  // b2 = color(0);
-  // c1 = color(204, 102, 0);
-  // c2 = color(0, 102, 153);
   // create a canvas the same size the window
   createCanvas(window.innerWidth, window.innerHeight);
 
@@ -164,22 +171,23 @@ function setup() {
             color(253, 150, 33),
             color(249, 36,  114),
             color(231, 219, 116)];
-  mars = new CelObj({radius: 50, // 1 is real scale
-                     density: 10,
-                     initVelocity: new Vector3(50, 0, 0), 
-                     position: new Vector3(0, 708, 0), // 70800 is real scale
+
+  mars = new CelObj({radius: 45, // 1 is real scale
+                     density: 4,
+                     initVelocity: new Vector3(60, 0, 0), 
+                     position: new Vector3(0, 500, 0), // 70800 is real scale
                      name: 'Mars'
                  });
   p2 = new CelObj({radius: 10,
-                   density: 5,
-                   initVelocity: new Vector3(-50, 0, 0),
-                   position: new Vector3(0, -500, 0),
-                   name: 'hi'
+                   density: 4,
+                   initVelocity: new Vector3(-55, 15, 0),
+                   position: new Vector3(0, -600, 0),
+                   name: 'Other planet'
                  });
   
   star = new CelObj({color: 'orange',
                      radius: 203,
-                     density: 1});
+                     density: 5});
   planets = [mars, p2];
   // p3 = new CelObj({color: 'yellow',
   //                  radius: 10,
@@ -188,8 +196,7 @@ function setup() {
   //                  position: new Vector3(0, -100, 0)
   //                });
 
-  objects = planets.concat(star);
-  model = new Model(objects);
+  model = new Model(planets, star);
 }
 
 function draw() {
@@ -199,15 +206,11 @@ function draw() {
   t += 1;
   fill(255);
   text('Not to scale', 0, window.innerHeight / 2 - 20);
+  text('Scale', -window.innerWidth / 2 + 15, -window.innerHeight / 2 + 47);
+  text('Time', -window.innerWidth / 2 + 15, -window.innerHeight / 2 + 20);
   fill(0);
-  // var obj;
-  // objects.update();
-  for (var i = 0; i < objects.length; i++) {
-    obj = objects[i];
-    obj.draw();
-  }
-  model.update();
-
+  model.draw();
+  model.update(dt);
 }
 
 function popup(x, y) {
