@@ -165,20 +165,34 @@ function Model(planets, star) {
 }
 
 function setup() {
-  timeSlider = createSlider(DT_MIN_EXP, DT_MAX_EXP, Math.log10(DT), 0.1);
-  timeSlider.position(50, 7);
-  timeSlider.style('width', '80px');
-  timeSlider.id('timeSlider');
-  timeSlider.changed(function(e) {
-    DT = Math.pow(10, Number(e.target.value));
-  });
 
-  scaleSlider = createSlider(SF_MIN_EXP, SF_MAX_EXP, Math.log10(SF), 0.1);
-  scaleSlider.position(50, 34);
-  scaleSlider.style('width', '80px');
-  scaleSlider.changed(function(e) {
-    SF = Math.pow(10, Number(e.target.value));
-  });
+  sliderClicked = null;
+
+  sidebar = true;
+
+  sliders = [new Slider({minVal: DT_MIN_EXP, maxVal: DT_MAX_EXP,
+                         val: Math.log10(DT),
+                         callback: function(newV) {DT = Math.pow(10, newV);},
+                         label: 'Time Scale'}),
+             new Slider({minVal: SF_MIN_EXP, maxVal: SF_MAX_EXP,
+                         val: Math.log10(SF),
+                         callback: function(newV) {SF = Math.pow(10, newV);},
+                         label: 'hi'})];
+
+  // timeSlider = createSlider(DT_MIN_EXP, DT_MAX_EXP, Math.log10(DT), 0.1);
+  // timeSlider.position(50, 7);
+  // timeSlider.style('width', '80px');
+  // timeSlider.id('timeSlider');
+  // timeSlider.changed(function(e) {
+  //   DT = Math.pow(10, Number(e.target.value));
+  // });
+
+  // scaleSlider = createSlider(SF_MIN_EXP, SF_MAX_EXP, Math.log10(SF), 0.1);
+  // scaleSlider.position(50, 34);
+  // scaleSlider.style('width', '80px');
+  // scaleSlider.changed(function(e) {
+  //   SF = Math.pow(10, Number(e.target.value));
+  // });
   // start = millis();
   // create a canvas the same size the window
   createCanvas(window.innerWidth, window.innerHeight);
@@ -218,15 +232,52 @@ function setup() {
   model = new Model(planets, star);
 }
 
+
+
+function drawSidebar() {
+  var slider;
+  for (var i = 0; i < sliders.length; i++) {
+    slider = sliders[i];
+    slider.draw();
+  }
+}
+
+function mousePressed() {
+  var slider;
+  for (var i = 0; i < sliders.length; i++) {
+    slider = sliders[i];
+    if (slider.mouseIn()) {
+      sliderClicked = slider;
+      return;
+    }
+  }
+  sliderClicked = null;
+}
+
+function mouseReleased() {
+  sliderClicked = null;
+}
+
 function draw() {
-  translate(window.innerWidth / 2, window.innerHeight / 2);
   background(0, 0, 0);
+  if (sliderClicked != null) {
+    sliderClicked.updateVal(mouseX);
+  }
+  // fill(255);
+  // rect(slider_left_margin, sliders[0].startsAt, slide_width, slide_height);
+  if (sidebar) {
+    drawSidebar();
+    // drawCloseButton();
+  } else {
+    // drawOpenButton();
+  }
+  translate(window.innerWidth / 2, window.innerHeight / 2);
   noStroke();
   t += 1;
   fill(255);
   text('Distances to scale, planets drawn ' + planetVisualScale + ' times bigger', -150, window.innerHeight / 2 - 20);
-  text('Scale', -window.innerWidth / 2 + 15, -window.innerHeight / 2 + 47);
-  text('Time', -window.innerWidth / 2 + 15, -window.innerHeight / 2 + 20);
+  // text('Scale', -window.innerWidth / 2 + 15, -window.innerHeight / 2 + 47);
+  // text('Time', -window.innerWidth / 2 + 15, -window.innerHeight / 2 + 20);
   fill(0);
   model.draw();
   model.update(DT);
