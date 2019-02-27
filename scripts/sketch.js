@@ -162,7 +162,6 @@ function toggleSidebar() {
 }
 
 function keyTyped() {
-  console.log(keyCode);
   if (key == ' ') {
     togglePause();
   }

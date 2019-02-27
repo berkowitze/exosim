@@ -129,7 +129,6 @@ function CelObj({radius, density,
   };
 
   this.updatePosition = function(mx, my) {
-    // console.log({mx, my});
     this.position = new Vector3((mx - window.innerWidth/2) * SF, (my - window.innerHeight/2) * SF, 0);
   };
 

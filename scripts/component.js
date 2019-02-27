@@ -12,8 +12,6 @@ function Component(box, width) {
 
     this.xStart = box.x0 + sliderCircleRadius;
     this.yStart = box.y0 + this.ident * (box.compHeight + box.heightMargin);
-    console.log(box);
-    console.log(this);
 
     this.xEnd = this.xStart + width;
     this.yEnd = this.yStart + box.compHeight;
