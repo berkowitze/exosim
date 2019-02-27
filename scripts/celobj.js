@@ -67,7 +67,7 @@ function CelObj({radius, density,
   };
 
   this.draw = function(visualScale) {
-    if (!showStreaks && !isStar) {
+    if (showStreaks && !isStar) {
       this.drawStreak();
     }
 
@@ -96,7 +96,8 @@ function CelObj({radius, density,
         var lp = lastPos[i];
         var col = 200 - i*2;
         fill(col);
-        ellipse(lp.x / SF, lp.y / SF, this.radius / SF * planetVisualScale / 1.3);
+        var planetRadius = this.radius / SF * planetVisualScale;
+        ellipse(lp.x / SF, lp.y / SF, planetRadius * (127 - i) / 200);
     }
   };
 
