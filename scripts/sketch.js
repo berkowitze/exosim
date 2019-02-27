@@ -84,6 +84,7 @@ function Model(planets, star) {
 function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
   componentClicked = null;
+  planetClicked = null;
 
   sidebarComponents = [
     new Button({label: 'Hide Sidebar',
@@ -123,8 +124,7 @@ function setup() {
   model = new Model(planets, star);
 }
 
-function mousePressed() {
-  var slider;
+function componentPress() {
   for (var i = 0; i < componentBoxes.length; i++) {
     box = componentBoxes[i];
     if (!box.showing) {
@@ -141,14 +141,34 @@ function mousePressed() {
   componentClicked = null;
 }
 
+function planetPress() {
+  for (var j = 0; j < planets.length; j++) {
+    if (planets[j].mouseIn()) {
+      planetClicked = planets[j];
+      ecliptic = 0;
+      return;
+    }
+  }
+  planetClicked = null;
+}
+
+function mousePressed() {
+  componentPress();
+  planetPress();
+}
+
 function mouseReleased() {
   componentClicked = null;
+  planetClicked = null;
 }
 
 function draw() {
   background(0, 0, 0);
   if (componentClicked != null) {
     componentClicked = componentClicked.updateVal(mouseX);
+  }
+  if (planetClicked != null) {
+    planetClicked.updatePosition(mouseX, mouseY);
   }
   translate(window.innerWidth / 2, window.innerHeight / 2);
   noStroke();

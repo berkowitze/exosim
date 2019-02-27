@@ -127,8 +127,21 @@ function CelObj({radius, density,
     this.position = this.position.plus(dx);
   };
 
+  this.updatePosition = function(mx, my) {
+    // console.log({mx, my});
+    this.position = new Vector3((mx - window.innerWidth/2) * SF, (my - window.innerHeight/2) * SF, 0);
+  };
+
   this.momentum = function() {
     return this.velocity.scale(this.mass);
+  };
+
+  this.mouseIn = function() {
+    x = this.planar.x / SF;
+    y = this.planar.y / SF;
+    visualScale = this.isStar ? starVisualScale : planetVisualScale;
+    r = this.radius * this.perspectiveScale / SF * visualScale;
+    return (square(mouseX - window.innerWidth/2 - x) + square(mouseY - window.innerHeight/2 - y)) < 1.3*square(r);
   };
 
   this.updateMassAndVolume();
