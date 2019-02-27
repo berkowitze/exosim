@@ -3,7 +3,7 @@ var DRAW_PERSPECTIVE = true;
 function CelObj({radius, density,
                  // position=null, initVelocity=null,
                  velocityMagnitude=null, distanceFromSun=null,
-                 color=null, angle=null, name=null}) {
+                 color=null, angle=null, name=null, isStar=false}) {
   if (color == null) {
     c = colors[counter % colors.length];
     this.color = c;
@@ -16,6 +16,7 @@ function CelObj({radius, density,
   this.radius = radius;
   this.density = density;
   this.name = name;
+  this.isStar = isStar;
   T = (angle == null) ? (Math.random() * 2 * Math.PI) : angle;
 
   if (distanceFromSun == null) {
@@ -58,23 +59,24 @@ function CelObj({radius, density,
     this.perspectiveScale = FD/(FD+inline.dot(norm));
   };
 
-  this.draw = function(minRadius) {
+  this.draw = function(visualScale) {
     fill(this.color);
 
     if (!DRAW_PERSPECTIVE) {
       this.planar = this.position;
     }
 
-    ellipse(this.planar.x / SF, this.planar.y / SF, this.radius * this.perspectiveScale / SF * planetVisualScale);
+    // TODO(izzy): this should be replaced by a visual cone.
+    // right now the effective field of view is 180 degrees which gives strange effects
+    if (DRAW_PERSPECTIVE && this.perspectiveScale < 0) { return; } // don't draw planets behind the camera
+
+    visualScale = this.isStar ? starVisualScale : planetVisualScale;
+
+    ellipse(this.planar.x / SF, this.planar.y / SF, this.radius * this.perspectiveScale / SF * visualScale);
     if (this.name != null) {
       fill(255);
       text(this.name, this.planar.x / SF + 15, this.planar.y / SF + 15);
     }
-  };
-
-  this.starDraw = function() {
-    fill(this.color);
-    ellipse(this.position.x / SF, this.position.y / SF, this.radius / SF * starVisualScale);
   };
 
   this.setDensity = function(newDensity) {

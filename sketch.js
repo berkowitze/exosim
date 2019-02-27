@@ -25,6 +25,7 @@ var zero3 = new Vector3(0, 0, 0);
 
 function Model(planets, star) {
   this.planets = planets;
+  // TODO(izzy): consider making an array of stars so we can have binaries/trinaries
   this.star = star;
   this.objects = planets.concat(star);
 
@@ -86,18 +87,17 @@ function Model(planets, star) {
   this.draw = function() {
 
     if (DRAW_PERSPECTIVE) {
-      for (var i = 0; i < this.planets.length; i++) {
-        planet = this.planets[i];
-        planet.project();
+      for (var i = 0; i < this.objects.length; i++) {
+        obj = this.objects[i];
+        obj.project();
       }
-      this.planets.sort(compareScale);
+      this.objects.sort(compareScale);
     }
 
-    for (var i = 0; i < this.planets.length; i++) {
-      planet = this.planets[i];
-      planet.draw(this.minRadius);
+    for (var i = 0; i < this.objects.length; i++) {
+      obj = this.objects[i];
+      obj.draw();
     }
-    this.star.starDraw(this.minRadius);
   };
 }
 
