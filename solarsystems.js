@@ -1,6 +1,6 @@
 mercury = new CelObj({
-  radius: 2439500,
-  density: 4879,
+  radius: 2.4395e6,
+  density: 5472,
   velocityMagnitude: 47400,
   distanceFromSun: 57.9e9,
   name: 'Mercury'
