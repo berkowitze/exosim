@@ -1,7 +1,8 @@
-square = x => x*x;
 exp10 = x => Math.pow(10,x);
 
-var t = 0;
+planets = OUR_SOLAR_SYSTEM;
+star = SUN;
+
 var counter = 0; // for selecting different colors
 
 var SF = 1e9; // scale factor
@@ -21,95 +22,6 @@ var G = 6.674e-11;
 var ecliptic = 0;
 
 var zero3 = new Vector3(0, 0, 0);
-
-function CelObj({radius, density, color=null,
-                 position=null, initVelocity=null, name=null}) {
-  if (color == null) {
-    this.color = colors[counter % colors.length];
-    counter += 1;
-  }
-  else {
-    this.color = color;
-  }
-
-  this.radius = radius;
-  this.density = density;
-  this.name = name;
-
-  if (position == null) {
-    this.position = zero3;
-  } else {
-    this.position = position;
-  }
-
-  if (initVelocity == null) {
-    this.velocity = zero3;
-  }
-  else {
-    this.velocity = initVelocity;
-  }
-
-  this.updateMassAndVolume = function() {
-    this.volume = 4/3 * PI * Math.pow(this.radius, 3);
-    this.mass = this.volume * this.density;
-  };
-
-  this.force = function(other) {
-    scale = -G * other.mass / square(this.dist(other));
-    f = this.position.sub(other.position).normalized().scale(scale);
-    return f;
-  };
-
-  this.dist = function(other) {
-    return this.position.dist(other.position);
-  };
-
-  this.draw = function(minRadius) {
-    fill(this.color);
-
-    var norm = new Vector3(0, Math.sin(ecliptic), Math.cos(ecliptic));
-    var inline = norm.scale(this.position.dot(norm));
-    var planar =  this.position.sub(inline);
-    var perspectiveScale = FD/(FD+inline.dot(norm));
-    // console.log(perspectiveScale);
-
-    ellipse(planar.x / SF, planar.y / SF, this.radius * perspectiveScale / SF * planetVisualScale);
-    if (this.name != null) {
-      fill(255);
-      text(this.name, this.position.x / SF + 15, this.position.y / SF + 15);
-    }
-  };
-
-
-  this.starDraw = function() {
-    fill(this.color);
-    ellipse(this.position.x / SF, this.position.y / SF, this.radius / SF * starVisualScale);
-  };
-
-  this.setDensity = function(newDensity) {
-    this.density = newDensity;
-    this.updateMassAndVolume();
-  };
-
-  this.setRadius = function(newRadius) {
-    this.radius = radius;
-    this.updateMassAndVolume();
-  };
-
-  this.update = function(force, DT) {
-    dv = force.scale(DT);
-    this.velocity = this.velocity.plus(dv);
-    dx = this.velocity.scale(DT);
-    this.position = this.position.plus(dx);
-  };
-
-  this.momentum = function() {
-    return this.velocity.scale(this.mass);
-  };
-
-  this.updateMassAndVolume();
-
-}
 
 function Model(planets, star) {
   this.planets = planets;
@@ -177,10 +89,8 @@ function Model(planets, star) {
 }
 
 function setup() {
-// <<<<<<< HEAD
-
+  createCanvas(window.innerWidth, window.innerHeight);
   sliderClicked = null;
-
   sidebar = true;
 
   sliders = [new Slider({minVal: DT_MIN_EXP, maxVal: DT_MAX_EXP,
@@ -195,41 +105,6 @@ function setup() {
                          val: 0,
                          callback: function(newV) {ecliptic = newV;},
                          label: 'Ecliptic angle'})];
-
-  // create a canvas the same size the window
-  createCanvas(window.innerWidth, window.innerHeight);
-
-  colors = [color(172, 128, 255),
-            color(166, 226, 44),
-            color(104, 216, 239),
-            color(253, 150, 33),
-            color(249, 36,  114),
-            color(231, 219, 116)];
-
-  mars = new CelObj({radius: 3.389e6, // 1 is real scale
-                     density: 4000,
-                     initVelocity: new Vector3(24100, 0, 0), 
-                     position: new Vector3(0, 227.9e9, 0),
-                     name: 'Mars'
-                 });
-  // p2 = new CelObj({radius: 10,
-  //                  density: 4,
-  //                  initVelocity: new Vector3(-55, 15, 0),
-  //                  position: new Vector3(0, -600, 0),
-  //                  name: 'Other planet'
-  //                });
-  
-  star = new CelObj({color: 'orange',
-                     radius: 695.508e6,
-                     density: 1410,
-                     name: 'Star'});
-  planets = [mars];
-  // p3 = new CelObj({color: 'yellow',
-  //                  radius: 10,
-  //                  density: 10,
-  //                  velocity: new Vector3(0, 100, 0), 
-  //                  position: new Vector3(0, -100, 0)
-  //                });
 
   model = new Model(planets, star);
 }
@@ -271,7 +146,6 @@ function draw() {
   }
   translate(window.innerWidth / 2, window.innerHeight / 2);
   noStroke();
-  t += 1;
   fill(255);
   text('Distances to scale, planets drawn ' + planetVisualScale + ' times bigger', -150, window.innerHeight / 2 - 20);
   fill(0);
