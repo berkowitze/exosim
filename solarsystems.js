@@ -71,9 +71,9 @@ pluto = new CelObj({
 });
   
 SUN = new CelObj({color: 'orange',
-                   radius: 695.508e6,
-                   density: 1410,
-                   name: 'Star'});
+                  radius: 695.508e6,
+                  density: 1410,
+                  name: 'Star'});
 
 OUR_SOLAR_SYSTEM = [
   mercury,

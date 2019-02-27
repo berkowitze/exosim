@@ -1,32 +1,39 @@
 var DRAW_PERSPECTIVE = true;
 
-function CelObj({radius, density, color=null,
-                 position=null, initVelocity=null, name=null}) {
+function CelObj({radius, density,
+                 // position=null, initVelocity=null,
+                 velocityMagnitude=null, distanceFromSun=null,
+                 color=null, angle=null, name=null}) {
   if (color == null) {
-    this.color = colors[counter % colors.length];
+    c = colors[counter % colors.length];
+    this.color = c;
     counter += 1;
   }
   else {
     this.color = color;
   }
 
-  this.perspectiveScale = 1;
-
   this.radius = radius;
   this.density = density;
   this.name = name;
+  T = (angle == null) ? (Math.random() * 2 * Math.PI) : angle;
 
-  if (position == null) {
+  if (distanceFromSun == null) {
     this.position = zero3;
-  } else {
-    this.position = position;
+  }
+  else {
+    D = distanceFromSun;
+    this.position = new Vector3(D*Math.cos(T), D*Math.sin(T), 0);
   }
 
-  if (initVelocity == null) {
+  if (velocityMagnitude == null) {
     this.velocity = zero3;
   }
   else {
-    this.velocity = initVelocity;
+    console.log(T);
+    this.velocity = new Vector3(-velocityMagnitude * Math.sin(T),
+                                velocityMagnitude  * Math.cos(T),
+                                0);
   }
 
   this.updateMassAndVolume = function() {
