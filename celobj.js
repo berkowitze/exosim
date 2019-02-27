@@ -1,13 +1,19 @@
 var DRAW_PERSPECTIVE = true;
 
+getColor = (function() {
+  var counter = 0;
+  return function() {
+    col = colors[counter % colors.length];
+    counter += 1;
+    return col;
+  };
+})();
+
 function CelObj({radius, density,
-                 // position=null, initVelocity=null,
                  velocityMagnitude=null, distanceFromSun=null,
                  color=null, angle=null, name=null}) {
   if (color == null) {
-    c = colors[counter % colors.length];
-    this.color = c;
-    counter += 1;
+    this.color = getColor();
   }
   else {
     this.color = color;
@@ -66,7 +72,7 @@ function CelObj({radius, density,
     }
 
     ellipse(this.planar.x / SF, this.planar.y / SF, this.radius * this.perspectiveScale / SF * planetVisualScale);
-    if (this.name != null) {
+    if (this.name != null && showLabels) {
       fill(255);
       text(this.name, this.planar.x / SF + 15, this.planar.y / SF + 15);
     }

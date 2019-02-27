@@ -1,27 +1,7 @@
-exp10 = x => Math.pow(10,x);
-
 planets = OUR_SOLAR_SYSTEM;
 star = SUN;
 
-var counter = 0; // for selecting different colors
-
-var SF = 1e9; // scale factor
-var SF_MIN_EXP = 5;
-var SF_MAX_EXP = 12;
-
-var DT = 1e5; // timestep
-var DT_MIN_EXP = 3;
-var DT_MAX_EXP = 8;
-
-var FD = 4e11; // forcal distance
-
-var planetVisualScale = 1e3; //1000.0; // visual scale for planets to make them more seeable
-var starVisualScale = 1e1; // 10.0;
-var G = 6.674e-11;
-
-var ecliptic = 0;
-
-var zero3 = new Vector3(0, 0, 0);
+exp10 = x => Math.pow(10,x);
 
 function Model(planets, star) {
   this.planets = planets;
@@ -93,8 +73,8 @@ function Model(planets, star) {
       this.planets.sort(compareScale);
     }
 
-    for (var i = 0; i < this.planets.length; i++) {
-      planet = this.planets[i];
+    for (var j = 0; j < this.planets.length; j++) {
+      planet = this.planets[j];
       planet.draw(this.minRadius);
     }
     this.star.starDraw(this.minRadius);
@@ -117,7 +97,13 @@ function setup() {
              new Slider({minVal: 0, maxVal: PI/2,
                          val: 0,
                          callback: function(newV) {ecliptic = newV;},
-                         label: 'Ecliptic angle'})];
+                         label: 'Ecliptic angle'}),
+             new Button({label: 'Show Planet Labels',
+                         callback: function(checked) {showLabels = checked;},
+                         val: showLabels}),
+             new Button({label: 'Pause',
+                         callback: function(checked) {paused = checked;},
+                         val: paused})];
 
   model = new Model(planets, star);
 }
@@ -135,7 +121,9 @@ function mousePressed() {
   for (var i = 0; i < sliders.length; i++) {
     slider = sliders[i];
     if (slider.mouseIn()) {
+      // console.log(slider.label);
       sliderClicked = slider;
+      sliderClicked = sliderClicked.updateVal(mouseX);
       return;
     }
   }
@@ -149,7 +137,7 @@ function mouseReleased() {
 function draw() {
   background(0, 0, 0);
   if (sliderClicked != null) {
-    sliderClicked.updateVal(mouseX);
+    sliderClicked = sliderClicked.updateVal(mouseX);
   }
   if (sidebar) {
     drawSidebar();
@@ -163,7 +151,9 @@ function draw() {
   text('Distances to scale, planets drawn ' + planetVisualScale + ' times bigger', -150, window.innerHeight / 2 - 20);
   fill(0);
   model.draw();
-  model.update(DT);
+  if (!paused) {
+    model.update(DT);
+  }
 }
 
 function popup(x, y) {

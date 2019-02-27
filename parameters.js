@@ -1,12 +1,9 @@
-
-var counter = 0; // for selecting different colors
-
 var SF = 1e9; // scale factor
 var SF_MIN_EXP = 5;
 var SF_MAX_EXP = 12;
 
-var DT = 1e5; // timestep
-var DT_MIN_EXP = 3;
+var DT = 2e4; // timestep
+var DT_MIN_EXP = 0;
 var DT_MAX_EXP = 8;
 
 var FD = 4e11; // forcal distance
@@ -18,6 +15,9 @@ var G = 6.674e-11;
 var ecliptic = 0;
 
 var zero3 = new Vector3(0, 0, 0);
+
+var showLabels = true;
+var paused = false;
 
 colors = [[172, 128, 255],
           [166, 226, 44],
