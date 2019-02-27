@@ -67,7 +67,7 @@ function CelObj({radius, density,
   };
 
   this.draw = function(visualScale) {
-    if (!showStreaks) {
+    if (!showStreaks && !isStar) {
       this.drawStreak();
     }
 
