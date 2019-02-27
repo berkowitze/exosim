@@ -84,9 +84,14 @@ function Model(planets, star) {
 function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
   sliderClicked = null;
-  sidebar = true;
 
-  sliders = [new Slider({minVal: DT_MIN_EXP, maxVal: DT_MAX_EXP,
+  sliders = [new Button({label: 'Hide Sidebar',
+                         callback: function(checked) {
+                           hideSidebar = checked;
+                           this.label = checked ? 'Show Sidebar' : 'Hide Sidebar';
+                         },
+                         val: hideSidebar}),
+             new Slider({minVal: DT_MIN_EXP, maxVal: DT_MAX_EXP,
                          val: Math.log10(DT),
                          callback: function(newV) {DT = Math.pow(10, newV);},
                          label: 'Time Scale'}),
@@ -105,12 +110,19 @@ function setup() {
                          callback: function(checked) {paused = checked;},
                          val: paused})];
 
+  // openButton = new Button({label: 'Show Sidebar',
+  //                          callback: function(checked) {hideSidebar = checked;},
+  //                          val: hideSidebar});
   model = new Model(planets, star);
 }
 
 function drawSidebar() {
   var slider;
-  for (var i = 0; i < sliders.length; i++) {
+  sliders[0].draw();
+  if (hideSidebar) {
+    return;
+  }
+  for (var i = 1; i < sliders.length; i++) {
     slider = sliders[i];
     slider.draw();
   }
@@ -139,12 +151,7 @@ function draw() {
   if (sliderClicked != null) {
     sliderClicked = sliderClicked.updateVal(mouseX);
   }
-  if (sidebar) {
-    drawSidebar();
-    // drawCloseButton();
-  } else {
-    // drawOpenButton();
-  }
+  drawSidebar();
   translate(window.innerWidth / 2, window.innerHeight / 2);
   noStroke();
   fill(255);
