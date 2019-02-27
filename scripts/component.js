@@ -56,11 +56,17 @@ function Slider({label, minVal, maxVal, val, callback}) {
     };
 
     this.updateVal = function(mouseX) {
-        if (mouseX <= this.xStart || mouseX >= this.xEnd) {
-            return;
+        if (mouseX <= this.xStart) {
+            x = this.xStart;
+        }
+        else if (mouseX >= this.xEnd) {
+            x = this.xEnd;
+        }
+        else {
+            x = mouseX;
         }
 
-        frac = (mouseX - this.xStart) / (this.xEnd - this.xStart);
+        frac = (x - this.xStart) / (this.xEnd - this.xStart);
         this.val = this.minVal + frac * (this.maxVal - this.minVal);
         this.callback(this.val);
         return this;
