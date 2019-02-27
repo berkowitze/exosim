@@ -4,7 +4,7 @@ var SF_MAX_EXP = 12;
 
 var DT = 2e4; // timestep
 var DT_MIN_EXP = 0;
-var DT_MAX_EXP = 8;
+var DT_MAX_EXP = 6;
 
 var FD = 4e11; // forcal distance
 

@@ -88,7 +88,7 @@ function setup() {
   sliders = [new Button({label: 'Hide Sidebar',
                          callback: function(checked) {
                            hideSidebar = checked;
-                           this.label = checked ? 'Show Sidebar' : 'Hide Sidebar';
+                           this.label = checked?'Show Sidebar':'Hide Sidebar';
                          },
                          val: hideSidebar}),
              new Slider({minVal: DT_MIN_EXP, maxVal: DT_MAX_EXP,
