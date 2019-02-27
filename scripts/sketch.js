@@ -60,8 +60,8 @@ function Model(planets, star) {
     }
   };
 
-  function compareScale(a,b) {
-    return a.perspectiveScale - b.perspectiveScale;
+  function compareScale(a,blue) {
+    return a.perspectiveScale - blue.perspectiveScale;
   }
 
   this.draw = function() {
@@ -85,6 +85,9 @@ function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
   componentClicked = null;
   planetClicked = null;
+  red = 125;
+  green = 125;
+  blue = 125;
 
   sidebarComponents = [
     new Button({label: 'Hide Sidebar',
@@ -116,11 +119,28 @@ function setup() {
                 val: showStreaks}),
     new Button({label: 'Pause',
                 callback: function(checked) {paused = checked;},
-                val: paused})
+                val: paused}),
+    new Button({label: 'Create a planet',
+                callback: function(checked) {planetCreator = checked; colorPicker.showing = checked;},
+                val: planetCreator})
   ];
   sidebar = new ComponentBox({xStart: 13, yStart: 13, components: sidebarComponents, showing: true});
 
-  componentBoxes = [sidebar];
+  colorPickerComponents = [
+    new Slider({minVal: 0, maxVal: 255, val: red,
+                callback: function(newV) {red = newV;},
+                label: 'Red'}),
+    new Slider({minVal: 0, maxVal: 255, val: green,
+                callback: function(newV) {green = newV;},
+                label: 'Green'}),
+    new Slider({minVal: 0, maxVal: 255, val: blue,
+                callback: function(newV) {blue = newV;},
+                label: 'Blue'})
+  ];
+
+  colorPicker = new ComponentBox({xStart: window.innerWidth - 200, yStart: 13, components: colorPickerComponents});
+
+  componentBoxes = [sidebar, colorPicker];
   model = new Model(planets, star);
 }
 
@@ -163,6 +183,9 @@ function mouseReleased() {
 }
 
 function draw() {
+  if (ecliptic != 0) {
+    showStreaks = true;
+  }
   background(0, 0, 0);
   if (componentClicked != null) {
     componentClicked = componentClicked.updateVal(mouseX);
@@ -173,7 +196,6 @@ function draw() {
   translate(window.innerWidth / 2, window.innerHeight / 2);
   noStroke();
   fill(255);
-  // text('Distances to scale, planets drawn ' + planetVisualScale + ' times bigger', -150, window.innerHeight / 2 - 20);
   fill(0);
   model.draw();
   if (!paused) {
@@ -184,6 +206,11 @@ function draw() {
     if (componentBoxes[i].showing) {
       componentBoxes[i].draw();
     }
+  }
+  if (planetCreator) {
+    fill(color(red, green, blue));
+    ellipse(window.innerWidth - 150, colorPickerComponents[colorPickerComponents.length-1].yEnd + 30, 50);
+    colorPicker.showing = true;
   }
 }
 
