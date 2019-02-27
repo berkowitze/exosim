@@ -151,16 +151,17 @@ function draw() {
   if (sliderClicked != null) {
     sliderClicked = sliderClicked.updateVal(mouseX);
   }
-  drawSidebar();
   translate(window.innerWidth / 2, window.innerHeight / 2);
   noStroke();
   fill(255);
-  text('Distances to scale, planets drawn ' + planetVisualScale + ' times bigger', -150, window.innerHeight / 2 - 20);
+  // text('Distances to scale, planets drawn ' + planetVisualScale + ' times bigger', -150, window.innerHeight / 2 - 20);
   fill(0);
   model.draw();
   if (!paused) {
     model.update(DT);
   }
+  translate(-window.innerWidth / 2, -window.innerHeight / 2);
+  drawSidebar();
 }
 
 function popup(x, y) {
