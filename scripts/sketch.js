@@ -83,73 +83,72 @@ function Model(planets, star) {
 
 function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
-  sliderClicked = null;
+  componentClicked = null;
 
-  sliders = [new Button({label: 'Hide Sidebar',
-                         callback: function(checked) {
-                           hideSidebar = checked;
-                           this.label = checked?'Show Sidebar':'Hide Sidebar';
-                         },
-                         val: hideSidebar}),
-             new Slider({minVal: DT_MIN_EXP, maxVal: DT_MAX_EXP,
-                         val: Math.log10(DT),
-                         callback: function(newV) {DT = Math.pow(10, newV);},
-                         label: 'Time Scale'}),
-             new Slider({minVal: SF_MIN_EXP, maxVal: SF_MAX_EXP,
-                         val: Math.log10(SF),
-                         callback: function(newV) {SF = Math.pow(10, newV);},
-                         label: 'Scale Factor'}),
-             new Slider({minVal: 0, maxVal: PI/2,
-                         val: 0,
-                         callback: function(newV) {ecliptic = newV;},
-                         label: 'Ecliptic angle'}),
-             new Button({label: 'Show Planet Labels',
-                         callback: function(checked) {showLabels = checked;},
-                         val: showLabels}),
-             new Button({label: 'Pause',
-                         callback: function(checked) {paused = checked;},
-                         val: paused})];
+  sidebarComponents = [
+    new Button({label: 'Hide Sidebar',
+                callback: function(checked) {
+                  hideSidebar = checked;
+                  this.label = checked?'Show Sidebar':'Hide Sidebar';
+                  for (var i = 1; i < this.box.components.length; i++) {
+                    this.box.components[i].drawIt = !this.box.components[i].drawIt;
+                  }
+                },
+                val: hideSidebar}),
+    new Slider({minVal: DT_MIN_EXP, maxVal: DT_MAX_EXP,
+                val: Math.log10(DT),
+                callback: function(newV) {DT = Math.pow(10, newV);},
+                label: 'Time Scale'}),
+    new Slider({minVal: SF_MIN_EXP, maxVal: SF_MAX_EXP,
+                val: Math.log10(SF),
+                callback: function(newV) {SF = Math.pow(10, newV);},
+                label: 'Scale Factor'}),
+    new Slider({minVal: 0, maxVal: PI/2,
+                val: 0,
+                callback: function(newV) {ecliptic = newV;},
+                label: 'Ecliptic angle'}),
+    new Button({label: 'Show Planet Labels',
+                callback: function(checked) {showLabels = checked;},
+                val: showLabels}),
+    new Button({label: 'Show streaks',
+                callback: function(checked) {showStreaks = checked;},
+                val: showStreaks}),
+    new Button({label: 'Pause',
+                callback: function(checked) {paused = checked;},
+                val: paused})
+  ];
+  sidebar = new ComponentBox({xStart: 13, yStart: 13, components: sidebarComponents, showing: true});
 
-  // openButton = new Button({label: 'Show Sidebar',
-  //                          callback: function(checked) {hideSidebar = checked;},
-  //                          val: hideSidebar});
+  componentBoxes = [sidebar];
   model = new Model(planets, star);
-}
-
-function drawSidebar() {
-  var slider;
-  sliders[0].draw();
-  if (hideSidebar) {
-    return;
-  }
-  for (var i = 1; i < sliders.length; i++) {
-    slider = sliders[i];
-    slider.draw();
-  }
 }
 
 function mousePressed() {
   var slider;
-  for (var i = 0; i < sliders.length; i++) {
-    slider = sliders[i];
-    if (slider.mouseIn()) {
-      // console.log(slider.label);
-      sliderClicked = slider;
-      sliderClicked = sliderClicked.updateVal(mouseX);
-      return;
+  for (var i = 0; i < componentBoxes.length; i++) {
+    box = componentBoxes[i];
+    if (!box.showing) {
+      continue;
+    }
+    for (var j = 0; j < box.components.length; j++) {
+      component = box.components[j];
+      if (component.mouseIn()) {
+        componentClicked = component.updateVal(mouseX);
+        return;
+      }
     }
   }
-  sliderClicked = null;
+  componentClicked = null;
 }
 
 function mouseReleased() {
-  sliderClicked = null;
+  componentClicked = null;
 }
 
 function draw() {
   background(0, 0, 0);
-  if (sliderClicked != null) {
-    sliderClicked = sliderClicked.updateVal(mouseX);
+  if (componentClicked != null) {
+    componentClicked = componentClicked.updateVal(mouseX);
   }
   translate(window.innerWidth / 2, window.innerHeight / 2);
   noStroke();
@@ -161,7 +160,11 @@ function draw() {
     model.update(DT);
   }
   translate(-window.innerWidth / 2, -window.innerHeight / 2);
-  drawSidebar();
+  for (var i = 0; i < componentBoxes.length; i++) {
+    if (componentBoxes[i].showing) {
+      componentBoxes[i].draw();
+    }
+  }
 }
 
 function popup(x, y) {

@@ -19,6 +19,7 @@ var zero3 = new Vector3(0, 0, 0);
 var showLabels = true;
 var paused = false;
 var hideSidebar = false;
+var showStreaks = true;
 
 colors = [[172, 128, 255],
           [166, 226, 44],

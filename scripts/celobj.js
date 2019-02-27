@@ -22,6 +22,8 @@ function CelObj({radius, density,
   this.radius = radius;
   this.density = density;
   this.name = name;
+  this.last100 = new Deque(100);
+
   T = (angle == null) ? (Math.random() * 2 * Math.PI) : angle;
 
   if (distanceFromSun == null) {
@@ -36,7 +38,6 @@ function CelObj({radius, density,
     this.velocity = zero3;
   }
   else {
-    console.log(T);
     this.velocity = new Vector3(-velocityMagnitude * Math.sin(T),
                                 velocityMagnitude  * Math.cos(T),
                                 0);
@@ -65,6 +66,9 @@ function CelObj({radius, density,
   };
 
   this.draw = function(minRadius) {
+    if (showStreaks) {
+      this.drawStreak();
+    }
     fill(this.color);
 
     if (!DRAW_PERSPECTIVE) {
@@ -75,6 +79,16 @@ function CelObj({radius, density,
     if (this.name != null && showLabels) {
       fill(255);
       text(this.name, this.planar.x / SF + 15, this.planar.y / SF + 15);
+    }
+  };
+
+  this.drawStreak = function() {
+    lastPos = this.last100.toArray();
+    for (var i = 0; i < lastPos.length; i++) {
+        var lp = lastPos[i];
+        var col = 200 - i*2;
+        fill(col);
+        ellipse(lp.x / SF, lp.y / SF, this.radius / SF * planetVisualScale / 1.3);
     }
   };
 
@@ -94,6 +108,11 @@ function CelObj({radius, density,
   };
 
   this.update = function(force, DT) {
+    len =  this.last100.insertFront(this.position);
+    if (len > 127) {
+      this.last100.pop();
+    }
+
     dv = force.scale(DT);
     this.velocity = this.velocity.plus(dv);
     dx = this.velocity.scale(DT);
