@@ -79,7 +79,20 @@ function Model(planets, star) {
     }
   };
 
+  function compareScale(a,b) {
+    return a.perspectiveScale - b.perspectiveScale;
+  }
+
   this.draw = function() {
+
+    if (DRAW_PERSPECTIVE) {
+      for (var i = 0; i < this.planets.length; i++) {
+        planet = this.planets[i];
+        planet.project();
+      }
+      this.planets.sort(compareScale);
+    }
+
     for (var i = 0; i < this.planets.length; i++) {
       planet = this.planets[i];
       planet.draw(this.minRadius);

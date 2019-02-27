@@ -1,40 +1,33 @@
-function CelObj({radius, density,
-                 // position=null, initVelocity=null,
-                 velocityMagnitude=null, distanceFromSun=null,
-                 color=null, angle=null, name=null}) {
+var DRAW_PERSPECTIVE = true;
+
+function CelObj({radius, density, color=null,
+                 position=null, initVelocity=null, name=null}) {
   if (color == null) {
-    c = colors[counter % colors.length];
-    this.color = c;
+    this.color = colors[counter % colors.length];
     counter += 1;
   }
   else {
     this.color = color;
   }
 
+  this.perspectiveScale = 1;
+
   this.radius = radius;
   this.density = density;
   this.name = name;
-  T = (angle == null) ? (Math.random() * 2 * Math.PI) : angle;
 
-  if (distanceFromSun == null) {
+  if (position == null) {
     this.position = zero3;
-  }
-  else {
-    D = distanceFromSun;
-    this.position = new Vector3(D*Math.cos(T), D*Math.sin(T), 0);
+  } else {
+    this.position = position;
   }
 
-  if (velocityMagnitude == null) {
+  if (initVelocity == null) {
     this.velocity = zero3;
   }
   else {
-    console.log(T);
-    this.velocity = new Vector3(-velocityMagnitude * Math.sin(T),
-                                velocityMagnitude  * Math.cos(T),
-                                0);
+    this.velocity = initVelocity;
   }
-  console.log(this.velocity);
-  console.log(this.position);
 
   this.updateMassAndVolume = function() {
     this.volume = 4/3 * Math.PI * Math.pow(this.radius, 3);
@@ -51,21 +44,26 @@ function CelObj({radius, density,
     return this.position.dist(other.position);
   };
 
+  this.project = function() {
+    var norm = new Vector3(0, Math.sin(ecliptic), Math.cos(ecliptic));
+    var inline = norm.scale(this.position.dot(norm));
+    this.planar = this.position.sub(inline);
+    this.perspectiveScale = FD/(FD+inline.dot(norm));
+  };
+
   this.draw = function(minRadius) {
     fill(this.color);
 
-    var norm = new Vector3(0, Math.sin(ecliptic), Math.cos(ecliptic));
-    var inline = norm.scale(this.position.dot(norm));
-    var planar =  this.position.sub(inline);
-    var perspectiveScale = FD/(FD+inline.dot(norm));
+    if (!DRAW_PERSPECTIVE) {
+      this.planar = this.position;
+    }
 
-    ellipse(planar.x / SF, planar.y / SF, this.radius * perspectiveScale / SF * planetVisualScale);
+    ellipse(this.planar.x / SF, this.planar.y / SF, this.radius * this.perspectiveScale / SF * planetVisualScale);
     if (this.name != null) {
       fill(255);
-      text(this.name, this.position.x / SF + 15, this.position.y / SF + 15);
+      text(this.name, this.planar.x / SF + 15, this.planar.y / SF + 15);
     }
   };
-
 
   this.starDraw = function() {
     fill(this.color);
