@@ -87,10 +87,10 @@ function setup() {
   planetClicked = null;
 
   sidebarComponents = [
-    new Button({label: 'Hide Sidebar',
+    hideButton = new Button({label: 'Hide Sidebar [h]',
                 callback: function(checked) {
                   hideSidebar = checked;
-                  this.label = checked?'Show Sidebar':'Hide Sidebar';
+                  this.label = checked?'Show Sidebar [h]':'Hide Sidebar [h]';
                   for (var i = 1; i < this.box.components.length; i++) {
                     this.box.components[i].drawIt = !this.box.components[i].drawIt;
                   }
@@ -114,7 +114,7 @@ function setup() {
     new Button({label: 'Show streaks',
                 callback: function(checked) {showStreaks = checked;},
                 val: showStreaks}),
-    new Button({label: 'Pause',
+    pauseButton = new Button({label: 'Pause [space]',
                 callback: function(checked) {paused = checked;},
                 val: paused})
   ];
@@ -150,6 +150,25 @@ function planetPress() {
     }
   }
   planetClicked = null;
+}
+
+function togglePause() {
+  paused = !paused;
+  pauseButton.val = paused;
+}
+
+function toggleSidebar() {
+  hideButton.callback(!hideSidebar);
+}
+
+function keyTyped() {
+  console.log(keyCode);
+  if (key == ' ') {
+    togglePause();
+  }
+  if (key == 'h') {
+    toggleSidebar();
+  }
 }
 
 function mousePressed() {
