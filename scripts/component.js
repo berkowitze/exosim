@@ -70,6 +70,18 @@ function Slider({label, minVal, maxVal, val, callback}) {
         this.callback(this.val);
         return this;
     };
+
+    this.decrement = function() {
+        var newV = this.val - this.len/30;
+        this.val = newV >= this.minVal ? newV : this.minVal;
+        this.callback(this.val);
+    };
+
+    this.increment = function() {
+        var newV = this.val + this.len/30;
+        this.val = newV <= this.maxVal ? newV : this.maxVal;
+        this.callback(this.val);
+    };
 }
 
 function Button({label, callback, val=false}) {
@@ -102,6 +114,8 @@ function Button({label, callback, val=false}) {
         this.callback(this.val);
         return null;
     };
+
+    this.toggle = this.updateVal;
 }
 
 function Input(label) {

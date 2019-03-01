@@ -100,28 +100,28 @@ function setup() {
                   }
                 },
                 val: hideSidebar}),
-    new Slider({minVal: DT_MIN_EXP, maxVal: DT_MAX_EXP,
+    timeSlider = new Slider({minVal: DT_MIN_EXP, maxVal: DT_MAX_EXP,
                 val: Math.log10(DT),
                 callback: function(newV) {DT = Math.pow(10, newV);},
-                label: 'Time Scale'}),
-    new Slider({minVal: SF_MIN_EXP, maxVal: SF_MAX_EXP,
+                label: 'Time Scale [\u2190 \u2192]'}),
+    scaleSlider = new Slider({minVal: SF_MIN_EXP, maxVal: SF_MAX_EXP,
                 val: Math.log10(SF),
                 callback: function(newV) {SF = Math.pow(10, newV);},
-                label: 'Scale Factor'}),
-    new Slider({minVal: 0, maxVal: PI/2,
+                label: 'Scale Factor [\u2191 \u2193]'}),
+    eclipticSlider = new Slider({minVal: 0, maxVal: PI/2,
                 val: 0,
                 callback: function(newV) {ecliptic = newV;},
-                label: 'Ecliptic angle'}),
-    new Button({label: 'Show Planet Labels',
+                label: 'Ecliptic angle [s w]'}),
+    labelsButton = new Button({label: 'Show Planet Labels [l]',
                 callback: function(checked) {showLabels = checked;},
                 val: showLabels}),
-    new Button({label: 'Show streaks',
-                callback: function(checked) {showStreaks = checked;},
-                val: showStreaks}),
+    trailsButton = new Button({label: 'Show trails [t]',
+                callback: function(checked) {showTrails = checked;},
+                val: showTrails}),
     pauseButton = new Button({label: 'Pause [space]',
                 callback: function(checked) {paused = checked;},
                 val: paused}),
-    new Button({label: 'Create a planet',
+    new Button({label: 'Create a Planet',
                 callback: function(checked) {planetCreator = checked; colorPicker.showing = checked;},
                 val: planetCreator})
   ];
@@ -152,12 +152,19 @@ function setup() {
 function keyPressed() {
   if (inputSelected != null && keyCode == BACKSPACE) {
     inputSelected.backspace();
+    return;
   }
-}
-
-function keyTyped() {
-  if (inputSelected != null) {
-    inputSelected.keyPress(key);
+  if (keyCode == LEFT_ARROW) {
+    timeSlider.decrement();
+  }
+  else if (keyCode == RIGHT_ARROW) {
+    timeSlider.increment();
+  }
+  else if (keyCode == DOWN_ARROW) {
+    scaleSlider.decrement();
+  }
+  else if (keyCode == UP_ARROW) {
+    scaleSlider.increment();
   }
 }
 
@@ -197,21 +204,30 @@ function planetPress() {
   planetClicked = null;
 }
 
-function togglePause() {
-  paused = !paused;
-  pauseButton.val = paused;
-}
-
-function toggleSidebar() {
-  hideButton.callback(!hideSidebar);
-}
-
 function keyTyped() {
-  if (key == ' ') {
-    togglePause();
+  if (inputSelected != null) {
+    inputSelected.keyPress(key);
+    return;
   }
-  if (key == 'h') {
-    toggleSidebar();
+  switch (key) {
+    case ' ':
+      pauseButton.toggle();
+      break;
+    case 'h':
+      hideButton.toggle();
+      break;
+    case 's':
+      eclipticSlider.decrement();
+      break;
+    case 'w':
+      eclipticSlider.increment();
+      break;
+    case 't':
+      trailsButton.toggle();
+      break;
+    case 'l':
+      labelsButton.toggle();
+      break;
   }
 }
 
@@ -239,8 +255,8 @@ function mouseReleased() {
 }
 
 function draw() {
-  if (ecliptic != 0) {
-    showStreaks = true;
+  if (ecliptic != 0 && showTrails) {
+    trailsButton.toggle();
   }
   background(0, 0, 0);
   if (componentClicked != null) {

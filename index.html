@@ -21,5 +21,19 @@
 </head>
 
 <body>
+  <audio loop>
+    <source src="quiet_water.mp3" type="audio/mpeg">
+  </audio>
 </body>
+<script type="text/javascript">
+  a = setInterval(
+    function() {
+      try {
+        var a = $('audio').get(0);
+        a.volume = 0.5;
+        a.play();
+      } catch (err) {}
+    },
+    1000);
+</script>
 </html>

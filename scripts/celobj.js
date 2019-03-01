@@ -67,8 +67,8 @@ function CelObj({radius, density,
   };
 
   this.draw = function(visualScale) {
-    if (showStreaks && !isStar) {
-      this.drawStreak();
+    if (showTrails && !isStar) {
+      this.drawTrail();
     }
 
     fill(this.color);
@@ -90,7 +90,7 @@ function CelObj({radius, density,
     }
   };
 
-  this.drawStreak = function() {
+  this.drawTrail = function() {
     lastPos = this.last100.toArray();
     for (var i = 0; i < lastPos.length; i++) {
         var lp = lastPos[i];

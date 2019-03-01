@@ -20,7 +20,7 @@ var showLabels = true;
 var paused = false;
 var hideSidebar = false;
 var planetCreator = false;
-var showStreaks = true;
+var showTrails = true;
 
 colors = [[172, 128, 255],
           [166, 226, 44],
