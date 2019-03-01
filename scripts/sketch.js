@@ -1,8 +1,6 @@
 planets = OUR_SOLAR_SYSTEM;
 star = SUN;
 
-exp10 = x => Math.pow(10,x);
-
 function Model(planets, star) {
   this.planets = planets;
   // TODO(izzy): consider making an array of stars so we can have binaries/trinaries
@@ -10,11 +8,9 @@ function Model(planets, star) {
   this.objects = planets.concat(star);
 
   this.minRadius = this.objects
-                   .map(obj => obj.radius)
-                   .reduce((rad, rst) => Math.min(rad, rst), Infinity);
+                   .map(obj => obj.radius).min();
   this.maxRadius = this.objects
-                   .map(obj => obj.radius)
-                   .reduce((rad, rst) => Math.max(rad, rst), -Infinity);
+                   .map(obj => obj.radius).max();
 
   this.updateMomentum = function() {
     momentum = zero3;
@@ -129,23 +125,49 @@ function setup() {
                               components: sidebarComponents, showing: true});
 
   colorPickerComponents = [
-    new Slider({minVal: 0, maxVal: 255, val: red,
+    redSlider = new Slider({minVal: 0, maxVal: 255, val: red,
                 callback: function(newV) {red = newV;},
                 label: 'Red'}),
-    new Slider({minVal: 0, maxVal: 255, val: green,
+    greenSlider = new Slider({minVal: 0, maxVal: 255, val: green,
                 callback: function(newV) {green = newV;},
                 label: 'Green'}),
-    new Slider({minVal: 0, maxVal: 255, val: blue,
+    blueSlider = new Slider({minVal: 0, maxVal: 255, val: blue,
                 callback: function(newV) {blue = newV;},
                 label: 'Blue'}),
-    new Input('Planet name'),
-    new Text('Drag the planet into place when you\'re ready!')
+    nameInput = new Input('Planet name'),
+    new Slider({minVal: newPlanetMinRadius, maxVal: newPlanetMaxRadius,
+                val: newPlanetRadius,
+                callback: function(newV) {newPlanetRadius = newV;},
+                label: 'Planet radius'}),
+    new Slider({minVal: newPlanetMinDensity, maxVal: newPlanetMaxDensity,
+                val: newPlanetDensity,
+                callback: function(newV) {newPlanetDensity = newV;},
+                label: 'Planet density'}),
+    new Button({label: 'Reset',
+                callback: function(checked) {
+                  if (!checked) {
+                    return;
+                  }
+                  red = 125;
+                  green = 125;
+                  blue = 125;
+                  redSlider.val = 125;
+                  greenSlider.val = 125;
+                  blueSlider.val = 125;
+                  nameInput.clear();
+                  inputSelected = null;
+                  this.toggle();
+                }
+              }),
+    new Text(['Drag the planet into place', 'when you\'re ready!'])
   ];
 
   colorPicker = new ComponentBox({xStart: window.innerWidth - 200, yStart: 13,
                                   components: colorPickerComponents});
 
   componentBoxes = [sidebar, colorPicker];
+  newPlanetX = window.innerWidth - 150;
+  newPlanetY = colorPickerComponents[colorPickerComponents.length-1].yEnd + 30;
   model = new Model(planets, star);
 }
 
@@ -198,10 +220,11 @@ function planetPress() {
     if (planets[j].mouseIn()) {
       planetClicked = planets[j];
       ecliptic = 0;
-      return;
+      return true;
     }
   }
   planetClicked = null;
+  return false;
 }
 
 function keyTyped() {
@@ -231,11 +254,38 @@ function keyTyped() {
   }
 }
 
-function mousePressed() {
-  if (!componentPress()) {
-    planetPress();
+function newPlanetPress() {
+  if (!planetCreator) {
+    return false;
   }
-  else {
+  return square(mouseX - newPlanetX) + square(mouseY - newPlanetY) < 
+         square(newPlanetRadius) * 1.3;
+}
+
+function createNewPlanet() {
+  var c = color(redSlider.val, greenSlider.val, blueSlider.val);
+  var name = nameInput.val.join('');
+  var density = newPlanetDensity;
+  var radius = newPlanetRadius;
+  var pos = new Vector3((mouseX - window.innerWidth/2) * SF, (mouseY - window.innerHeight/2) * SF, 0);
+  var velMag = Math.sqrt(G * star.mass / pos.dist(star.position));
+  var newPlanet = new CelObj({
+    radius: radius,
+    density: density,
+    velocityMagnitude: velMag,
+    distanceFromSun: pos.dist(star.position),
+    color: c,
+    angle: Math.atan2(pos.y, pos.x),
+    name: name,
+    isStar: false
+  });
+  model.planets.push(newPlanet);
+  model.objects.push(newPlanet);
+  draggingNewPlanet = false;
+}
+
+function mousePressed() {
+  if (componentPress()) {
     for (var k = 0; k < INPUTS.length; k++) {
       var inp = INPUTS[k];
       if (inp === componentClicked) {
@@ -244,10 +294,20 @@ function mousePressed() {
       }
       inp.border = false;
     }
+    return;
   }
+  inputSelected = null;
+  if (planetPress()) {
+    return;
+  }
+  draggingNewPlanet = newPlanetPress();
 }
 
 function mouseReleased() {
+  if (draggingNewPlanet) {
+    createNewPlanet();
+    return;
+  }
   if (componentClicked != null && componentClicked.doneOnRelease) {
     componentClicked = null;
   }
@@ -257,6 +317,9 @@ function mouseReleased() {
 function draw() {
   if (ecliptic != 0 && showTrails) {
     trailsButton.toggle();
+  }
+  if (draggingNewPlanet) {
+    ecliptic = 0;
   }
   background(0, 0, 0);
   if (componentClicked != null) {
@@ -281,7 +344,14 @@ function draw() {
   }
   if (planetCreator) {
     fill(color(red, green, blue));
-    ellipse(window.innerWidth - 150, colorPickerComponents[colorPickerComponents.length-1].yEnd + 100, 50);
+    var newPlanetDrawRadius = scaleToRange(newPlanetRadius, newPlanetMinRadius,
+                                           newPlanetMaxRadius, 5, 30);
+    if (!draggingNewPlanet) {
+      ellipse(newPlanetX, newPlanetY, newPlanetDrawRadius);
+    }
+    else {
+      ellipse(mouseX, mouseY, newPlanetDrawRadius);
+    }
     colorPicker.showing = true;
   }
 }

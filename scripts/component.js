@@ -5,7 +5,7 @@ var HEIGHT_MARGIN = 8;
 var sliderCircleRadius = 5;
 INPUTS = [];
 
-function Component(box, width) {
+function Component(box, width, height=1) {
     this.box = box;
     this.width = width;
     this.drawIt = true;
@@ -14,7 +14,8 @@ function Component(box, width) {
     this.yStart = box.y0 + this.ident * (box.compHeight + box.heightMargin);
 
     this.xEnd = this.xStart + width;
-    this.yEnd = this.yStart + box.compHeight;
+    this.yEnd = this.yStart + (box.compHeight * height);
+    box.y1 = Math.max(box.y1, this.yEnd);
 
     this.mouseIn = function() {
         return (mouseX >= this.xStart && mouseX <= this.xEnd &&
@@ -177,6 +178,10 @@ function Input(label) {
         this.val.push(key);
     };
 
+    this.clear = function() {
+        this.val = [];
+    };
+
     INPUTS.push(this);
 }
 
@@ -184,15 +189,15 @@ function Text(txt) {
     this.text = txt;
     this.doneOnRelease = true;
     this.init = function(box) {
-        Component.call(this, box, slideWidth);
+        Component.call(this, box, slideWidth + 50, this.text.length);
     };
 
     this.updateVal = function(){};
     this.draw = function() {
         fill(255);
-        textAlign(CENTER, RIGHT);
-        text(this.text, this.box.x0 + 4, this.yStart + this.box.compHeight / 2,
-             this.width, this.box.compHeight);
+        textAlign(LEFT, TOP);
+        text(this.text.join('\n'), this.box.x0 + 4, this.yStart + this.box.compHeight / 2,
+             this.width, this.yEnd - this.yStart);
         textAlign(CENTER, CENTER);
     };
 }
@@ -211,13 +216,10 @@ function ComponentBox({xStart, yStart, components,
     for (var i = 0; i < components.length; i++) {
         components[i].ident = i;
     }
-
+    this.y1 = 0;
     components.map(comp => comp.init(this));
 
-    this.x1 = this.components.map(comp => comp.xEnd)
-                             .reduce((end, restEnd) => Math.max(end, restEnd), -Infinity);
-    this.y1 = this.components.map(comp => comp.yEnd)
-                             .reduce((end, restEnd) => Math.max(end, restEnd), -Infinity);
+    this.x1 = this.components.map(comp => comp.xEnd).max();
     this.bg = rect(this.x0, this.y0, (this.x1 - this.x0), (this.y1 - this.y0));
     this.draw = function() {
         for (var i = 0; i < this.components.length; i++) {
