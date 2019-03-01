@@ -199,10 +199,10 @@ function keyPressed() {
   else if (keyCode == RIGHT_ARROW) {
     timeSlider.increment();
   }
-  else if (keyCode == DOWN_ARROW) {
+  else if (keyCode == UP_ARROW) {
     scaleSlider.decrement();
   }
-  else if (keyCode == UP_ARROW) {
+  else if (keyCode == DOWN_ARROW) {
     scaleSlider.increment();
   }
 }
@@ -256,10 +256,10 @@ function keyTyped() {
     case 'h':
       hideButton.toggle();
       break;
-    case 's':
+    case 'w':
       eclipticSlider.decrement();
       break;
-    case 'w':
+    case 's':
       eclipticSlider.increment();
       break;
     case 't':
