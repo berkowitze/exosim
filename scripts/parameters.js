@@ -8,7 +8,7 @@ var DT_MAX_EXP = 6;
 
 var newPlanetRadius = 2e6;
 var newPlanetMinRadius = 0.1e6;
-var newPlanetMaxRadius = 15e6;
+var newPlanetMaxRadius = 120e6;
 
 var newPlanetDensity = 3000;
 var newPlanetMinDensity = 500;
