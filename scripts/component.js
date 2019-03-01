@@ -4,6 +4,7 @@ var slideWidth = 100;
 var buttonWidth = 60;
 var HEIGHT_MARGIN = 8;
 var sliderCircleRadius = 5;
+INPUTS = [];
 
 function Component(box, width) {
     this.box = box;
@@ -29,6 +30,7 @@ function Slider({label, minVal, maxVal, val, callback}) {
     this.len = maxVal - minVal;
     this.val = val;
     this.callback = callback;
+    this.doneOnRelease = true;
 
     this.init = function(box) {
         Component.call(this, box, slideWidth);
@@ -75,6 +77,7 @@ function Button({label, callback, val=false}) {
     this.label = label;
     this.callback = callback;
     this.val = val;
+    this.doneOnRelease = true;
 
     this.init = function(box) {
         Component.call(this, box, buttonWidth);
@@ -102,6 +105,85 @@ function Button({label, callback, val=false}) {
     };
 }
 
+function Input(label) {
+    this.label = label;
+    this.val = [];
+    this.border = false;
+    this.doneOnRelease = false;
+
+    this.init = function(box) {
+        Component.call(this, box, slideWidth);
+    };
+
+    this.draw = function() {
+        fill(200);
+        if (this.border) {
+            stroke(0, 0, 255);
+        }
+        else {
+            noStroke();
+        }
+        rect(this.box.x0,
+             this.yStart,
+             slideWidth + (2 * sliderCircleRadius),
+             this.box.compHeight,
+             5);
+        noStroke();
+        fill(100);
+        textSize(14);
+        textAlign(LEFT, CENTER);
+        var txt = this.val.length == 0 ? this.label : this.val.join('');
+        if (this.val.length == 0) {
+            fill(100);
+        }
+        else {
+            fill(0);
+        }
+        
+        text(txt, this.box.x0 + 4, this.yStart + this.box.compHeight / 2);
+
+        textAlign(CENTER, CENTER);
+        textSize(12);
+    };
+
+    this.updateVal = function() {
+        this.border = true;
+        return this;
+    };
+
+    this.backspace = function() {
+        if (this.val.length == 0) {
+                return;
+        }
+        else {
+            this.val.pop();
+        }
+    };
+
+    this.keyPress = function(key) {
+        this.val.push(key);
+    };
+
+    INPUTS.push(this);
+}
+
+function Text(txt) {
+    this.text = txt;
+    this.doneOnRelease = true;
+    this.init = function(box) {
+        Component.call(this, box, slideWidth);
+    };
+
+    this.updateVal = function(){};
+    this.draw = function() {
+        fill(255);
+        textAlign(CENTER, RIGHT);
+        text(this.text, this.box.x0 + 4, this.yStart + this.box.compHeight / 2,
+             this.width, this.box.compHeight);
+        textAlign(CENTER, CENTER);
+    };
+}
+
 function ComponentBox({xStart, yStart, components,
                        componentHeight=compHeight,
                        heightMargin=HEIGHT_MARGIN,
@@ -119,6 +201,11 @@ function ComponentBox({xStart, yStart, components,
 
     components.map(comp => comp.init(this));
 
+    this.x1 = this.components.map(comp => comp.xEnd)
+                             .reduce((end, restEnd) => Math.max(end, restEnd), -Infinity);
+    this.y1 = this.components.map(comp => comp.yEnd)
+                             .reduce((end, restEnd) => Math.max(end, restEnd), -Infinity);
+    this.bg = rect(this.x0, this.y0, (this.x1 - this.x0), (this.y1 - this.y0));
     this.draw = function() {
         for (var i = 0; i < this.components.length; i++) {
             if (this.components[i].drawIt) {
