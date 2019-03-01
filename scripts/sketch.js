@@ -313,7 +313,7 @@ function createNewPlanet() {
     distanceFromSun: pos.dist(star.position),
     color: c,
     angle: Math.atan2(pos.y, pos.x),
-    name: name ? name != '' : '[Unnamed]',
+    name: name != '' ? name : '[Unnamed]',
     isStar: false
   });
   model.planets.push(newPlanet);

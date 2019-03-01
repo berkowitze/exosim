@@ -50,6 +50,7 @@ function Slider({label, minVal, maxVal, val, callback}) {
                 sliderCircleRadius * 2);
 
         fill(255);
+        textSize(12);
         textAlign(LEFT, CENTER);
         text(this.label, this.xEnd + 10, this.yStart + this.box.compHeight / 2);
         textAlign(CENTER, CENTER);
@@ -111,6 +112,7 @@ function Button({label, callback, val=false}) {
 
         textAlign(LEFT, CENTER);
         fill(255);
+        textSize(12);
         text(this.label, this.xEnd + 10, this.yStart + compHeight / 2);
         textAlign(CENTER, CENTER);
     };
@@ -201,6 +203,7 @@ function Text(txt) { // input is a list of strings one element per row
     this.draw = function() {
         fill(255);
         textAlign(LEFT, TOP);
+        textSize(12);
         text(this.text.join('\n'), this.box.x0 + 4, this.yStart + this.box.compHeight / 2,
              this.width, this.yEnd - this.yStart);
         textAlign(CENTER, CENTER);
