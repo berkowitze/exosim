@@ -91,10 +91,10 @@ function setup() {
   blue = 125;
 
   sidebarComponents = [
-    new Button({label: 'Hide Sidebar',
+    hideButton = new Button({label: 'Hide Sidebar [h]',
                 callback: function(checked) {
                   hideSidebar = checked;
-                  this.label = checked?'Show Sidebar':'Hide Sidebar';
+                  this.label = checked?'Show Sidebar [h]':'Hide Sidebar [h]';
                   for (var i = 1; i < this.box.components.length; i++) {
                     this.box.components[i].drawIt = !this.box.components[i].drawIt;
                   }
@@ -118,14 +118,15 @@ function setup() {
     new Button({label: 'Show streaks',
                 callback: function(checked) {showStreaks = checked;},
                 val: showStreaks}),
-    new Button({label: 'Pause',
+    pauseButton = new Button({label: 'Pause [space]',
                 callback: function(checked) {paused = checked;},
                 val: paused}),
     new Button({label: 'Create a planet',
                 callback: function(checked) {planetCreator = checked; colorPicker.showing = checked;},
                 val: planetCreator})
   ];
-  sidebar = new ComponentBox({xStart: 13, yStart: 13, components: sidebarComponents, showing: true});
+  sidebar = new ComponentBox({xStart: 13, yStart: 13,
+                              components: sidebarComponents, showing: true});
 
   colorPickerComponents = [
     new Slider({minVal: 0, maxVal: 255, val: red,
@@ -141,7 +142,8 @@ function setup() {
     new Text('Drag the planet into place when you\'re ready!')
   ];
 
-  colorPicker = new ComponentBox({xStart: window.innerWidth - 200, yStart: 13, components: colorPickerComponents});
+  colorPicker = new ComponentBox({xStart: window.innerWidth - 200, yStart: 13,
+                                  components: colorPickerComponents});
 
   componentBoxes = [sidebar, colorPicker];
   model = new Model(planets, star);
@@ -193,6 +195,24 @@ function planetPress() {
     }
   }
   planetClicked = null;
+}
+
+function togglePause() {
+  paused = !paused;
+  pauseButton.val = paused;
+}
+
+function toggleSidebar() {
+  hideButton.callback(!hideSidebar);
+}
+
+function keyTyped() {
+  if (key == ' ') {
+    togglePause();
+  }
+  if (key == 'h') {
+    toggleSidebar();
+  }
 }
 
 function mousePressed() {
