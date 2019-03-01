@@ -30,6 +30,7 @@ var hideSidebar = false;
 var planetCreator = false;
 var showTrails = true;
 var draggingNewPlanet = false;
+var trashHover = false;
 
 colors = [[172, 128, 255],
           [166, 226, 44],
