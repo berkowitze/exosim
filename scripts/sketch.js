@@ -413,6 +413,16 @@ function draw() {
   }
   if (planetClicked != null) {
     planetClicked.updatePosition(mouseX, mouseY);
+  }
+  translate(window.innerWidth / 2, window.innerHeight / 2);
+  noStroke();
+  fill(0);
+  model.draw();
+  if (!paused) {
+    model.update(DT);
+  }
+  translate(-window.innerWidth / 2, -window.innerHeight / 2);
+  if (planetClicked != null) {
     var trashX = window.innerWidth - 50;
     var trashY = window.innerHeight - 50;
     var minX = trashX - 20;
@@ -430,15 +440,6 @@ function draw() {
     }
     drawTrash(trashX, trashY, 20, trashColor);
   }
-  translate(window.innerWidth / 2, window.innerHeight / 2);
-  noStroke();
-  fill(255);
-  fill(0);
-  model.draw();
-  if (!paused) {
-    model.update(DT);
-  }
-  translate(-window.innerWidth / 2, -window.innerHeight / 2);
   for (var i = 0; i < componentBoxes.length; i++) {
     if (componentBoxes[i].showing) {
       componentBoxes[i].draw();
