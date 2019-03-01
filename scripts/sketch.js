@@ -236,7 +236,7 @@ function planetPress() {
   for (var j = 0; j < planets.length; j++) {
     if (planets[j].mouseIn()) {
       planetClicked = planets[j];
-      ecliptic = 0;
+      eclipticSlider.setTo(0);
       return true;
     }
   }
@@ -275,8 +275,12 @@ function newPlanetPress() {
   if (!planetCreator) {
     return false;
   }
-  return square(mouseX - newPlanetX) + square(mouseY - newPlanetY) < 
-         square(newPlanetDrawRadius) * 1.3;
+  var dragging = square(mouseX - newPlanetX) + square(mouseY - newPlanetY) < 
+                 square(newPlanetDrawRadius) * 1.3;
+  if (dragging) {
+    model.shiftToZero();
+  }
+  return dragging;
 }
 
 function createNewPlanet() {
@@ -351,7 +355,7 @@ function draw() {
     trailsButton.toggle();
   }
   if (draggingNewPlanet) {
-    ecliptic = 0;
+    eclipticSlider.setTo(0);
   }
   background(0, 0, 0);
   if (componentClicked != null) {

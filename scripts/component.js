@@ -72,6 +72,11 @@ function Slider({label, minVal, maxVal, val, callback}) {
         return this;
     };
 
+    this.setTo = function(newV) {
+        this.val = newV;
+        this.callback(this.val);
+    };
+
     this.decrement = function() {
         var newV = this.val - this.len/30;
         this.val = newV >= this.minVal ? newV : this.minVal;
