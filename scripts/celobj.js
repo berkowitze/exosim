@@ -137,10 +137,10 @@ function CelObj({radius, density,
   };
 
   this.mouseIn = function() {
-    x = this.planar.x / SF;
-    y = this.planar.y / SF;
-    visualScale = this.isStar ? starVisualScale : planetVisualScale;
-    r = this.radius * this.perspectiveScale / SF * visualScale;
+    var x = this.planar.x / SF;
+    var y = this.planar.y / SF;
+    var visualScale = this.isStar ? starVisualScale : planetVisualScale;
+    var r = this.radius * this.perspectiveScale / SF * visualScale;
     return (square(mouseX - window.innerWidth/2 - x) + square(mouseY - window.innerHeight/2 - y)) < 1.3*square(r);
   };
 

@@ -60,8 +60,8 @@ function Model(planets, star) {
     }
   };
 
-  function compareScale(a,b) {
-    return a.perspectiveScale - b.perspectiveScale;
+  function compareScale(a,blue) {
+    return a.perspectiveScale - blue.perspectiveScale;
   }
 
   this.draw = function() {
@@ -120,7 +120,10 @@ function setup() {
                 val: showStreaks}),
     pauseButton = new Button({label: 'Pause [space]',
                 callback: function(checked) {paused = checked;},
-                val: paused})
+                val: paused}),
+    new Button({label: 'Create a planet',
+                callback: function(checked) {planetCreator = checked; colorPicker.showing = checked;},
+                val: planetCreator})
   ];
   sidebar = new ComponentBox({xStart: 13, yStart: 13,
                               components: sidebarComponents, showing: true});
@@ -236,6 +239,9 @@ function mouseReleased() {
 }
 
 function draw() {
+  if (ecliptic != 0) {
+    showStreaks = true;
+  }
   background(0, 0, 0);
   if (componentClicked != null) {
     componentClicked = componentClicked.updateVal(mouseX);
@@ -246,7 +252,6 @@ function draw() {
   translate(window.innerWidth / 2, window.innerHeight / 2);
   noStroke();
   fill(255);
-  // text('Distances to scale, planets drawn ' + planetVisualScale + ' times bigger', -150, window.innerHeight / 2 - 20);
   fill(0);
   model.draw();
   if (!paused) {

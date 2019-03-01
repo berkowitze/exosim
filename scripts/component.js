@@ -1,4 +1,3 @@
-// var component_count = 0;
 var compHeight = 20;
 var slideWidth = 100;
 var buttonWidth = 60;
