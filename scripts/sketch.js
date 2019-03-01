@@ -1,4 +1,5 @@
 planets = OUR_SOLAR_SYSTEM;
+// planets = [];
 star = SUN;
 
 function Model(planets, star) {
@@ -31,7 +32,6 @@ function Model(planets, star) {
     this.star.velocity = dv;
   };
 
-  // this.zeroMomentum();
   this.updateMomentum();
 
   this.update = function(DT) {
@@ -60,6 +60,15 @@ function Model(planets, star) {
     return a.perspectiveScale - blue.perspectiveScale;
   }
 
+  this.shiftToZero = function() {
+    var dp = this.star.position;
+    this.star.position = zero3;
+    for (var i = 0; i < this.planets.length; i++) {
+      var p = this.planets[i];
+      p.position = p.position.sub(dp);
+    }
+  };
+
   this.draw = function() {
 
     if (DRAW_PERSPECTIVE) {
@@ -85,6 +94,7 @@ function setup() {
   red = 125;
   green = 125;
   blue = 125;
+  newPlanetDrawRadius = 5;
 
   sidebarComponents = [
     hideButton = new Button({label: 'Hide Sidebar [h]',
@@ -112,7 +122,14 @@ function setup() {
                 callback: function(checked) {showLabels = checked;},
                 val: showLabels}),
     trailsButton = new Button({label: 'Show trails [t]',
-                callback: function(checked) {showTrails = checked;},
+                callback: function(checked) {
+                  if (model.planets.length > 20) {
+                    this.val = false;
+                    showTrails = false;
+                    return;
+                  }
+                  showTrails = checked;
+                },
                 val: showTrails}),
     pauseButton = new Button({label: 'Pause [space]',
                 callback: function(checked) {paused = checked;},
@@ -259,7 +276,7 @@ function newPlanetPress() {
     return false;
   }
   return square(mouseX - newPlanetX) + square(mouseY - newPlanetY) < 
-         square(newPlanetRadius) * 1.3;
+         square(newPlanetDrawRadius) * 1.3;
 }
 
 function createNewPlanet() {
@@ -267,7 +284,9 @@ function createNewPlanet() {
   var name = nameInput.val.join('');
   var density = newPlanetDensity;
   var radius = newPlanetRadius;
-  var pos = new Vector3((mouseX - window.innerWidth/2) * SF, (mouseY - window.innerHeight/2) * SF, 0);
+  var pos = new Vector3((mouseX - window.innerWidth/2) * SF,
+                        (mouseY - window.innerHeight/2) * SF,
+                        0);
   var velMag = Math.sqrt(G * star.mass / pos.dist(star.position));
   var newPlanet = new CelObj({
     radius: radius,
@@ -282,6 +301,9 @@ function createNewPlanet() {
   model.planets.push(newPlanet);
   model.objects.push(newPlanet);
   draggingNewPlanet = false;
+  if (model.planets.length > 20 && showTrails) {
+    trailsButton.toggle();
+  }
 }
 
 function mousePressed() {
@@ -314,6 +336,16 @@ function mouseReleased() {
   planetClicked = null;
 }
 
+function doubleClicked() {
+  for (var j = 0; j < planets.length; j++) {
+    if (planets[j].mouseIn()) {
+      planets[j].setOnOrbit(star);
+      return false;
+    }
+  }
+  return false;
+}
+
 function draw() {
   if (ecliptic != 0 && showTrails) {
     trailsButton.toggle();
@@ -344,7 +376,7 @@ function draw() {
   }
   if (planetCreator) {
     fill(color(red, green, blue));
-    var newPlanetDrawRadius = scaleToRange(newPlanetRadius, newPlanetMinRadius,
+    newPlanetDrawRadius = scaleToRange(newPlanetRadius, newPlanetMinRadius,
                                            newPlanetMaxRadius, 5, 30);
     if (!draggingNewPlanet) {
       ellipse(newPlanetX, newPlanetY, newPlanetDrawRadius);

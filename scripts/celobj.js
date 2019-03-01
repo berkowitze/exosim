@@ -144,6 +144,14 @@ function CelObj({radius, density,
     return (square(mouseX - window.innerWidth/2 - x) + square(mouseY - window.innerHeight/2 - y)) < 1.3*square(r);
   };
 
+  this.setOnOrbit = function(star) {
+    var d = this.position.dist(star);
+    var velMag = Math.sqrt(G * star.mass / this.position.dist(star.position));
+    var angleAt = Math.atan2(this.position.y, this.position.x);
+
+    this.velocity = new Vector3(-Math.sin(angleAt) * velMag, Math.cos(angleAt) * velMag, 0);
+  };
+
   this.updateMassAndVolume();
 
 }
