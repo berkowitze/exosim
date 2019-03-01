@@ -322,6 +322,9 @@ function mousePressed() {
     }
     return;
   }
+  for (var i = 0; i < INPUTS.length; i++) {
+    INPUTS[i].border = false;
+  }
   inputSelected = null;
   if (planetPress()) {
     return;

@@ -190,7 +190,7 @@ function Input(label) {
     INPUTS.push(this);
 }
 
-function Text(txt) {
+function Text(txt) { // input is a list of strings one element per row
     this.text = txt;
     this.doneOnRelease = true;
     this.init = function(box) {
