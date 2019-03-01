@@ -85,6 +85,7 @@ function setup() {
   createCanvas(window.innerWidth, window.innerHeight);
   componentClicked = null;
   planetClicked = null;
+  inputSelected = null;
   red = 125;
   green = 125;
   blue = 125;
@@ -135,7 +136,9 @@ function setup() {
                 label: 'Green'}),
     new Slider({minVal: 0, maxVal: 255, val: blue,
                 callback: function(newV) {blue = newV;},
-                label: 'Blue'})
+                label: 'Blue'}),
+    new Input('Planet name'),
+    new Text('Drag the planet into place when you\'re ready!')
   ];
 
   colorPicker = new ComponentBox({xStart: window.innerWidth - 200, yStart: 13, components: colorPickerComponents});
@@ -144,21 +147,41 @@ function setup() {
   model = new Model(planets, star);
 }
 
+function keyPressed() {
+  if (inputSelected != null && keyCode == BACKSPACE) {
+    inputSelected.backspace();
+  }
+}
+
+function keyTyped() {
+  if (inputSelected != null) {
+    inputSelected.keyPress(key);
+  }
+}
+
 function componentPress() {
   for (var i = 0; i < componentBoxes.length; i++) {
-    box = componentBoxes[i];
+    var box = componentBoxes[i];
     if (!box.showing) {
       continue;
     }
     for (var j = 0; j < box.components.length; j++) {
-      component = box.components[j];
+      var component = box.components[j];
       if (component.mouseIn()) {
+        for (var k = 0; k < INPUTS.length; k++) {
+          var inp = INPUTS[k];
+          if (inp === component) {
+            continue;
+          }
+          inp.border = false;
+        }
         componentClicked = component.updateVal(mouseX);
-        return;
+        return true;
       }
     }
   }
   componentClicked = null;
+  return false;
 }
 
 function planetPress() {
@@ -173,12 +196,25 @@ function planetPress() {
 }
 
 function mousePressed() {
-  componentPress();
-  planetPress();
+  if (!componentPress()) {
+    planetPress();
+  }
+  else {
+    for (var k = 0; k < INPUTS.length; k++) {
+      var inp = INPUTS[k];
+      if (inp === componentClicked) {
+        inputSelected = inp;
+        continue;
+      }
+      inp.border = false;
+    }
+  }
 }
 
 function mouseReleased() {
-  componentClicked = null;
+  if (componentClicked != null && componentClicked.doneOnRelease) {
+    componentClicked = null;
+  }
   planetClicked = null;
 }
 
@@ -209,7 +245,7 @@ function draw() {
   }
   if (planetCreator) {
     fill(color(red, green, blue));
-    ellipse(window.innerWidth - 150, colorPickerComponents[colorPickerComponents.length-1].yEnd + 30, 50);
+    ellipse(window.innerWidth - 150, colorPickerComponents[colorPickerComponents.length-1].yEnd + 100, 50);
     colorPicker.showing = true;
   }
 }
