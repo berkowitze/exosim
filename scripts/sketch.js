@@ -440,6 +440,9 @@ function draw() {
     }
     drawTrash(trashX, trashY, 20, trashColor);
   }
+  else {
+    trashHover = false;
+  }
   for (var i = 0; i < componentBoxes.length; i++) {
     if (componentBoxes[i].showing) {
       componentBoxes[i].draw();
