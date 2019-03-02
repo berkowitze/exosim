@@ -1,9 +1,9 @@
-var DRAW_PERSPECTIVE = true;
+
 
 getColor = (function() {
-  var counter = 0;
+  let counter = 0;
   return function() {
-    col = colors[counter % colors.length];
+    let col = colors[counter % colors.length];
     counter += 1;
     return col;
   };
@@ -25,13 +25,13 @@ function CelObj({radius, density,
   this.last100 = new Deque(100);
   this.isStar = isStar;
   
-  T = (angle == null) ? (Math.random() * 2 * Math.PI) : angle;
+  let T = (angle == null) ? (Math.random() * 2 * Math.PI) : angle;
 
   if (distanceFromSun == null) {
     this.position = zero3;
   }
   else {
-    D = distanceFromSun;
+    let D = distanceFromSun;
     this.position = new Vector3(D*Math.cos(T), D*Math.sin(T), 0);
   }
 
@@ -50,9 +50,8 @@ function CelObj({radius, density,
   };
 
   this.force = function(other) {
-    scale = -G * other.mass / square(this.dist(other));
-    f = this.position.sub(other.position).normalized().scale(scale);
-    return f;
+    let scale = -G * other.mass / square(this.dist(other));
+    return this.position.sub(other.position).normalized().scale(scale);
   };
 
   this.dist = function(other) {
@@ -60,8 +59,8 @@ function CelObj({radius, density,
   };
 
   this.project = function() {
-    var norm = new Vector3(0, Math.sin(ecliptic), Math.cos(ecliptic));
-    var inline = norm.scale(this.position.dot(norm));
+    let norm = new Vector3(0, Math.sin(ecliptic), Math.cos(ecliptic));
+    let inline = norm.scale(this.position.dot(norm));
     this.planar = this.position.sub(inline);
     this.perspectiveScale = FD/(FD+inline.dot(norm));
   };
@@ -84,26 +83,21 @@ function CelObj({radius, density,
     visualScale = this.isStar ? starVisualScale : planetVisualScale;
 
     ellipse(this.planar.x / SF, this.planar.y / SF, this.radius * this.perspectiveScale / SF * visualScale);
-    if (this.name != null && showLabels) {
+    if (this.name != null && showLabels && !this.isStar) {
       fill(255);
       text(this.name, this.planar.x / SF + 15, this.planar.y / SF + 15);
     }
   };
 
   this.drawTrail = function() {
-    lastPos = this.last100.toArray();
-    for (var i = 0; i < lastPos.length; i++) {
-        var lp = lastPos[i];
-        var col = 200 - i*2;
+    let lastPos = this.last100.toArray();
+    for (let i = 0; i < lastPos.length; i++) {
+        let lp = lastPos[i];
+        let col = 200 - i*2;
         fill(col);
-        var planetRadius = this.radius / SF * planetVisualScale;
+        let planetRadius = this.radius / SF * planetVisualScale;
         ellipse(lp.x / SF, lp.y / SF, planetRadius * (127 - i) / 200);
     }
-  };
-
-  this.starDraw = function() {
-    fill(this.color);
-    ellipse(this.position.x / SF, this.position.y / SF, this.radius / SF * starVisualScale);
   };
 
   this.setDensity = function(newDensity) {
@@ -112,19 +106,19 @@ function CelObj({radius, density,
   };
 
   this.setRadius = function(newRadius) {
-    this.radius = radius;
+    this.radius = newRadius;
     this.updateMassAndVolume();
   };
 
   this.update = function(force, DT) {
-    len =  this.last100.insertFront(this.position);
+    let len = this.last100.insertFront(this.position);
     if (len > 127) {
       this.last100.pop();
     }
 
-    dv = force.scale(DT);
+    let dv = force.scale(DT);
     this.velocity = this.velocity.plus(dv);
-    dx = this.velocity.scale(DT);
+    let dx = this.velocity.scale(DT);
     this.position = this.position.plus(dx);
   };
 
@@ -136,18 +130,17 @@ function CelObj({radius, density,
     return this.velocity.scale(this.mass);
   };
 
-  this.mouseIn = function() {
-    var x = this.planar.x / SF;
-    var y = this.planar.y / SF;
-    var visualScale = this.isStar ? starVisualScale : planetVisualScale;
-    var r = this.radius * this.perspectiveScale / SF * visualScale;
+  this.pointIn = function(mouseX, mouseY) {
+    let x = this.planar.x / SF;
+    let y = this.planar.y / SF;
+    let visualScale = this.isStar ? starVisualScale : planetVisualScale;
+    let r = this.radius * this.perspectiveScale / SF * visualScale;
     return (square(mouseX - w/2 - x) + square(mouseY - h/2 - y)) < 1.3*square(r);
   };
 
   this.setOnOrbit = function(star) {
-    var d = this.position.dist(star);
-    var velMag = Math.sqrt(G * star.mass / this.position.dist(star.position));
-    var angleAt = Math.atan2(this.position.y, this.position.x);
+    let velMag = Math.sqrt(G * star.mass / this.position.dist(star.position));
+    let angleAt = Math.atan2(this.position.y, this.position.x);
 
     this.velocity = new Vector3(-Math.sin(angleAt) * velMag, Math.cos(angleAt) * velMag, 0);
   };

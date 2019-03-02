@@ -1,43 +1,63 @@
-var SF = 541169500; // scale factor
-var SF_MIN_EXP = 5;
-var SF_MAX_EXP = 12;
+let time = 0;
 
-var DT = 5e3; // timestep
-var DT_MIN_EXP = 0;
-var DT_MAX_EXP = 6;
+let SF = 541169500; // scale factor
+const SF_MIN_EXP = 5;
+const SF_MAX_EXP = 12;
 
-var newPlanetRadius = 2e6;
-var newPlanetMinRadius = 0.1e6;
-var newPlanetMaxRadius = 120e6;
+let DT = 5e3; // time step
+const DT_MIN_EXP = 0;
+const DT_MAX_EXP = 6;
 
-var newPlanetDensity = 3000;
-var newPlanetMinDensity = 500;
-var newPlanetMaxDensity = 10000;
+let newPlanetRadius = 2e6;
+const newPlanetMinRadius = 0.1e6;
+const newPlanetMaxRadius = 120e6;
+let newPlanetDrawRadius = 5;
 
-var FD = 4e11; // forcal distance
+let newPlanetDensity = 3000;
+const newPlanetMinDensity = 500;
+const newPlanetMaxDensity = 10000;
 
-var planetVisualScale = 1e3; //1000.0; // visual scale for planets to make them more seeable
-var starVisualScale = 1e1; // 10.0;
-var G = 6.674e-11;
+let FD = 4e11; // focal distance
 
-var ecliptic = 0;
+let planetVisualScale = 1e3; //1000.0; // visual scale for planets to make them more seeable
+let starVisualScale = 1e1; // 10.0;
+const G = 6.674e-11;
+const SEC_PER_YEAR = 31557600;
+let INPUTS = [];
+let ecliptic = 0;
 
-var zero3 = new Vector3(0, 0, 0);
+// initial variables
+const zero3 = new Vector3(0, 0, 0);
 
-var showLabels = true;
-var paused = false;
-var hideSidebar = false;
-var planetCreatorShowing = false;
-var showTrails = true;
-var draggingNewPlanet = false;
-var trashHover = false;
+let showLabels = true;
+let showTrails = true;
+let paused = false;
+let hideSidebar = false;
+let planetCreatorShowing = false;
+let draggingNewPlanet = false;
+let trashHover = false;
 
-var planetCreator;
-var sidebar;
+const DRAW_PERSPECTIVE = true;
 
-colors = [[172, 128, 255],
-          [166, 226, 44],
-          [104, 216, 239],
-          [253, 150, 33],
-          [249, 36,  114],
-          [231, 219, 116]];
+// global declarations
+let sidebarComponents, planetCreatorComponents;
+let planetCreator, sidebar;
+
+let componentClicked = null;
+
+let w, h, newPlanetX, newPlanetY, componentBoxes;
+let blueSlider, redSlider, greenSlider, nameInput;
+let blue, red, green;
+
+let hideButton, timeSlider, fullscreenButton, pauseButton, trailsButton,
+    labelsButton, eclipticSlider, scaleSlider;
+
+let planetClicked, inputSelected;
+let model;
+
+const colors = [[172, 128, 255],
+                [166, 226, 44],
+                [104, 216, 239],
+                [253, 150, 33],
+                [249, 36,  114],
+                [231, 219, 116]];

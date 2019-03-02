@@ -3,17 +3,17 @@ function drawTrash(xStart, yStart, baseWidth, color) {
   stroke(color);
   strokeWeight(2);
 
-  baseHeight = 4 * baseWidth / 3;
-  lidOverlap = baseWidth / 15;
-  lidHeight = baseHeight / 10;
-  handleHeight = lidHeight * 4/5;
-  handleWidth = baseWidth/3;
-  handleStart = xStart + (baseWidth / 3);
-  stripeHeight = baseHeight * 6/10;
-  stripeWidth = baseWidth / 15;
-  stripeY = yStart + baseHeight / 5;
-  stripesX = xStart + baseWidth / 5;
-  stripeSep = baseWidth / 3.75;
+  let baseHeight = baseWidth * 4/3;
+  let lidOverlap = baseWidth / 15;
+  let lidHeight = baseHeight / 10;
+  let handleHeight = lidHeight * 4/5;
+  let handleWidth = baseWidth / 3;
+  let handleStart = xStart + (baseWidth / 3);
+  let stripeHeight = baseHeight * 6/10;
+  let stripeWidth = baseWidth / 15;
+  let stripeY = yStart + baseHeight / 5;
+  let stripesX = xStart + baseWidth / 5;
+  let stripeSep = baseWidth / 3.75;
 
   rect(xStart, yStart, baseWidth, baseHeight, 0, 0, 4, 4);
   rect(xStart - lidOverlap, yStart - lidHeight,
@@ -29,25 +29,24 @@ function drawTrash(xStart, yStart, baseWidth, color) {
 }
 
 function trashUpdate() {
+  let trashColor;
   if (planetClicked != null) {
-    var trashX = w - 50;
-    var trashY = h - 50;
-    var minX = trashX - 20;
-    var minY = trashY - 20;
-    var maxX = trashX + 30;
-    var maxY = trashY + 32;
+    let trashX = w - 50;
+    let trashY = h - 50;
+    let minX = trashX - 20;
+    let minY = trashY - 20;
+    let maxX = trashX + 30;
+    let maxY = trashY + 32;
     if (mouseX >= minX && mouseX <= maxX &&
         mouseY >= minY && mouseY <= maxY) {
       trashColor = color(255, 72, 49);
       trashHover = true;
-    }
-    else {
+    } else {
       trashColor = color(255, 255, 255);
       trashHover = false;
     }
     drawTrash(trashX, trashY, 20, trashColor);
-  }
-  else {
+  } else {
     trashHover = false;
   }
 }

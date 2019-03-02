@@ -1,9 +1,8 @@
-var compHeight = 20;
-var slideWidth = 100;
-var buttonWidth = 60;
-var HEIGHT_MARGIN = 8;
-var sliderCircleRadius = 5;
-INPUTS = [];
+const compHeight = 20;
+const slideWidth = 100;
+const buttonWidth = 60;
+const HEIGHT_MARGIN = 8;
+const sliderCircleRadius = 5;
 
 function Component(box, width, height=1) {
     this.box = box;
@@ -17,7 +16,7 @@ function Component(box, width, height=1) {
     this.yEnd = this.yStart + (box.compHeight * height);
     box.y1 = Math.max(box.y1, this.yEnd);
 
-    this.mouseIn = function() {
+    this.pointIn = function(mouseX, mouseY) {
         return (mouseX >= this.xStart && mouseX <= this.xEnd &&
                 mouseY >= this.yStart && mouseY <= this.yEnd);
     };
@@ -57,17 +56,16 @@ function Slider({label, minVal, maxVal, val, callback}) {
     };
 
     this.updateVal = function(mouseX) {
+        let x;
         if (mouseX <= this.xStart) {
             x = this.xStart;
-        }
-        else if (mouseX >= this.xEnd) {
+        } else if (mouseX >= this.xEnd) {
             x = this.xEnd;
-        }
-        else {
+        } else {
             x = mouseX;
         }
 
-        frac = (x - this.xStart) / (this.xEnd - this.xStart);
+        const frac = (x - this.xStart) / (this.xEnd - this.xStart);
         this.val = this.minVal + frac * (this.maxVal - this.minVal);
         this.callback(this.val);
         return this;
@@ -79,13 +77,13 @@ function Slider({label, minVal, maxVal, val, callback}) {
     };
 
     this.decrement = function() {
-        var newV = this.val - this.len/30;
+        const newV = this.val - this.len / 30;
         this.val = newV >= this.minVal ? newV : this.minVal;
         this.callback(this.val);
     };
 
     this.increment = function() {
-        var newV = this.val + this.len/30;
+        const newV = this.val + this.len / 30;
         this.val = newV <= this.maxVal ? newV : this.maxVal;
         this.callback(this.val);
     };
@@ -139,7 +137,7 @@ function Input(label) {
     this.draw = function() {
         fill(200);
         if (this.border) {
-            stroke(0, 0, 255);
+            stroke(0, 50, 200);
         }
         else {
             noStroke();
@@ -153,8 +151,8 @@ function Input(label) {
         fill(100);
         textSize(14);
         textAlign(LEFT, CENTER);
-        var txt = this.val.length == 0 ? this.label : this.val.join('');
-        if (this.val.length == 0) {
+        const txt = !this.val.length ? this.label : this.val.join('');
+        if (!this.val.length) {
             fill(100);
         }
         else {
@@ -173,10 +171,7 @@ function Input(label) {
     };
 
     this.backspace = function() {
-        if (this.val.length == 0) {
-                return;
-        }
-        else {
+        if (this.val.length) {
             this.val.pop();
         }
     };
@@ -192,7 +187,7 @@ function Input(label) {
     INPUTS.push(this);
 }
 
-function Text(txt) { // input is a list of strings one element per row
+function TextBox(txt) { // input is a list of strings one element per row
     this.text = txt;
     this.doneOnRelease = true;
     this.init = function(box) {
@@ -221,7 +216,7 @@ function ComponentBox({xStart, yStart, components,
     this.components = components;
     this.showing = showing;
 
-    for (var i = 0; i < components.length; i++) {
+    for (let i = 0; i < components.length; i++) {
         components[i].ident = i;
     }
     this.y1 = 0;
@@ -230,7 +225,7 @@ function ComponentBox({xStart, yStart, components,
     this.x1 = this.components.map(comp => comp.xEnd).max();
     this.bg = rect(this.x0, this.y0, (this.x1 - this.x0), (this.y1 - this.y0));
     this.draw = function() {
-        for (var i = 0; i < this.components.length; i++) {
+        for (let i = 0; i < this.components.length; i++) {
             if (this.components[i].drawIt) {
                 this.components[i].draw();
             }

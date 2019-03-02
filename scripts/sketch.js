@@ -8,50 +8,44 @@ function Model(planets, star) {
   this.star = star;
   this.objects = planets.concat(star);
 
-  this.minRadius = this.objects
-                   .map(obj => obj.radius).min();
-  this.maxRadius = this.objects
-                   .map(obj => obj.radius).max();
-
   this.updateMomentum = function() {
-    momentum = zero3;
-    for (var i = 0; i < this.objects.length; i++) {
-      obj = this.objects[i];
+    let momentum = zero3;
+    for (let i = 0; i < this.objects.length; i++) {
+      let obj = this.objects[i];
       momentum = momentum.plus(obj.momentum());
     }
     this.momentum = momentum;
   };
 
   this.zeroMomentum = function() {
-    planetMomentum = zero3;
-    for (i = 0; i < this.objects.length; i++) {
-      planet = this.objects[i];
+    let planetMomentum = zero3;
+    for (let i = 0; i < this.objects.length; i++) {
+      let planet = this.objects[i];
       planetMomentum = planetMomentum.plus(planet.momentum());
     }
-    dv = planetMomentum.scale(-1/this.star.mass);
-    this.star.velocity = dv;
+    this.star.velocity = planetMomentum.scale(-1 / this.star.mass);
   };
 
   this.updateMomentum();
 
   this.update = function(DT) {
-    forces = [];
-    for (var i = 0; i < this.objects.length; i++) {
-      obj = this.objects[i];
-      force = new Vector3(0, 0, 0);
-      for (var j = 0; j < this.objects.length; j++) {
-        if (i == j) {
+    let forces = [];
+    for (let i = 0; i < this.objects.length; i++) {
+      let obj = this.objects[i];
+      let force = new Vector3(0, 0, 0);
+      for (let j = 0; j < this.objects.length; j++) {
+        if (i === j) {
           continue;
         }
-        from = this.objects[j];
+        let from = this.objects[j];
         force = force.plus(obj.force(from));
       }
       forces.push(force);
     }
 
-    for (i = 0; i < this.objects.length; i++) {
-      obj = this.objects[i];
-      force = forces[i];
+    for (let i = 0; i < this.objects.length; i++) {
+      let obj = this.objects[i];
+      let force = forces[i];
       obj.update(force, DT);
     }
   };
@@ -61,22 +55,22 @@ function Model(planets, star) {
   }
 
   this.shiftToZero = function() {
-    var dp = this.star.position;
+    let dp = this.star.position;
     this.star.position = zero3;
-    for (var i = 0; i < this.planets.length; i++) {
-      var p = this.planets[i];
+    for (let i = 0; i < this.planets.length; i++) {
+      let p = this.planets[i];
       p.position = p.position.sub(dp);
     }
   };
 
   this.removePlanet = function(planet) {
-    var pIndex = model.planets.indexOf(planet);
+    let pIndex = model.planets.indexOf(planet);
     if (pIndex < 0) {
       return;
     }
     model.planets.splice(pIndex, 1);
 
-    var oIndex = model.objects.indexOf(planet);
+    let oIndex = model.objects.indexOf(planet);
     if (oIndex < 0) {
       return;
     }
@@ -86,15 +80,15 @@ function Model(planets, star) {
   this.draw = function() {
 
     if (DRAW_PERSPECTIVE) {
-      for (var i = 0; i < this.objects.length; i++) {
-        obj = this.objects[i];
+      for (let i = 0; i < this.objects.length; i++) {
+        let obj = this.objects[i];
         obj.project();
       }
       this.objects.sort(compareScale);
     }
 
-    for (var j = 0; j < this.objects.length; j++) {
-      obj = this.objects[j];
+    for (let j = 0; j < this.objects.length; j++) {
+      let obj = this.objects[j];
       obj.draw();
     }
   };
@@ -133,15 +127,13 @@ function sizeDependentSetup() { // wrote this so resize works
 }
 
 function setup() {
-  time = 0;
   w = window.innerWidth;
   h = window.innerHeight;
-  createCanvas(w, h);
-  componentClicked = null;
+
   planetClicked = null;
   inputSelected = null;
+  createCanvas(w, h);
   red = green = blue = 125;
-  newPlanetDrawRadius = 5;
 
   sidebarComponents = makeSidebarComponents();
 
@@ -153,35 +145,36 @@ function setup() {
 }
 
 function keyPressed() {
-  if (inputSelected != null && keyCode == BACKSPACE) {
+  if (inputSelected != null && keyCode === BACKSPACE) {
     inputSelected.backspace();
     return;
   }
-  if (keyCode == LEFT_ARROW) {
-    timeSlider.decrement();
-  }
-  else if (keyCode == RIGHT_ARROW) {
-    timeSlider.increment();
-  }
-  else if (keyCode == UP_ARROW) {
-    scaleSlider.decrement();
-  }
-  else if (keyCode == DOWN_ARROW) {
-    scaleSlider.increment();
+  switch (keyCode) {
+    case LEFT_ARROW:
+      timeSlider.decrement();
+      break;
+    case RIGHT_ARROW:
+      timeSlider.increment();
+      break;
+    case UP_ARROW:
+      scaleSlider.decrement();
+      break;
+    case DOWN_ARROW:
+      scaleSlider.increment();
   }
 }
 
 function componentPress() {
-  for (var i = 0; i < componentBoxes.length; i++) {
-    var box = componentBoxes[i];
+  for (let i = 0; i < componentBoxes.length; i++) {
+    let box = componentBoxes[i];
     if (!box.showing) {
       continue;
     }
-    for (var j = 0; j < box.components.length; j++) {
-      var component = box.components[j];
-      if (component.mouseIn()) {
-        for (var k = 0; k < INPUTS.length; k++) {
-          var inp = INPUTS[k];
+    for (let i = 0; i < box.components.length; i++) {
+      let component = box.components[i];
+      if (component.pointIn(mouseX, mouseY)) {
+        for (let j = 0; j < INPUTS.length; j++) {
+          let inp = INPUTS[j];
           if (inp === component) {
             continue;
           }
@@ -197,8 +190,9 @@ function componentPress() {
 }
 
 function planetPress() {
-  for (var j = 0; j < planets.length; j++) {
-    if (planets[j].mouseIn()) {
+  for (let j = 0; j < planets.length; j++) {
+    console.log(planets[j]);
+    if (planets[j].pointIn(mouseX, mouseY)) {
       planetClicked = planets[j];
       eclipticSlider.setTo(0);
       return true;
@@ -243,7 +237,7 @@ function newPlanetPress() {
   if (!planetCreator) {
     return false;
   }
-  var dragging = square(mouseX - newPlanetX) + square(mouseY - newPlanetY) < 
+  let dragging = square(mouseX - newPlanetX) + square(mouseY - newPlanetY) <
                  square(newPlanetDrawRadius) * 1.3;
   if (dragging) {
     model.shiftToZero();
@@ -252,20 +246,20 @@ function newPlanetPress() {
 }
 
 function createNewPlanet() {
-  var c = color(redSlider.val, greenSlider.val, blueSlider.val);
-  var name = nameInput.val.join('');
-  var density = newPlanetDensity;
-  var radius = newPlanetRadius;
-  var pos = new Vector3((mouseX - w/2) * SF, (mouseY - h/2) * SF, 0);
-  var velMag = Math.sqrt(G * star.mass / pos.dist(star.position));
-  var newPlanet = new CelObj({
+  let c = color(redSlider.val, greenSlider.val, blueSlider.val);
+  let name = nameInput.val.join('');
+  let density = newPlanetDensity;
+  let radius = newPlanetRadius;
+  let pos = new Vector3((mouseX - w/2) * SF, (mouseY - h/2) * SF, 0);
+  let velMag = Math.sqrt(G * star.mass / pos.dist(star.position));
+  let newPlanet = new CelObj({
     radius: radius,
     density: density,
     velocityMagnitude: velMag,
     distanceFromSun: pos.dist(star.position),
     color: c,
     angle: Math.atan2(pos.y, pos.x),
-    name: name != '' ? name : '[Unnamed]',
+    name: name !== '' ? name : '[Unnamed]',
     isStar: false
   });
   model.planets.push(newPlanet);
@@ -278,8 +272,8 @@ function createNewPlanet() {
 
 function mousePressed() {
   if (componentPress()) {
-    for (var k = 0; k < INPUTS.length; k++) {
-      var inp = INPUTS[k];
+    for (let i = 0; i < INPUTS.length; i++) {
+      let inp = INPUTS[i];
       if (inp === componentClicked) {
         inputSelected = inp;
         continue;
@@ -288,7 +282,7 @@ function mousePressed() {
     }
     return;
   }
-  for (var i = 0; i < INPUTS.length; i++) {
+  for (let i = 0; i < INPUTS.length; i++) {
     INPUTS[i].border = false;
   }
   inputSelected = null;
@@ -313,9 +307,9 @@ function mouseReleased() {
 }
 
 function doubleClicked() {
-  for (var j = 0; j < planets.length; j++) {
-    if (planets[j].mouseIn()) {
-      planets[j].setOnOrbit(star);
+  for (let i = 0; i < planets.length; i++) {
+    if (planets[i].pointIn(mouseX, mouseY)) {
+      planets[i].setOnOrbit(star);
       return false;
     }
   }
@@ -323,7 +317,7 @@ function doubleClicked() {
 }
 
 function interfacePreUpdate() {
-  if (ecliptic != 0 && showTrails) {
+  if (ecliptic !== 0 && showTrails) {
     trailsButton.toggle();
   }
   if (draggingNewPlanet) {
@@ -341,14 +335,14 @@ function interfacePreUpdate() {
 function timeOverlay() {
   fill(255);
   textAlign(LEFT, CENTER);
-  text((time / 3.154e7).toFixed(3) + ' years', 13, h - 20);
+  text((time / SEC_PER_YEAR).toFixed(3) + ' years', 13, h - 20);
 }
 
 function overlays() {
   timeOverlay();
   trashUpdate();
 
-  for (var i = 0; i < componentBoxes.length; i++) {
+  for (let i = 0; i < componentBoxes.length; i++) {
     if (componentBoxes[i].showing) {
       componentBoxes[i].draw();
     }
@@ -383,7 +377,3 @@ function draw() {
   overlays();
 }
 
-function popup(x, y) {
-  fill(255,255,255);
-  rect(x,y, 100, 100);
-}

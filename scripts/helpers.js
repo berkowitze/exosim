@@ -1,4 +1,4 @@
-exp10 = x => Math.pow(10,x);
+exp10 = n => Math.pow(10,n);
 Array.prototype.min = function() {
   return this.reduce((x, y) => Math.min(x, y), Infinity);
 };
