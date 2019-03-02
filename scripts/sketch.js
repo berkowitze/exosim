@@ -101,6 +101,7 @@ function Model(planets, star) {
 }
 
 function setup() {
+  time = 0;
   createCanvas(window.innerWidth, window.innerHeight);
   componentClicked = null;
   planetClicked = null;
@@ -148,6 +149,10 @@ function setup() {
     pauseButton = new Button({label: 'Pause [space]',
                 callback: function(checked) {paused = checked;},
                 val: paused}),
+    // fullscreenButton = new Button({label: 'Fullscreen [f]',
+    //                                callback: function(checked) {console.log('hi');fullscreen(!fullscreen());},
+    //                                 val: false
+    //                               }),
     new Button({label: 'Create a Planet',
                 callback: function(checked) {planetCreator = checked; colorPicker.showing = checked;},
                 val: planetCreator})
@@ -259,6 +264,7 @@ function planetPress() {
 }
 
 function keyTyped() {
+
   if (inputSelected != null) {
     inputSelected.keyPress(key);
     return;
@@ -282,6 +288,9 @@ function keyTyped() {
     case 'l':
       labelsButton.toggle();
       break;
+    // case 'f':
+    //   fullscreenButton.toggle();
+    //   break;
   }
 }
 
@@ -420,8 +429,12 @@ function draw() {
   model.draw();
   if (!paused) {
     model.update(DT);
+    time += DT;
   }
   translate(-window.innerWidth / 2, -window.innerHeight / 2);
+  fill(255);
+  textAlign(LEFT, CENTER);
+  text((time / 3.154e7).toFixed(3) + ' years', 13, window.innerHeight - 20);
   if (planetClicked != null) {
     var trashX = window.innerWidth - 50;
     var trashY = window.innerHeight - 50;
