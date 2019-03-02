@@ -191,7 +191,6 @@ function componentPress() {
 
 function planetPress() {
   for (let j = 0; j < planets.length; j++) {
-    console.log(planets[j]);
     if (planets[j].pointIn(mouseX, mouseY)) {
       planetClicked = planets[j];
       eclipticSlider.setTo(0);
@@ -313,6 +312,19 @@ function doubleClicked() {
       return false;
     }
   }
+  return false;
+}
+
+function mouseWheel(event) {
+  if (Number.isInteger(event.delta)) {
+    return false;
+  }
+
+  let newSF = Math.log10(SF + event.delta * 1e8);
+  if (isNaN(newSF) || newSF < scaleSlider.minVal || newSF > scaleSlider.maxVal) {
+    return false;
+  }
+  scaleSlider.setTo(newSF);
   return false;
 }
 
