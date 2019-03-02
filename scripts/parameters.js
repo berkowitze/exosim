@@ -27,10 +27,13 @@ var zero3 = new Vector3(0, 0, 0);
 var showLabels = true;
 var paused = false;
 var hideSidebar = false;
-var planetCreator = false;
+var planetCreatorShowing = false;
 var showTrails = true;
 var draggingNewPlanet = false;
 var trashHover = false;
+
+var planetCreator;
+var sidebar;
 
 colors = [[172, 128, 255],
           [166, 226, 44],

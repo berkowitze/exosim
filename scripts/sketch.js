@@ -93,117 +93,62 @@ function Model(planets, star) {
       this.objects.sort(compareScale);
     }
 
-    for (var i = 0; i < this.objects.length; i++) {
-      obj = this.objects[i];
+    for (var j = 0; j < this.objects.length; j++) {
+      obj = this.objects[j];
       obj.draw();
     }
   };
 }
 
+function windowResized() {
+  w = windowWidth;
+  h = windowHeight;
+  sizeDependentSetup();
+  resizeCanvas(w, h);
+}
+
+function sizeDependentSetup() { // wrote this so resize works
+  sidebar = new ComponentBox(
+    {
+      xStart: 13,
+      yStart: 13,
+      components: sidebarComponents,
+      showing: sidebar == null ? true : sidebar.showing
+    }
+  );
+
+  planetCreator = new ComponentBox(
+    {
+      xStart: w - 200,
+      yStart: 13,
+      components: planetCreatorComponents,
+      showing: planetCreator == null ? false : planetCreator.showing
+    }
+  );
+
+  newPlanetX = w - 150;
+  newPlanetY = planetCreator.y1 + 30;
+
+  componentBoxes = [sidebar, planetCreator];
+}
+
 function setup() {
   time = 0;
-  createCanvas(window.innerWidth, window.innerHeight);
+  w = window.innerWidth;
+  h = window.innerHeight;
+  createCanvas(w, h);
   componentClicked = null;
   planetClicked = null;
   inputSelected = null;
-  red = 125;
-  green = 125;
-  blue = 125;
+  red = green = blue = 125;
   newPlanetDrawRadius = 5;
 
-  sidebarComponents = [
-    hideButton = new Button({label: 'Hide Sidebar [h]',
-                callback: function(checked) {
-                  hideSidebar = checked;
-                  this.label = checked?'Show Sidebar [h]':'Hide Sidebar [h]';
-                  for (var i = 1; i < this.box.components.length; i++) {
-                    this.box.components[i].drawIt = !this.box.components[i].drawIt;
-                  }
-                },
-                val: hideSidebar}),
-    timeSlider = new Slider({minVal: DT_MIN_EXP, maxVal: DT_MAX_EXP,
-                val: Math.log10(DT),
-                callback: function(newV) {DT = Math.pow(10, newV);},
-                label: 'Time Scale [\u2190 \u2192]'}),
-    scaleSlider = new Slider({minVal: SF_MIN_EXP, maxVal: SF_MAX_EXP,
-                val: Math.log10(SF),
-                callback: function(newV) {SF = Math.pow(10, newV);},
-                label: 'Scale Factor [\u2191 \u2193]'}),
-    eclipticSlider = new Slider({minVal: 0, maxVal: PI/2,
-                val: 0,
-                callback: function(newV) {ecliptic = newV;},
-                label: 'Ecliptic angle [s w]'}),
-    labelsButton = new Button({label: 'Show Planet Labels [l]',
-                callback: function(checked) {showLabels = checked;},
-                val: showLabels}),
-    trailsButton = new Button({label: 'Show trails [t]',
-                callback: function(checked) {
-                  if (model.planets.length > 20) {
-                    this.val = false;
-                    showTrails = false;
-                    return;
-                  }
-                  showTrails = checked;
-                },
-                val: showTrails}),
-    pauseButton = new Button({label: 'Pause [space]',
-                callback: function(checked) {paused = checked;},
-                val: paused}),
-    // fullscreenButton = new Button({label: 'Fullscreen [f]',
-    //                                callback: function(checked) {console.log('hi');fullscreen(!fullscreen());},
-    //                                 val: false
-    //                               }),
-    new Button({label: 'Create a Planet',
-                callback: function(checked) {planetCreator = checked; colorPicker.showing = checked;},
-                val: planetCreator})
-  ];
-  sidebar = new ComponentBox({xStart: 13, yStart: 13,
-                              components: sidebarComponents, showing: true});
+  sidebarComponents = makeSidebarComponents();
 
-  colorPickerComponents = [
-    redSlider = new Slider({minVal: 0, maxVal: 255, val: red,
-                callback: function(newV) {red = newV;},
-                label: 'Red'}),
-    greenSlider = new Slider({minVal: 0, maxVal: 255, val: green,
-                callback: function(newV) {green = newV;},
-                label: 'Green'}),
-    blueSlider = new Slider({minVal: 0, maxVal: 255, val: blue,
-                callback: function(newV) {blue = newV;},
-                label: 'Blue'}),
-    nameInput = new Input('Planet name'),
-    new Slider({minVal: newPlanetMinRadius, maxVal: newPlanetMaxRadius,
-                val: newPlanetRadius,
-                callback: function(newV) {newPlanetRadius = newV;},
-                label: 'Planet radius'}),
-    new Slider({minVal: newPlanetMinDensity, maxVal: newPlanetMaxDensity,
-                val: newPlanetDensity,
-                callback: function(newV) {newPlanetDensity = newV;},
-                label: 'Planet density'}),
-    new Button({label: 'Reset',
-                callback: function(checked) {
-                  if (!checked) {
-                    return;
-                  }
-                  red = 125;
-                  green = 125;
-                  blue = 125;
-                  redSlider.val = 125;
-                  greenSlider.val = 125;
-                  blueSlider.val = 125;
-                  nameInput.clear();
-                  inputSelected = null;
-                  this.toggle();
-                }
-              }),
-    new Text(['Drag the planet into place', 'when you\'re ready!'])
-  ];
+  planetCreatorComponents = createPlanetComponents();
 
-  colorPicker = new ComponentBox({xStart: window.innerWidth - 200, yStart: 13,
-                                  components: colorPickerComponents});
+  sizeDependentSetup();
 
-  componentBoxes = [sidebar, colorPicker];
-  newPlanetX = window.innerWidth - 150;
-  newPlanetY = colorPickerComponents[colorPickerComponents.length-1].yEnd + 30;
   model = new Model(planets, star);
 }
 
@@ -288,9 +233,9 @@ function keyTyped() {
     case 'l':
       labelsButton.toggle();
       break;
-    // case 'f':
-    //   fullscreenButton.toggle();
-    //   break;
+    case 'f':
+      fullscreenButton.toggle();
+      break;
   }
 }
 
@@ -311,9 +256,7 @@ function createNewPlanet() {
   var name = nameInput.val.join('');
   var density = newPlanetDensity;
   var radius = newPlanetRadius;
-  var pos = new Vector3((mouseX - window.innerWidth/2) * SF,
-                        (mouseY - window.innerHeight/2) * SF,
-                        0);
+  var pos = new Vector3((mouseX - w/2) * SF, (mouseY - h/2) * SF, 0);
   var velMag = Math.sqrt(G * star.mass / pos.dist(star.position));
   var newPlanet = new CelObj({
     radius: radius,
@@ -379,37 +322,7 @@ function doubleClicked() {
   return false;
 }
 
-function drawTrash(xStart, yStart, baseWidth, color) {
-  noFill();
-  stroke(color);
-  strokeWeight(2);
-
-  baseHeight = 4 * baseWidth / 3;
-  lidOverlap = baseWidth / 15;
-  lidHeight = baseHeight / 10;
-  handleHeight = lidHeight * 4/5;
-  handleWidth = baseWidth/3;
-  handleStart = xStart + (baseWidth / 3);
-  stripeHeight = baseHeight * 6/10;
-  stripeWidth = baseWidth / 15;
-  stripeY = yStart + baseHeight / 5;
-  stripesX = xStart + baseWidth / 5;
-  stripeSep = baseWidth / 3.75;
-
-  rect(xStart, yStart, baseWidth, baseHeight, 0, 0, 4, 4);
-  rect(xStart - lidOverlap, yStart - lidHeight,
-       baseWidth + 2*lidOverlap, lidHeight, 2);
-  rect(handleStart, yStart - lidHeight - handleHeight,
-       handleWidth, handleHeight, 3);
-  strokeWeight(1);
-  rect(stripesX, stripeY, stripeWidth, stripeHeight, 3);
-  rect(stripesX + stripeSep, stripeY, stripeWidth, stripeHeight, 3);
-  rect(stripesX + 2*stripeSep, stripeY, stripeWidth, stripeHeight, 3);
-  noStroke();
-  fill(0);
-}
-
-function draw() {
+function interfacePreUpdate() {
   if (ecliptic != 0 && showTrails) {
     trailsButton.toggle();
   }
@@ -423,56 +336,51 @@ function draw() {
   if (planetClicked != null) {
     planetClicked.updatePosition(mouseX, mouseY);
   }
-  translate(window.innerWidth / 2, window.innerHeight / 2);
-  noStroke();
-  fill(0);
-  model.draw();
-  if (!paused) {
-    model.update(DT);
-    time += DT;
-  }
-  translate(-window.innerWidth / 2, -window.innerHeight / 2);
+}
+
+function timeOverlay() {
   fill(255);
   textAlign(LEFT, CENTER);
-  text((time / 3.154e7).toFixed(3) + ' years', 13, window.innerHeight - 20);
-  if (planetClicked != null) {
-    var trashX = window.innerWidth - 50;
-    var trashY = window.innerHeight - 50;
-    var minX = trashX - 20;
-    var minY = trashY - 20;
-    var maxX = trashX + 30;
-    var maxY = trashY + 32;
-    if (mouseX >= minX && mouseX <= maxX &&
-        mouseY >= minY && mouseY <= maxY) {
-      trashColor = color(255, 72, 49);
-      trashHover = true;
-    }
-    else {
-      trashColor = color(255, 255, 255);
-      trashHover = false;
-    }
-    drawTrash(trashX, trashY, 20, trashColor);
-  }
-  else {
-    trashHover = false;
-  }
+  text((time / 3.154e7).toFixed(3) + ' years', 13, h - 20);
+}
+
+function overlays() {
+  timeOverlay();
+  trashUpdate();
+
   for (var i = 0; i < componentBoxes.length; i++) {
     if (componentBoxes[i].showing) {
       componentBoxes[i].draw();
     }
   }
-  if (planetCreator) {
+  if (planetCreator.showing) {
     fill(color(red, green, blue));
     newPlanetDrawRadius = scaleToRange(newPlanetRadius, newPlanetMinRadius,
-                                           newPlanetMaxRadius, 5, 30);
+                                       newPlanetMaxRadius, 5, 30);
     if (!draggingNewPlanet) {
       ellipse(newPlanetX, newPlanetY, newPlanetDrawRadius);
     }
     else {
       ellipse(mouseX, mouseY, newPlanetDrawRadius);
     }
-    colorPicker.showing = true;
   }
+}
+
+function draw() {
+  interfacePreUpdate();
+
+  translate(w/2, h/2);
+  noStroke();
+  fill(0);
+  model.draw();
+  translate(-w/2, -h/2);
+
+  if (!paused) {
+    model.update(DT);
+    time += DT;
+  }
+
+  overlays();
 }
 
 function popup(x, y) {

@@ -129,7 +129,7 @@ function CelObj({radius, density,
   };
 
   this.updatePosition = function(mx, my) {
-    this.position = new Vector3((mx - window.innerWidth/2) * SF, (my - window.innerHeight/2) * SF, 0);
+    this.position = new Vector3((mx - w/2) * SF, (my - h/2) * SF, 0);
   };
 
   this.momentum = function() {
@@ -141,7 +141,7 @@ function CelObj({radius, density,
     var y = this.planar.y / SF;
     var visualScale = this.isStar ? starVisualScale : planetVisualScale;
     var r = this.radius * this.perspectiveScale / SF * visualScale;
-    return (square(mouseX - window.innerWidth/2 - x) + square(mouseY - window.innerHeight/2 - y)) < 1.3*square(r);
+    return (square(mouseX - w/2 - x) + square(mouseY - h/2 - y)) < 1.3*square(r);
   };
 
   this.setOnOrbit = function(star) {
