@@ -28,6 +28,12 @@ function Vector3(x, y, z) {
                        this.z - other.z);
   };
 
+  this.mul = function(other) {
+    return new Vector3(this.x * other.x,
+                       this.y * other.y,
+                       this.z * other.z);
+  };
+
   this.scale = function(scale) {
     return new Vector3(scale * this.x,
                        scale * this.y,

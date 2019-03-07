@@ -115,13 +115,13 @@ function CelObj({radius, density,
     this.updateMassAndVolume();
   };
 
-  this.update = function(force, DT) {
+  this.update = function(accel, DT) {
     len =  this.last100.insertFront(this.position);
     if (len > 127) {
       this.last100.pop();
     }
 
-    dv = force.scale(DT);
+    dv = accel.scale(DT);
     this.velocity = this.velocity.plus(dv);
     dx = this.velocity.scale(DT);
     this.position = this.position.plus(dx);

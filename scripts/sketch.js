@@ -60,6 +60,46 @@ function Model(planets, star) {
     }
   };
 
+  this.updateRungeKutta = function(DT) {
+    accels = [];
+    for (var i = 0; i < this.objects.length; i++) {
+      obj = this.objects[i];
+      accel = new Vector3(0, 0, 0);
+      for (var j = 0; j < this.objects.length; j++) {
+        if (i == j) {
+          continue;
+        }
+        other = this.objects[j];
+        tmp = -G * other.mass / Math.pow(obj.dist(other), 3);
+
+        k1 = obj.position.sub(other.position).scale(tmp);
+
+        tmp_vel = obj.velocity.plus(k1.scale(DT/2));
+        tmp_pos = obj.position.plus(tmp_vel.scale(DT/2));
+        k2 = tmp_pos.sub(other.position).scale(tmp);
+
+        tmp_vel = obj.velocity.plus(k2.scale(DT/2));
+        tmp_pos = obj.position.plus(tmp_vel.scale(DT/2));
+        k3 = tmp_pos.sub(other.position).scale(tmp);
+
+        tmp_vel = obj.velocity.plus(k3.scale(DT));
+        tmp_pos = obj.position.plus(tmp_vel.scale(DT));
+        k4 = tmp_pos.sub(other.position).scale(tmp);
+
+        a = k2.plus(k3).scale(2).plus(k1).plus(k4).scale(1/6);
+        accel = accel.plus(a);
+      }
+      accels.push(accel);
+    }
+
+    for (i = 0; i < this.objects.length; i++) {
+      obj = this.objects[i];
+      accel = accels[i];
+      obj.update(accel, DT);
+    }
+  };
+
+
   function compareScale(a,b) {
     return a.perspectiveScale - b.perspectiveScale;
   }
