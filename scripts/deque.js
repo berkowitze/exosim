@@ -272,4 +272,4 @@ function getCapacity(capacity) {
     );
 }
 
-module.exports = Deque;
+// module.exports = Deque;
