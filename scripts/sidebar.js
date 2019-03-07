@@ -36,7 +36,7 @@ function makeSidebarComponents() {
             maxVal: Math.PI / 2,
             val: 0,
             callback: function (newV) {
-                ecliptic = newV;
+                ecliptic = -newV;
             },
             label: 'Ecliptic angle [s w]'
         }),

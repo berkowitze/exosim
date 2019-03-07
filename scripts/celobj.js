@@ -60,9 +60,13 @@ function CelObj({radius, density,
 
   this.project = function() {
     let norm = new Vector3(0, Math.sin(ecliptic), Math.cos(ecliptic));
+    let cameraPosition = norm.scale(-FD);
     let inline = norm.scale(this.position.dot(norm));
-    this.planar = this.position.sub(inline);
     this.perspectiveScale = FD/(FD+inline.dot(norm));
+
+    var c = this.position.sub(cameraPosition); // vector from camera to object
+    let fromCam = c.dot(norm);
+    this.planar = cameraPosition.plus(c.scale(FD/fromCam));
   };
 
   this.draw = function(visualScale) {
