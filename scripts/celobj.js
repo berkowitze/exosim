@@ -77,7 +77,7 @@ function CelObj({radius, density,
     // check to make sure that other is in front of this
     if (inlineCoeff < 0) {
       let inline = norm.scale(inlineCoeff);
-      let d = diff.sub(inline).dist();
+      let d = diff.sub(inline).length;
       let intersection = circleOverlap(this.radius, other.radius, d);
       return intersection/(sq(this.radius)*PI);
     }
