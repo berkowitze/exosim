@@ -69,6 +69,23 @@ function CelObj({radius, density,
     this.planar = cameraPosition.plus(c.scale(FD/fromCam));
   };
 
+  this.occlusion = function(other) {
+    let norm = new Vector3(0, Math.sin(ecliptic), Math.cos(ecliptic));
+    let diff = other.position.sub(this.position);
+    let inlineCoeff = norm.dot(diff);
+
+    // check to make sure that other is in front of this
+    if (inlineCoeff < 0) {
+      let inline = norm.scale(inlineCoeff);
+      let d = diff.sub(inline).dist();
+      let intersection = circleOverlap(this.radius, other.radius, d);
+      return intersection/(sq(this.radius)*PI);
+    }
+    else {
+      return 0;
+    }
+  };
+
   this.draw = function(visualScale) {
     if (showTrails && !isStar) {
       this.drawTrail();
