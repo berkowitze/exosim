@@ -89,6 +89,43 @@ function Slider({label, minVal, maxVal, val, callback}) {
     };
 }
 
+function Options({label, callback, options, initIndex}) {
+    this.label = label;
+    this.callback = callback;
+    this.options = options;
+    this.val = initIndex;
+
+    this.init = function(box) {
+        Component.call(this, box, slideWidth*2 - 10);
+        this.optWidth = this.width / this.options.length;
+    };
+
+    this.draw = function() {
+        fill(100);
+        rect(this.box.x0, this.yStart, this.width, compHeight, 5);
+        fill(150);
+        rect(this.box.x0 + this.val * this.optWidth,
+             this.yStart,
+             this.optWidth,
+             compHeight,
+             5);
+        fill(255);
+        textAlign(CENTER, CENTER);
+        for (let i = 0; i < this.options.length; i++) {
+            text(this.options[i],
+                 this.box.x0 + i * this.optWidth,
+                 this.yStart,
+                 this.optWidth,
+                 compHeight);
+        }
+    };
+
+    this.updateVal = function(x) {
+        this.val = int((x - this.xStart) / this.width * this.options.length);
+        this.callback(this.val);
+    };
+}
+
 function Button({label, callback, val=false}) {
     this.label = label;
     this.callback = callback;

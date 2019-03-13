@@ -46,6 +46,17 @@ function createPlanetComponents() {
             },
             label: 'Planet density'
         }),
+        new Options({
+            label: '',
+            callback: function (newV) {
+                console.log(newV);
+                console.log(this.options);
+                creating = this.options[newV];
+                creationText.text[0] = 'Drag the ' + creating.toLowerCase() + ' into place';
+            },
+            options: ['Sun', 'Planet', 'Moon'],
+            initIndex: 1
+        }),
         new Button({
             label: 'Reset',
             callback: function (checked) {
@@ -63,7 +74,7 @@ function createPlanetComponents() {
                 this.toggle();
             }
         }),
-        new TextBox(['Drag the planet into place',
-                     'when you\'re ready!'])
+        creationText = new TextBox(['Drag the planet into place',
+                                    'when you\'re ready!'])
     ];
 }
