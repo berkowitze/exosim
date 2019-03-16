@@ -463,6 +463,14 @@ function overlays() {
     }
     else {
       ellipse(mouseX, mouseY, newPlanetDrawRadius);
+      if (draggingOnto) {
+        noFill();
+        stroke(255);
+        r = new Vector3(mouseX-w/2, mouseY-h/2, 0).dist(draggingOnto.position.scale(1/SF));
+        ellipse(w/2 + draggingOnto.position.x / SF, h/2 + draggingOnto.position.y / SF, r*2, r*2);
+
+        noStroke();
+      }
     }
   }
 }

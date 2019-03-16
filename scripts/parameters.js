@@ -34,7 +34,7 @@ const zero3 = new Vector3(0, 0, 0);
 
 let showLabels = true;
 let showTrails = true;
-let paused = true;
+let paused = false;
 let hideSidebar = false;
 let planetCreatorShowing = false;
 let draggingNewPlanet = false;
