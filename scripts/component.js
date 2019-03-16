@@ -87,6 +87,17 @@ function Slider({label, minVal, maxVal, val, callback}) {
         this.val = newV <= this.maxVal ? newV : this.maxVal;
         this.callback(this.val);
     };
+
+    this.updateBounds = function(newMin, newMax) {
+        const frac = (this.val - this.minVal) / (this.maxVal - this.minVal);
+        const newVal = newMin + (newMax - newMin) * frac;
+
+        this.val = newVal;
+        this.minVal = newMin;
+        this.maxVal = newMax;
+        this.len = newMax - newMin;
+        this.callback(this.val);
+    };
 }
 
 function Options({label, callback, options, initIndex}) {

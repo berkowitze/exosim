@@ -68,7 +68,7 @@ function makeSidebarComponents() {
             },
             val: false
         }),
-        new Button({
+        createButton = new Button({
             label: 'Create a Planet',
             callback: function (checked) {
                 planetCreator.showing = checked;

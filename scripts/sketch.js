@@ -269,18 +269,17 @@ function newPlanetPress() {
     return false;
   }
   let dragging = square(mouseX - newPlanetX) + square(mouseY - newPlanetY) <
-                 square(newPlanetDrawRadius) * 1.3;
+                 square(newObjectDrawRadius) * 1.3;
   return dragging;
 }
 
 function createNewObject(orbiting=null) {
-  let density = newPlanetDensity;
-  let radius = newPlanetRadius;
+  let density = newObjectDensity;
+  let radius = newObjectRadius;
   let nameInp = nameInput.val.join('');
   name = nameInp !== '' ? nameInp : '[Unnamed]';
   let c = color(redSlider.val, greenSlider.val, blueSlider.val);
   let pos = new Vector3((mouseX - w/2) * SF, (mouseY - h/2) * SF, 0);
-  console.log(pos);
   // let newObj;
   if (orbiting == null) {
     newObj = new CelObj({
@@ -291,8 +290,6 @@ function createNewObject(orbiting=null) {
       type: 0,
       position: pos
     });
-    console.log(newObj.velocity);
-    console.log(newObj.position);
   }
   else {
     let velMag = Math.sqrt(G * orbiting.mass / pos.dist(orbiting.position));
@@ -443,13 +440,14 @@ function overlays() {
   }
   if (planetCreator.showing) {
     fill(color(red, green, blue));
-    newPlanetDrawRadius = scaleToRange(newPlanetRadius, newPlanetMinRadius,
-                                       newPlanetMaxRadius, 5, 30);
+    newObjectDrawRadius = scaleToRange(newObjectRadius,
+                                       radiusSlider.minVal,
+                                       radiusSlider.maxVal, 5, 30);
     if (!draggingNewObject) {
-      ellipse(newPlanetX, newPlanetY, newPlanetDrawRadius);
+      ellipse(newPlanetX, newPlanetY, newObjectDrawRadius);
     }
     else {
-      ellipse(mouseX, mouseY, newPlanetDrawRadius);
+      ellipse(mouseX, mouseY, newObjectDrawRadius);
       if (draggingOnto) {
         noFill();
         stroke(255);

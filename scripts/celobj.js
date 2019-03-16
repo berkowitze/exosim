@@ -56,7 +56,6 @@ function CelObj({radius, density, orbiting=null,
   }
 
   if (velocityMagnitude == null && orbiting == null) {
-    console.log('ys');
     this.velocity = zero3;
   }
   else {

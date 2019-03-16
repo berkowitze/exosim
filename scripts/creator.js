@@ -28,21 +28,21 @@ function createPlanetComponents() {
             label: 'Blue'
         }),
         nameInput = new Input('Planet name'),
-        new Slider({
-            minVal: newPlanetMinRadius,
-            maxVal: newPlanetMaxRadius,
-            val: newPlanetRadius,
+        radiusSlider = new Slider({
+            minVal: newObjectRadiusScales.Planet[0],
+            maxVal: newObjectRadiusScales.Planet[2],
+            val: newObjectRadiusScales.Planet[1],
             callback: function (newV) {
-                newPlanetRadius = newV;
+                newObjectRadius = newV;
             },
             label: 'Planet radius'
         }),
-        new Slider({
-            minVal: newPlanetMinDensity,
-            maxVal: newPlanetMaxDensity,
-            val: newPlanetDensity,
+        densitySlider = new Slider({
+            minVal: newObjectDensityScales.Planet[0],
+            maxVal: newObjectDensityScales.Planet[2],
+            val: newObjectDensityScales.Planet[1],
             callback: function (newV) {
-                newPlanetDensity = newV;
+                newObjectDensity = newV;
             },
             label: 'Planet density'
         }),
@@ -50,7 +50,17 @@ function createPlanetComponents() {
             label: '',
             callback: function (newV) {
                 creating = this.options[newV];
-                creationText.text[0] = 'Drag the ' + creating.toLowerCase() + ' into place';
+                createButton.label = 'Create a ' + creating;
+                densitySlider.label = creating + ' density';
+                radiusSlider.label = creating + ' radius';
+                nameInput.label = creating + ' name';
+                creationText.text = creationTextOptions[creating];
+
+                densitySlider.updateBounds(newObjectDensityScales[creating][0],
+                                           newObjectDensityScales[creating][2]);
+                radiusSlider.updateBounds(newObjectRadiusScales[creating][0],
+                                           newObjectRadiusScales[creating][2]);
+
             },
             options: ['Star', 'Planet', 'Moon'],
             initIndex: 1
@@ -72,7 +82,6 @@ function createPlanetComponents() {
                 this.toggle();
             }
         }),
-        creationText = new TextBox(['Drag the planet into place',
-                                    'when you\'re ready!'])
+        creationText = new TextBox(creationTextOptions.Planet)
     ];
 }
