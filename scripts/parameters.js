@@ -20,18 +20,21 @@ const newPlanetMaxDensity = 10000;
 let FD = 4e11; // focal distance
 
 let planetVisualScale = 1e3; //1000.0; // visual scale for planets to make them more seeable
+let moonVisualScale = planetVisualScale * 2;
 let starVisualScale = 1e1; // 10.0;
 const G = 6.674e-11;
 const SEC_PER_YEAR = 31557600;
 let INPUTS = [];
 let ecliptic = 0;
+let creating = "Planet";
+let draggingOnto = null;
 
 // initial variables
 const zero3 = new Vector3(0, 0, 0);
 
 let showLabels = true;
 let showTrails = true;
-let paused = false;
+let paused = true;
 let hideSidebar = false;
 let planetCreatorShowing = false;
 let draggingNewPlanet = false;

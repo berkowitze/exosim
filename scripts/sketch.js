@@ -116,6 +116,16 @@ function Model(planets, star) {
     model.objects.splice(oIndex, 1);
   };
 
+  this.getHoveredObjects = function(x, y) {
+    let scaledMouse = new Vector3(x, y, 0).sub(new Vector3(w/2, h/2, 0)).scale(SF);
+    return this.objects.concat().sort(function(a, b) {
+      let d1 = a.position.dist(scaledMouse);
+      let d2 = b.position.dist(scaledMouse);
+      return d1 - d2;
+    }).filter(obj => obj.position.dist(scaledMouse) / SF < 20);
+    
+  };
+
   this.draw = function() {
 
     if (DRAW_PERSPECTIVE) {
@@ -283,22 +293,32 @@ function newPlanetPress() {
   return dragging;
 }
 
-function createNewPlanet() {
+function createNewPlanet(star) {
+
+}
+
+function createNewObject(orbiting) {
+  if (orbiting == undefined) {
+    // creating star
+    return;
+  }
+  console.log('createNewObject called');
   let c = color(redSlider.val, greenSlider.val, blueSlider.val);
   let name = nameInput.val.join('');
   let density = newPlanetDensity;
   let radius = newPlanetRadius;
   let pos = new Vector3((mouseX - w/2) * SF, (mouseY - h/2) * SF, 0);
-  let velMag = Math.sqrt(G * star.mass / pos.dist(star.position));
+  let velMag = Math.sqrt(G * orbiting.mass / pos.dist(orbiting.position));
   let newPlanet = new CelObj({
+    orbiting: orbiting,
     radius: radius,
     density: density,
     velocityMagnitude: velMag,
-    distanceFromSun: pos.dist(star.position),
+    distanceFromOrbiter: pos.dist(orbiting.position),
     color: c,
-    angle: Math.atan2(pos.y, pos.x),
+    angle: Math.atan2(pos.y - orbiting.position.y, pos.x - orbiting.position.x),
     name: name !== '' ? name : '[Unnamed]',
-    isStar: false
+    type: creating == "Star" ? 0 : (creating == "Planet" ? 1 : 2)
   });
   model.planets.push(newPlanet);
   model.objects.push(newPlanet);
@@ -306,6 +326,8 @@ function createNewPlanet() {
   if (model.planets.length > 20 && showTrails) {
     trailsButton.toggle();
   }
+  draggingOnto = null;
+  draggingNewPlanet = false;
 }
 
 function mousePressed() {
@@ -324,17 +346,51 @@ function mousePressed() {
     INPUTS[i].border = false;
   }
   inputSelected = null;
+  if (draggingNewPlanet) {
+    return;
+  }
   if (planetPress()) {
     return;
   }
-  draggingNewPlanet = newPlanetPress();
+  if (newPlanetPress()) {
+    draggingNewPlanet = true;
+  }
 }
 
 function mouseReleased() {
-  if (draggingNewPlanet) {
-    createNewPlanet();
+  if (draggingNewPlanet && draggingOnto == null) {
+    let hoveredObjs = model.getHoveredObjects(mouseX, mouseY);
+    draggingOnto = hoveredObjs.length == 0 ? null : hoveredObjs[0];
+    if (draggingOnto != null) {
+      switch (creating) {
+        case "Star":
+          createNewObject();
+          break;
+        case "Planet":
+          if (draggingOnto.isPlanet || draggingOnto.isMoon) {
+            draggingOnto = null; // dragged planet onto other planet/moon
+          }
+          break;
+        case "Moon":
+          if (draggingOnto.isStar || draggingOnto.isMoon) {
+            draggingOnto = null; // dragged moon onto other moon/star
+          }
+          break;
+      }
+      console.log(draggingOnto);
+    }
+    if (draggingOnto == null) {
+      draggingNewPlanet = false;
+    }
+    else {
+      // runs when new object is dropped onto valid object to orbit
+    }
     return;
   }
+  else if (draggingNewPlanet) { // runs when new object has valid orbiter and is placed
+    createNewObject(draggingOnto);
+  }
+
   if (componentClicked != null && componentClicked.doneOnRelease) {
     componentClicked = null;
   }
@@ -344,7 +400,7 @@ function mouseReleased() {
   planetClicked = null;
 }
 
-function doubleClicked() {
+function doubleClicked() { // TODO: make this reset orbit around its orbiter/set vel to 0 for star
   for (let i = 0; i < planets.length; i++) {
     if (planets[i].pointIn(mouseX, mouseY)) {
       planets[i].setOnOrbit(star);
@@ -413,12 +469,14 @@ function overlays() {
 
 function draw() {
   interfacePreUpdate();
-
+  // earthPos = ecliptic == 0 ? earth.position.scale(-1/SF) : earth.planar.scale(-1/SF);
   translate(w/2, h/2);
+  // translate(earthPos.x, earthPos.y);
   noStroke();
   fill(0);
   model.draw();
   translate(-w/2, -h/2);
+  // translate(-earthPos.x, -earthPos.y);
 
   if (!paused) {
     // model.updateRungeKutta(DT);

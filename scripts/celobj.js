@@ -1,5 +1,3 @@
-
-
 getColor = (function() {
   let counter = 0;
   return function() {
@@ -9,9 +7,30 @@ getColor = (function() {
   };
 })();
 
-function CelObj({radius, density,
-                 velocityMagnitude=null, distanceFromSun=null,
-                 color=null, angle=null, name=null, isStar=false}) {
+function CelObj({radius, density, orbiting=null,
+                 velocityMagnitude=null, distanceFromOrbiter=null,
+                 color=null, angle=null, name=null, type=1}) {
+
+  // console.log({radius, density,
+  //                velocityMagnitude, distanceFromOrbiter,
+  //                color, angle, name, type});
+  switch (type) { // @Eli - note - I really don't like this but whatever
+    case 0:
+      this.isPlanet = false;
+      this.isStar = true;
+      this.isMoon = false;
+      break;
+    case 1:
+      this.isPlanet = true;
+      this.isStar = false;
+      this.isMoon = false;
+      break;
+    case 2:
+      this.isPlanet = false;
+      this.isStar = false;
+      this.isMoon = true;
+      break;
+  }
   if (color == null) {
     this.color = getColor();
   }
@@ -23,25 +42,31 @@ function CelObj({radius, density,
   this.density = density;
   this.name = name;
   this.last100 = new Deque(100);
-  this.isStar = isStar;
   
   let T = (angle == null) ? (Math.random() * 2 * Math.PI) : angle;
 
-  if (distanceFromSun == null) {
+  if (distanceFromOrbiter == null) {
     this.position = zero3;
   }
   else {
-    let D = distanceFromSun;
-    this.position = new Vector3(D*Math.cos(T), D*Math.sin(T), 0);
+    let D = distanceFromOrbiter;
+    let xShift = orbiting == null ? 0 : orbiting.position.x;
+    let yShift = orbiting == null ? 0 : orbiting.position.y;
+    this.position = new Vector3(D*Math.cos(T) + xShift,
+                                D*Math.sin(T) + yShift,
+                                0);
   }
 
-  if (velocityMagnitude == null) {
+  if (velocityMagnitude == null && orbiting == null) {
     this.velocity = zero3;
   }
   else {
+    if (velocityMagnitude == null) {
+      velocityMagnitude = Math.sqrt(G * orbiting.mass / this.position.dist(orbiting.position));
+    }
     this.velocity = new Vector3(-velocityMagnitude * Math.sin(T),
                                 velocityMagnitude  * Math.cos(T),
-                                0);
+                                0).plus(orbiting.velocity);
   }
 
   this.updateMassAndVolume = function() {
@@ -87,7 +112,7 @@ function CelObj({radius, density,
   };
 
   this.draw = function(visualScale) {
-    if (showTrails && !isStar) {
+    if (showTrails && !this.isStar) {
       this.drawTrail();
     }
 
@@ -101,7 +126,7 @@ function CelObj({radius, density,
     // right now the effective field of view is 180 degrees which gives strange effects
     if (DRAW_PERSPECTIVE && this.perspectiveScale < 0) { return; } // don't draw planets behind the camera
 
-    visualScale = this.isStar ? starVisualScale : planetVisualScale;
+    visualScale = this.isStar ? starVisualScale : (this.isPlanet ? planetVisualScale : moonVisualScale);
 
     ellipse(this.planar.x / SF, this.planar.y / SF, this.radius * this.perspectiveScale / SF * visualScale);
     if (this.name != null && showLabels && !this.isStar) {

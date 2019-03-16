@@ -49,12 +49,10 @@ function createPlanetComponents() {
         new Options({
             label: '',
             callback: function (newV) {
-                console.log(newV);
-                console.log(this.options);
                 creating = this.options[newV];
                 creationText.text[0] = 'Drag the ' + creating.toLowerCase() + ' into place';
             },
-            options: ['Sun', 'Planet', 'Moon'],
+            options: ['Star', 'Planet', 'Moon'],
             initIndex: 1
         }),
         new Button({
