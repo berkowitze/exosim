@@ -9,12 +9,9 @@ getColor = (function() {
 
 function CelObj({radius, density, orbiting=null,
                  velocityMagnitude=null, distanceFromOrbiter=null,
-                 color=null, angle=null, name=null, type=1}) {
-
-  // console.log({radius, density,
-  //                velocityMagnitude, distanceFromOrbiter,
-  //                color, angle, name, type});
-  switch (type) { // @Eli - note - I really don't like this but whatever
+                 color=null, angle=null, name=null, type=1,
+                 position=null}) {
+  switch (type) { // @Eli - note - I really don't like this but whatever?
     case 0:
       this.isPlanet = false;
       this.isStar = true;
@@ -40,13 +37,14 @@ function CelObj({radius, density, orbiting=null,
 
   this.radius = radius;
   this.density = density;
+  this.orbiting = orbiting;
   this.name = name;
   this.last100 = new Deque(100);
   
   let T = (angle == null) ? (Math.random() * 2 * Math.PI) : angle;
 
   if (distanceFromOrbiter == null) {
-    this.position = zero3;
+    this.position = position == null ? zero3 : position;
   }
   else {
     let D = distanceFromOrbiter;
@@ -58,6 +56,7 @@ function CelObj({radius, density, orbiting=null,
   }
 
   if (velocityMagnitude == null && orbiting == null) {
+    console.log('ys');
     this.velocity = zero3;
   }
   else {
@@ -125,12 +124,15 @@ function CelObj({radius, density, orbiting=null,
     // TODO(izzy): this should be replaced by a visual cone.
     // right now the effective field of view is 180 degrees which gives strange effects
     if (DRAW_PERSPECTIVE && this.perspectiveScale < 0) { return; } // don't draw planets behind the camera
-
     visualScale = this.isStar ? starVisualScale : (this.isPlanet ? planetVisualScale : moonVisualScale);
-
     ellipse(this.planar.x / SF, this.planar.y / SF, this.radius * this.perspectiveScale / SF * visualScale);
-    if (this.name != null && showLabels && !this.isStar) {
-      fill(255);
+    if (this.name != null && showLabels) {
+      if (draggingNewObject && (this === draggingOnto || this.pointIn(mouseX, mouseY))) {
+        fill('#3adde0');
+      }
+      else {
+        fill(255);
+      }
       text(this.name, this.planar.x / SF + 15, this.planar.y / SF + 15);
     }
   };

@@ -50,7 +50,7 @@ function makeSidebarComponents() {
         trailsButton = new Button({
             label: 'Show trails [t]',
             callback: function (checked) {
-                this.val = showTrails = (checked && model.planets.length <= 20);
+                this.val = showTrails = (checked && model.objects.length <= 20);
             },
             val: showTrails
         }),

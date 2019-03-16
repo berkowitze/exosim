@@ -37,7 +37,7 @@ let showTrails = true;
 let paused = false;
 let hideSidebar = false;
 let planetCreatorShowing = false;
-let draggingNewPlanet = false;
+let draggingNewObject = false;
 let trashHover = false;
 
 const DRAW_PERSPECTIVE = true;

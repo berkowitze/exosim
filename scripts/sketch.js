@@ -2,11 +2,8 @@ planets = OUR_SOLAR_SYSTEM;
 // planets = [];
 star = SUN;
 
-function Model(planets, star) {
-  this.planets = planets;
-  // TODO(izzy): consider making an array of stars so we can have binaries/trinaries
-  this.star = star;
-  this.objects = planets.concat(star);
+function Model(objects) {
+  this.objects = objects;
 
   this.updateMomentum = function() {
     let momentum = zero3;
@@ -15,15 +12,6 @@ function Model(planets, star) {
       momentum = momentum.plus(obj.momentum());
     }
     this.momentum = momentum;
-  };
-
-  this.zeroMomentum = function() {
-    let planetMomentum = zero3;
-    for (let i = 0; i < this.objects.length; i++) {
-      let planet = this.objects[i];
-      planetMomentum = planetMomentum.plus(planet.momentum());
-    }
-    this.star.velocity = planetMomentum.scale(-1 / this.star.mass);
   };
 
   this.updateMomentum();
@@ -89,27 +77,18 @@ function Model(planets, star) {
     }
   };
 
-  function compareScale(a,blue) {
-    return a.perspectiveScale - blue.perspectiveScale;
+  function compareScale(a,b) {
+    return a.perspectiveScale - b.perspectiveScale;
   }
 
-  this.shiftToZero = function() {
-    let dp = this.star.position;
-    this.star.position = zero3;
-    for (let i = 0; i < this.planets.length; i++) {
-      let p = this.planets[i];
-      p.position = p.position.sub(dp);
-    }
-  };
-
-  this.removePlanet = function(planet) {
-    let pIndex = model.planets.indexOf(planet);
+  this.removeObject = function(object) {
+    let pIndex = model.objects.indexOf(object);
     if (pIndex < 0) {
       return;
     }
-    model.planets.splice(pIndex, 1);
+    model.objects.splice(pIndex, 1);
 
-    let oIndex = model.objects.indexOf(planet);
+    let oIndex = model.objects.indexOf(object);
     if (oIndex < 0) {
       return;
     }
@@ -190,7 +169,7 @@ function setup() {
 
   sizeDependentSetup();
 
-  model = new Model(planets, star);
+  model = new Model(planets.concat(star));
 }
 
 function keyPressed() {
@@ -238,10 +217,11 @@ function componentPress() {
   return false;
 }
 
-function planetPress() {
-  for (let j = 0; j < planets.length; j++) {
-    if (planets[j].pointIn(mouseX, mouseY)) {
-      planetClicked = planets[j];
+function celObjPress() {
+  let revObjs = model.objects.concat().reverse();
+  for (let j = 0; j < revObjs.length; j++) {
+    if (revObjs[j].pointIn(mouseX, mouseY)) {
+      planetClicked = revObjs[j];
       eclipticSlider.setTo(0);
       return true;
     }
@@ -269,6 +249,9 @@ function keyTyped() {
     case 's':
       eclipticSlider.increment();
       break;
+    case 'm':
+      $('audio').get(0).muted = !$('audio').get(0).muted;
+      break;
     case 't':
       trailsButton.toggle();
       break;
@@ -287,47 +270,50 @@ function newPlanetPress() {
   }
   let dragging = square(mouseX - newPlanetX) + square(mouseY - newPlanetY) <
                  square(newPlanetDrawRadius) * 1.3;
-  if (dragging) {
-    model.shiftToZero();
-  }
   return dragging;
 }
 
-function createNewPlanet(star) {
-
-}
-
-function createNewObject(orbiting) {
-  if (orbiting == undefined) {
-    // creating star
-    return;
-  }
-  console.log('createNewObject called');
-  let c = color(redSlider.val, greenSlider.val, blueSlider.val);
-  let name = nameInput.val.join('');
+function createNewObject(orbiting=null) {
   let density = newPlanetDensity;
   let radius = newPlanetRadius;
+  let nameInp = nameInput.val.join('');
+  name = nameInp !== '' ? nameInp : '[Unnamed]';
+  let c = color(redSlider.val, greenSlider.val, blueSlider.val);
   let pos = new Vector3((mouseX - w/2) * SF, (mouseY - h/2) * SF, 0);
-  let velMag = Math.sqrt(G * orbiting.mass / pos.dist(orbiting.position));
-  let newPlanet = new CelObj({
-    orbiting: orbiting,
-    radius: radius,
-    density: density,
-    velocityMagnitude: velMag,
-    distanceFromOrbiter: pos.dist(orbiting.position),
-    color: c,
-    angle: Math.atan2(pos.y - orbiting.position.y, pos.x - orbiting.position.x),
-    name: name !== '' ? name : '[Unnamed]',
-    type: creating == "Star" ? 0 : (creating == "Planet" ? 1 : 2)
-  });
-  model.planets.push(newPlanet);
-  model.objects.push(newPlanet);
-  draggingNewPlanet = false;
-  if (model.planets.length > 20 && showTrails) {
+  console.log(pos);
+  // let newObj;
+  if (orbiting == null) {
+    newObj = new CelObj({
+      radius: radius,
+      density: density,
+      color: c,
+      name: name,
+      type: 0,
+      position: pos
+    });
+    console.log(newObj.velocity);
+    console.log(newObj.position);
+  }
+  else {
+    let velMag = Math.sqrt(G * orbiting.mass / pos.dist(orbiting.position));
+    newObj = new CelObj({
+      orbiting: orbiting,
+      radius: radius,
+      density: density,
+      velocityMagnitude: velMag,
+      distanceFromOrbiter: pos.dist(orbiting.position),
+      color: c,
+      angle: Math.atan2(pos.y - orbiting.position.y, pos.x - orbiting.position.x),
+      name: name,
+      type: creating == "Planet" ? 1 : 2
+    });
+  }
+  model.objects.push(newObj);
+  if (model.objects.length > 20 && showTrails) {
     trailsButton.toggle();
   }
   draggingOnto = null;
-  draggingNewPlanet = false;
+  draggingNewObject = false;
 }
 
 function mousePressed() {
@@ -346,26 +332,27 @@ function mousePressed() {
     INPUTS[i].border = false;
   }
   inputSelected = null;
-  if (draggingNewPlanet) {
+  if (draggingNewObject) {
     return;
   }
-  if (planetPress()) {
+  if (celObjPress()) {
     return;
   }
   if (newPlanetPress()) {
-    draggingNewPlanet = true;
+    draggingNewObject = true;
   }
 }
 
 function mouseReleased() {
-  if (draggingNewPlanet && draggingOnto == null) {
+  if (draggingNewObject && draggingOnto == null) {
+    if (creating == "Star") {
+      createNewObject();
+      return;
+    }
     let hoveredObjs = model.getHoveredObjects(mouseX, mouseY);
     draggingOnto = hoveredObjs.length == 0 ? null : hoveredObjs[0];
     if (draggingOnto != null) {
       switch (creating) {
-        case "Star":
-          createNewObject();
-          break;
         case "Planet":
           if (draggingOnto.isPlanet || draggingOnto.isMoon) {
             draggingOnto = null; // dragged planet onto other planet/moon
@@ -377,17 +364,16 @@ function mouseReleased() {
           }
           break;
       }
-      console.log(draggingOnto);
     }
     if (draggingOnto == null) {
-      draggingNewPlanet = false;
+      draggingNewObject = false;
     }
     else {
       // runs when new object is dropped onto valid object to orbit
     }
     return;
   }
-  else if (draggingNewPlanet) { // runs when new object has valid orbiter and is placed
+  else if (draggingNewObject) { // runs when new object has valid orbiter and is placed
     createNewObject(draggingOnto);
   }
 
@@ -395,7 +381,7 @@ function mouseReleased() {
     componentClicked = null;
   }
   if (planetClicked != null && trashHover) {
-    model.removePlanet(planetClicked);
+    model.removeObject(planetClicked);
   }
   planetClicked = null;
 }
@@ -403,8 +389,9 @@ function mouseReleased() {
 function doubleClicked() { // TODO: make this reset orbit around its orbiter/set vel to 0 for star
   for (let i = 0; i < planets.length; i++) {
     if (planets[i].pointIn(mouseX, mouseY)) {
-      planets[i].setOnOrbit(star);
-      return false;
+      // planets[i].setOnOrbit(planets[i].orbiting);
+      // TODO : This is broken
+      break;
     }
   }
   return false;
@@ -427,7 +414,7 @@ function interfacePreUpdate() {
   if (ecliptic !== 0 && showTrails) {
     trailsButton.toggle();
   }
-  if (draggingNewPlanet) {
+  if (draggingNewObject) {
     eclipticSlider.setTo(0);
   }
   background(0, 0, 0);
@@ -458,7 +445,7 @@ function overlays() {
     fill(color(red, green, blue));
     newPlanetDrawRadius = scaleToRange(newPlanetRadius, newPlanetMinRadius,
                                        newPlanetMaxRadius, 5, 30);
-    if (!draggingNewPlanet) {
+    if (!draggingNewObject) {
       ellipse(newPlanetX, newPlanetY, newPlanetDrawRadius);
     }
     else {
@@ -468,7 +455,7 @@ function overlays() {
         stroke(255);
         r = new Vector3(mouseX-w/2, mouseY-h/2, 0).dist(draggingOnto.position.scale(1/SF));
         ellipse(w/2 + draggingOnto.position.x / SF, h/2 + draggingOnto.position.y / SF, r*2, r*2);
-
+        fill(255);
         noStroke();
       }
     }
