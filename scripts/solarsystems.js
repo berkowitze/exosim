@@ -1,11 +1,10 @@
-SUN = new CelObj({color: 'orange',
+SUN = new Star({color: 'orange',
                   radius: 695.508e6,
                   density: 1410,
                   name: 'Sun',
-                  type: 0
 });
 
-mercury = new CelObj({
+mercury = new Planet({
   orbiting: SUN,
   radius: 2.4395e6,
   density: 5472,
@@ -14,7 +13,7 @@ mercury = new CelObj({
   name: 'Mercury'
 });
 
-venus = new CelObj({
+venus = new Planet({
   orbiting: SUN,
   radius: 6.052e6,
   density: 5234,
@@ -23,7 +22,7 @@ venus = new CelObj({
   name: 'Venus'
 });
 
-earth = new CelObj({
+earth = new Planet({
   orbiting: SUN,
   radius: 6.378e6,
   density: 5514,
@@ -32,16 +31,15 @@ earth = new CelObj({
   name: 'Earth'
 });
 
-moon = new CelObj({
+moon = new Moon({
   orbiting: earth,
   radius: 1.7371e6,
   density: 3344,
   distanceFromOrbiter: 3.78e8,
   name: 'Moon',
-  type: 2
 });
 
-mars = new CelObj({
+mars = new Planet({
   orbiting: SUN,
   radius: 3.396e6,
   density: 3933,
@@ -50,7 +48,7 @@ mars = new CelObj({
   name: 'Mars'
 });
 
-jupiter = new CelObj({
+jupiter = new Planet({
   orbiting: SUN,
   radius: 71.492e6,
   density: 1326,
@@ -59,7 +57,7 @@ jupiter = new CelObj({
   name: 'Jupiter'
 });
 
-saturn = new CelObj({
+saturn = new Planet({
   orbiting: SUN,
   radius: 60.28e6,
   density: 687,
@@ -68,7 +66,7 @@ saturn = new CelObj({
   name: 'Saturn'
 });
 
-uranus = new CelObj({
+uranus = new Planet({
   orbiting: SUN,
   radius: 25.559e6,
   density: 1271,
@@ -77,7 +75,7 @@ uranus = new CelObj({
   name: 'Uranus'
 });
 
-neptune = new CelObj({
+neptune = new Planet({
   orbiting: SUN,
   radius: 24.764e6,
   density: 1638,
@@ -86,7 +84,7 @@ neptune = new CelObj({
   name: 'Neptune'
 });
 
-pluto = new CelObj({
+pluto = new Planet({
   orbiting: SUN,
   radius: 1.185e6,
   density: 2095,
@@ -96,6 +94,7 @@ pluto = new CelObj({
 });
 
 OUR_SOLAR_SYSTEM = [
+  SUN,
   mercury,
   venus,
   earth,

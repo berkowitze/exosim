@@ -65,6 +65,8 @@ let hideButton, timeSlider, fullscreenButton, pauseButton, trailsButton,
 let planetClicked, inputSelected;
 let model;
 
+let newObjectDrawRadius;
+
 const colors = [[172, 128, 255],
                 [166, 226, 44],
                 [104, 216, 239],
