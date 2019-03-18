@@ -1,15 +1,11 @@
 function makeSidebarComponents() {
     return [
         hideButton = new Button({
-            label: 'Hide Sidebar [h]',
+            label: 'Hide everything [h]',
             callback: function (checked) {
-                hideSidebar = checked;
-                this.label = checked ? 'Show Sidebar [h]' : 'Hide Sidebar [h]';
-                for (let i = 1; i < this.box.components.length; i++) {
-                    this.box.components[i].drawIt = !this.box.components[i].drawIt;
-                }
+                hideEverything = checked;
             },
-            val: hideSidebar
+            val: hideEverything
         }),
         new Button({
             label: 'Clear solar system',

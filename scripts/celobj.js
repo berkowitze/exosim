@@ -1,14 +1,3 @@
-getColor = (function() {
-  let counter = 0;
-  return function() {
-    let col = colors[counter % colors.length];
-    counter += 1;
-    return col;
-  };
-})();
-
-cube = x => x*x*x;
-
 class CelObj {
   constructor({radius, density, velocity, position,
                color=null, name=null}) {

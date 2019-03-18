@@ -1,48 +1,50 @@
 square = x => x*x;
 
-function Vector3(x, y, z) {
-  this.x = x;
-  this.y = y;
-  this.z = z;
-  this.length = Math.sqrt(square(x) + square(y) + square(z));
+class Vector3 {
+  constructor(x, y, z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.length = Math.sqrt(square(x) + square(y) + square(z));
+  }
 
-  this.dot = function(other) {
+  dot(other) {
     return this.x * other.x + this.y * other.y + this.z * other.z;
-  };
+  }
 
-  this.dist = function(other) {
+  dist(other) {
     return Math.sqrt(square(this.x - other.x) + 
                      square(this.y - other.y) +
                      square(this.z - other.z));
-  };
+  }
 
-  this.plus = function(other) {
+  plus(other) {
     return new Vector3(this.x + other.x,
                        this.y + other.y,
                        this.z + other.z);
-  };
+  }
 
-  this.sub = function(other) {
+  sub(other) {
     return new Vector3(this.x - other.x,
                        this.y - other.y,
                        this.z - other.z);
-  };
+  }
 
-  this.mul = function(other) {
+  mul(other) {
     return new Vector3(this.x * other.x,
                        this.y * other.y,
                        this.z * other.z);
-  };
+  }
 
-  this.scale = function(scale) {
+  scale(scale) {
     return new Vector3(scale * this.x,
                        scale * this.y,
                        scale * this.z);
-  };
+  }
 
-  this.normalized = function() {
+  normalized() {
     return new Vector3(this.x / this.length,
                        this.y / this.length,
                        this.z / this.length);
-  };
+  }
 }

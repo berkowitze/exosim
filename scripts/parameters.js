@@ -42,7 +42,7 @@ const zero3 = new Vector3(0, 0, 0);
 let showLabels = true;
 let showTrails = true;
 let paused = false;
-let hideSidebar = false;
+let hideEverything = false;
 let planetCreatorShowing = false;
 let draggingNewObject = false;
 let trashHover = false;
@@ -73,6 +73,17 @@ const colors = [[172, 128, 255],
                 [253, 150, 33],
                 [249, 36,  114],
                 [231, 219, 116]];
+
+getColor = (function() {
+    let counter = 0;
+    return function() {
+        let col = colors[counter % colors.length];
+        counter += 1;
+        return col;
+    };
+})();
+
+cube = x => x*x*x;
 
 let creationTextOptions = {
     Moon: ['Drag the moon onto its', 'orbiting planet when ready!'],
