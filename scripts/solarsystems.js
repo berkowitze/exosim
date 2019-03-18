@@ -99,7 +99,7 @@ OUR_SOLAR_SYSTEM = [
   mercury,
   venus,
   earth,
-  moon,
+  //moon,
   mars,
   jupiter,
   saturn,
