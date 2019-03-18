@@ -11,7 +11,13 @@ function makeSidebarComponents() {
             },
             val: hideSidebar
         }),
-
+        new Button({
+            label: 'Clear solar system',
+            callback: function(checked) {
+                this.val = false;
+                model.objects = [];
+            }
+        }),
         timeSlider = new Slider({
             minVal: DT_MIN_EXP,
             maxVal: DT_MAX_EXP,
