@@ -153,7 +153,7 @@ class Orbiter extends CelObj {
 
   drawTrail() {
     let lastPos = this.trail.toArray();
-    for (let i = 0; i < lastPos.length; i++) {
+    for (let i = 2; i < lastPos.length; i += 3) {
         let lp = lastPos[i];
         let col = 200 - i*2;
         fill(col);
