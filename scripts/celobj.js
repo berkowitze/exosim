@@ -1,6 +1,15 @@
 class CelObj {
-  constructor({radius, density, velocity, position,
+  constructor({radius, velocity, position,
+               mass=null, density=null,
                color=null, name=null}) {
+    console.log({mass, density});
+    if ((density == null && mass == null) ||
+        (density != null && mass != null)) {
+      throw new Error('Must give either mass or density to CelObj');
+    }
+    if (density == null) {
+      density = mass / (4.0/3.0 * Math.PI * cube(radius));
+    }
     if (color == null) {
       this.color = getColor();
     }
@@ -121,7 +130,7 @@ class CelObj {
 }
 
 class Orbiter extends CelObj {
-  constructor({orbiting, distanceFromOrbiter, radius, density,
+  constructor({orbiting, distanceFromOrbiter, radius, density=null, mass=null,
                angle=null, color=null, name=null}) {
     if (angle == null) {
       angle = Math.random() * 2*Math.PI;
@@ -133,14 +142,7 @@ class Orbiter extends CelObj {
     let velocity = new Vector3(velMag * -Math.sin(angle),
                                velMag * Math.cos(angle),
                                0);
-    super({
-      radius: radius,
-      density: density,
-      velocity: velocity,
-      position: position,
-      color: color,
-      name: name
-    });
+    super({radius, density, mass, velocity, position, color, name});
     this.trail = new Deque(128);
   }
 
@@ -203,7 +205,7 @@ class Moon extends Orbiter {
 }
 
 class Star extends CelObj {
-  constructor({radius, density, velocity=null, position=null,
+  constructor({radius, density=null, mass=null, velocity=null, position=null,
                color=null, name=null}) {
     if (position == null) {
       position = zero3;
@@ -211,8 +213,7 @@ class Star extends CelObj {
     if (velocity == null) {
       velocity = zero3;
     }
-    super({radius, density, velocity, position,
-           color, name});
+    super({radius, density, velocity, mass, position, color, name});
     this.scale = starVisualScale;
   }
 
