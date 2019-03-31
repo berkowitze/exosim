@@ -228,7 +228,7 @@ class Input extends Component {
     }
   }
 
-  keypress(key) {
+  keyPress(key) {
     this.val.push(key);
   }
 

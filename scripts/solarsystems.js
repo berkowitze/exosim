@@ -1,7 +1,9 @@
+AU = 1.496e11;
+
 SUN = new Star({color: 'orange',
-                  radius: 695.508e6,
-                  density: 1410,
-                  name: 'Sun',
+                radius: 695.508e6,
+                density: 1410,
+                name: 'Sun',
 });
 
 mercury = new Planet({
@@ -105,4 +107,51 @@ OUR_SOLAR_SYSTEM = [
   uranus,
   neptune,
   pluto
+];
+
+KEP89 = new Star({
+  color: 'orange',
+  radius: 1.61 * SUN.radius,
+  mass: 1.25 * SUN.mass,
+  name: 'Kepler-89'
+});
+
+KEP89B = new Planet({
+  orbiting: KEP89,
+  radius: 0.13 * jupiter.radius,
+  mass: 8 * earth.mass,
+  distanceFromOrbiter: 0.05 * AU,
+  name: 'Kepler-89b'
+});
+
+KEP89C = new Planet({
+  orbiting: KEP89,
+  radius: 0.31 * jupiter.radius,
+  mass: 9 * earth.mass,
+  distanceFromOrbiter: 0.099 * AU,
+  name: 'Kepler-89c'
+});
+
+KEP89D = new Planet({
+  orbiting: KEP89,
+  radius: 0.83 * jupiter.radius,
+  mass: 0.33 * jupiter.mass,
+  distanceFromOrbiter: 0.165 * AU,
+  name: 'Kepler-89d'
+});
+
+KEP89E = new Planet({
+  orbiting: KEP89,
+  radius: 0.49 * jupiter.radius,
+  mass: 13.5 * earth.mass,
+  distanceFromOrbiter: 0.298 * AU,
+  name: 'Kepler-89e'
+});
+
+KEPLER89 = [
+  KEP89,
+  KEP89B,
+  KEP89C,
+  KEP89D,
+  KEP89E,
 ];

@@ -1,6 +1,7 @@
 let time = 0;
 
-let SF = 541169500; // scale factor
+// let SF = 541169500; // scale factor
+SF = 341169500;
 const SF_MIN_EXP = 5;
 const SF_MAX_EXP = 12;
 
@@ -26,9 +27,9 @@ let newObjectDensity = newObjectDensityScales.Planet[1];
 
 let FD = 4e11; // focal distance
 
-let planetVisualScale = 1e3; //1000.0; // visual scale for planets to make them more seeable
+let planetVisualScale = 1e2; // visual scale for planets to make them more seeable
 let moonVisualScale = planetVisualScale * 2;
-let starVisualScale = 1e1; // 10.0;
+let starVisualScale = 1;//1e1; // 10.0;
 const G = 6.674e-11;
 const SEC_PER_YEAR = 31557600;
 let INPUTS = [];
