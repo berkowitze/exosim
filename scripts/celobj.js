@@ -2,7 +2,6 @@ class CelObj {
   constructor({radius, velocity, position,
                mass=null, density=null,
                color=null, name=null}) {
-    console.log({mass, density});
     if ((density == null && mass == null) ||
         (density != null && mass != null)) {
       throw new Error('Must give either mass or density to CelObj');
@@ -27,7 +26,7 @@ class CelObj {
 
     this.name = name;
 
-    this.project();
+    // this.project();
   }
 
   force(other) {
@@ -43,25 +42,35 @@ class CelObj {
     return this.velocity.scale(this.mass);
   }
 
-  project() {
-    let norm = new Vector3(0, Math.sin(ecliptic), Math.cos(ecliptic));
-    let cameraPosition = norm.scale(-FD);
-    let inline = norm.scale(this.position.dot(norm));
-    this.perspectiveScale = FD/(FD+inline.dot(norm));
+  project(origin) {
+    let focalPlaneNorm = new Vector3(0, sin(ecliptic), -cos(ecliptic)); // points toward the camera
+    let cameraDirection = focalPlaneNorm.scale(-1); // points in the direction the camera is looking
+    let cameraPosition = focalPlaneNorm.scale(FD); // global position of the camera
+    let relativePosition = this.position.sub(origin);
 
-    var c = this.position.sub(cameraPosition); // vector from camera to object
-    let fromCam = c.dot(norm);
-    this.planar = cameraPosition.plus(c.scale(FD/fromCam));
+    let cameraToObject = relativePosition.sub(cameraPosition);
+    let vecToFocalPlaneThroughObject = cameraToObject.scale(FD/cameraToObject.dot(cameraDirection));
+    let projectedPosition = cameraPosition.plus(vecToFocalPlaneThroughObject); // 3D coordinates in focal plane
+    let planar3d = projectedPosition;
+
+    let planarPositiveYAxis = new Vector3(0, cos(ecliptic), sin(ecliptic));
+    let ySign = sign(planarPositiveYAxis.dot(relativePosition));
+
+    // find how far back we've pushed the object onto the focal plane so we can rescale accordingly
+    this.perspectiveScale = vecToFocalPlaneThroughObject.length/cameraToObject.length;
+    // and take the 3D projected coordinates and convert them into 2D pixel coordinates in the focal plane
+    this.planar = new Vector3(planar3d.x, sqrt(sq(planar3d.y) + sq(planar3d.z)) * ySign, 0);
+    if (this.planar == undefined){ console.log('hi') }
   }
 
   occlusion(other) {
-    let norm = new Vector3(0, Math.sin(ecliptic), Math.cos(ecliptic));
+    let focalPlaneNorm = new Vector3(0, Math.sin(ecliptic), -Math.cos(ecliptic));
     let diff = other.position.sub(this.position);
-    let inlineCoeff = norm.dot(diff);
+    let inlineCoeff = focalPlaneNorm.dot(diff);
 
     // check to make sure that other is in front of this
     if (inlineCoeff < 0) {
-      let inline = norm.scale(inlineCoeff);
+      let inline = focalPlaneNorm.scale(inlineCoeff);
       let d = diff.sub(inline).length;
       let intersection = circleOverlap(this.radius, other.radius, d);
       return intersection/(sq(this.radius)*PI);
@@ -109,10 +118,10 @@ class CelObj {
   }
 
   pointIn(x, y, tolerance=0) {
+    console.log({planar: this.planar});
     let xP = this.planar.x / SF;
     let yP = this.planar.y / SF;
     let r = this.radius * this.perspectiveScale / SF * this.scale;
-    console.log({x, y, tolerance, xP, yP, r});
     return (square(x - w/2 - xP) + square(y - h/2 - yP)) < square(r + tolerance);
   }
 

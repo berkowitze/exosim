@@ -1,3 +1,6 @@
+planets = OUR_SOLAR_SYSTEM;
+star = SUN;
+
 function windowResized() {
   w = windowWidth;
   h = windowHeight;
@@ -255,17 +258,6 @@ function mouseReleased() {
     model.removeObject(planetClicked);
   }
   planetClicked = null;
-}
-
-function doubleClicked() { // TODO: make this reset orbit around its orbiter/set vel to 0 for star
-  for (let i = 0; i < model.objects.length; i++) {
-    if (planets[i].pointIn(mouseX, mouseY)) {
-      // planets[i].setOnOrbit(planets[i].orbiting);
-      // TODO : This is broken i think
-      break;
-    }
-  }
-  return false;
 }
 
 function mouseWheel(event) {

@@ -1,4 +1,7 @@
 exp10 = n => Math.pow(10,n);
+sign = x => Math.sign(x);
+sin = x => Math.sin(x);
+cos = x => Math.cos(x);
 Array.prototype.min = function() {
   return this.reduce((x, y) => Math.min(x, y), Infinity);
 };
