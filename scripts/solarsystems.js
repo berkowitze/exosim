@@ -124,16 +124,16 @@ KEP89 = new Star({
 
 KEP89B = new Planet({
   orbiting: KEP89,
-  radius: 0.13 * jupiter.radius,
-  mass: 8 * earth.mass,
+  radius: 0.1558 * jupiter.radius,
+  mass: 10.5 * earth.mass,
   distanceFromOrbiter: 0.05 * AU,
   name: 'Kepler-89b'
 });
 
 KEP89C = new Planet({
   orbiting: KEP89,
-  radius: 0.31 * jupiter.radius,
-  mass: 9 * earth.mass,
+  radius: 0.394 * jupiter.radius,
+  mass: 0.0491 * jupiter.mass,
   distanceFromOrbiter: 0.099 * AU,
   name: 'Kepler-89c'
 });

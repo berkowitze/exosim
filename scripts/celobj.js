@@ -25,8 +25,6 @@ class CelObj {
     this.velocity = velocity;
 
     this.name = name;
-
-    // this.project();
   }
 
   force(other) {

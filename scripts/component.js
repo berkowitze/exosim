@@ -110,15 +110,16 @@ class Slider extends Component {
 
 class Options extends Component {
   constructor({label, callback, options, initIndex}) {
-    super(slideWidth);
+    super(slideWidth + 50);
     this.label = label;
     this.callback = callback;
     this.options = options;
+    this.optWidth = this.width / this.options.length;
     this.val = initIndex;
   }
 
   draw() {
-    fill(100);
+    fill(90);
     rect(this.box.xStart, this.yStart, this.width, compHeight, 5);
     fill(150);
     rect(this.box.xStart + this.val * this.optWidth,
@@ -187,14 +188,14 @@ class Input extends Component {
   }
 
   draw() {
-    fill(200);
+    fill(180);
     if (this.border) {
       stroke(0, 50, 200);
     }
     else {
       noStroke();
     }
-    rect(this.xStart,
+    rect(this.box.xStart,
          this.yStart,
          this.width + (2 * sliderCircleRadius),
          this.box.compHeight,
@@ -211,7 +212,7 @@ class Input extends Component {
       fill(0);
     }
 
-    text(txt, this.xStart + 5, this.yStart + this.box.compHeight / 2);
+    text(txt, this.box.xStart + 5, this.yStart + this.box.compHeight / 2);
 
     textAlign(CENTER, CENTER);
     textSize(12);
@@ -239,7 +240,7 @@ class Input extends Component {
 
 class TextBox extends Component {
   constructor(txt) {
-    super(slideWidth + 50);
+    super(slideWidth + 50, txt.length);
     this.text = txt;
     this.doneOnRelease = true;
   }
