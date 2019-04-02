@@ -4,7 +4,7 @@ star = SUN;
 
 function Model(objects) {
   this.objects = objects;
-
+  this.origin = new Vector3(0,0,0);
   this.updateMomentum = function() {
     let momentum = zero3;
     for (let i = 0; i < this.objects.length; i++) {
@@ -106,11 +106,12 @@ function Model(objects) {
   };
 
   this.draw = function() {
+    this.origin = SUN.position;
 
     if (DRAW_PERSPECTIVE) {
       for (let i = 0; i < this.objects.length; i++) {
         let obj = this.objects[i];
-        obj.project();
+        obj.project(this.origin);
       }
       this.objects.sort(compareScale);
     }

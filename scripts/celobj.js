@@ -92,22 +92,24 @@ function CelObj({radius, density, orbiting=null,
   //   this.planar = cameraPosition.plus(c.scale(FD/fromCam));
   // };
 
-  this.project = function() {
+  this.project = function(origin) {
     let focalPlaneNorm = new Vector3(0, sin(ecliptic), -cos(ecliptic)); // points toward the camera
     let cameraDirection = focalPlaneNorm.scale(-1); // points in the direction the camera is looking
     let cameraPosition = focalPlaneNorm.scale(FD); // global position of the camera
+    let relativePosition = this.position.sub(origin);
 
-    let cameraToObject = this.position.sub(cameraPosition);
+    let cameraToObject = relativePosition.sub(cameraPosition);
     let vecToFocalPlaneThroughObject = cameraToObject.scale(FD/cameraToObject.dot(cameraDirection));
     let projectedPosition = cameraPosition.plus(vecToFocalPlaneThroughObject); // 3D coordinates in focal plane
+    let planar3d = projectedPosition;
 
     let planarPositiveYAxis = new Vector3(0, cos(ecliptic), sin(ecliptic));
-    let ySign = sign(planarPositiveYAxis.dot(this.position));
+    let ySign = sign(planarPositiveYAxis.dot(relativePosition));
 
     // find how far back we've pushed the object onto the focal plane so we can rescale accordingly
     this.perspectiveScale = vecToFocalPlaneThroughObject.length/cameraToObject.length;
     // and take the 3D projected coordinates and convert them into 2D pixel coordinates in the focal plane
-    this.planar = new Vector3(projectedPosition.x, sqrt(sq(projectedPosition.y) + sq(projectedPosition.z)) * ySign, 0);
+    this.planar = new Vector3(planar3d.x, sqrt(sq(planar3d.y) + sq(planar3d.z)) * ySign, 0);
   };
 
   this.occlusion = function(other) {
@@ -125,10 +127,6 @@ function CelObj({radius, density, orbiting=null,
     else {
       return 0;
     }
-  };
-
-  this planarOcclusion = function() {
-
   };
 
   this.draw = function(visualScale) {
