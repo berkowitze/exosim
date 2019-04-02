@@ -24,7 +24,7 @@ let newObjectDensityScales = {
 
 let newObjectDensity = newObjectDensityScales.Planet[1];
 
-let FD = 4e11; // focal distance
+let FD = 4e13; // focal distance (camera distance to origin in meters)
 
 let planetVisualScale = 1e3; //1000.0; // visual scale for planets to make them more seeable
 let moonVisualScale = planetVisualScale * 2;
