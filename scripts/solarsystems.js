@@ -1,5 +1,11 @@
 AU = 1.496e11;
 
+class SolarSystem {
+  constructor(objects) {
+    this.objects = objects;
+  }
+}
+
 SUN = new Star({color: 'orange',
                 radius: 695.508e6,
                 density: 1410,
