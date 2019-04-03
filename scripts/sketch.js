@@ -48,7 +48,9 @@ function setup() {
 
   sizeDependentSetup();
 
-  model = new Model(KEPLER89);
+  model1 = new Model(KEPLER89);
+  model2 = new Model(OUR_SOLAR_SYSTEM);
+  model = model1;
 }
 
 function keyPressed() {

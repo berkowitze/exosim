@@ -14,6 +14,20 @@ function makeSidebarComponents() {
                 model.objects = [];
             }
         }),
+        new Options({
+            label: 'Solar system',
+            options: ['Sun', 'Kepler 89'],
+            initIndex: 1,
+            callback: function(newV) {
+                console.log(newV);
+                if (newV == 0) {
+                    model = model2;
+                }
+                else {
+                    model = model1;
+                }
+            }
+        }),
         timeSlider = new Slider({
             minVal: DT_MIN_EXP,
             maxVal: DT_MAX_EXP,
