@@ -30,20 +30,7 @@ This project is intended to be used by students and enthusiasts. We specifically
 
 The entire project is built in Javascript. We use simple Euler integration to model the dynamics in 3D. In the future we plan to upgrade to Runge-Kutta. The 3D positions of the planets are projected into 2D based on the position of the camera.
 
-The mathematics for the dynamics are a set of two nonlinear ODEs:
-
-$$
-\begin{cases}
-\dot{\vec{x_i}} = \vec{v} \\
-\dot{\vec{v_i}} = \frac{1}{M_i}\sum\limits_{j \neq i} \vec{F}_{ij}
-\end{cases}
-$$
-
-Here, $v_i$ is the velocity of the planet and $x_i$ is its position (both in three dimensions).
-
-The force between two planets is:
-$$\vec{F_{ij}} = G\frac{M_iM_j}{r_{ij}^3} (\vec{x_i} - \vec{x_j})$$
-with $M$ the mass of the planet, and $r_{ij} = |\vec{x_i} - \vec{x_j}|$.
+An explanation of the mathematics of the system can be found in `/math.pdf`.
 
 ### Code layout
 All relevant code can be found in the `/scripts` folder. The overall program logic is within `sketch.js`. The simulation logic can be found in `model.js`. Constants can be found in `parameters.js` and `solarsystems.js`. Most other files are for rendering or setup work.
