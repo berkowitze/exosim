@@ -31,7 +31,7 @@ function makeSidebarComponents() {
             callback: function (newV) {
                 SF = Math.pow(10, newV);
             },
-            label: 'Scale Factor [\u2191 \u2193]'
+            label: 'Zoom [\u2191 \u2193]'
         }),
         visSlider = new Slider({
             minVal: OBJ_SCALE_MIN,
