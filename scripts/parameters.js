@@ -5,7 +5,7 @@ SF = 341169500;
 const SF_MIN_EXP = 5;
 const SF_MAX_EXP = 12;
 
-let DT = 5e3; // time step
+let DT = 250; // time step
 const DT_MIN_EXP = 0;
 const DT_MAX_EXP = 6;
 
@@ -27,9 +27,10 @@ let newObjectDensity = newObjectDensityScales.Planet[1];
 
 let FD = 4e13; // focal distance (camera distance to origin in meters)
 
-let planetVisualScale = 1e2; // visual scale for planets to make them more seeable
-let moonVisualScale = planetVisualScale * 2;
-let starVisualScale = 1;//1e1; // 10.0;
+let objectScale = 8;
+const OBJ_SCALE_MIN = 1;
+const OBJ_SCALE_MAX = 50;
+
 const G = 6.674e-11;
 const SEC_PER_YEAR = 31557600;
 let INPUTS = [];
@@ -41,7 +42,7 @@ let draggingOnto = null;
 const zero3 = new Vector3(0, 0, 0);
 
 let showLabels = true;
-let showTrails = true;
+let showTrails = false;
 let paused = false;
 let hideEverything = false;
 let planetCreatorShowing = false;

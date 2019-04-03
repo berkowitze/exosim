@@ -33,6 +33,16 @@ function makeSidebarComponents() {
             },
             label: 'Scale Factor [\u2191 \u2193]'
         }),
+        visSlider = new Slider({
+            minVal: OBJ_SCALE_MIN,
+            maxVal: OBJ_SCALE_MAX,
+            val: objectScale,
+            callback: function(newV) {
+                objectScale = newV;
+                this.label = `Visual Scale (${Number(objectScale).toFixed(0)})`;
+            },
+            label: `Visual Scale (${Number(objectScale).toFixed(0)})`
+        }),
         eclipticSlider = new Slider({
             minVal: 0,
             maxVal: Math.PI / 2,

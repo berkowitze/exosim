@@ -58,7 +58,6 @@ class CelObj {
     this.perspectiveScale = vecToFocalPlaneThroughObject.length/cameraToObject.length;
     // and take the 3D projected coordinates and convert them into 2D pixel coordinates in the focal plane
     this.planar = new Vector3(planar3d.x, sqrt(sq(planar3d.y) + sq(planar3d.z)) * ySign, 0);
-    if (this.planar == undefined){ console.log('hi') }
   }
 
   occlusion(other) {
@@ -92,7 +91,7 @@ class CelObj {
     fill(this.color);
     ellipse(this.planar.x / SF,
             this.planar.y / SF,
-            this.radius * this.perspectiveScale / SF * this.scale);
+            this.radius * this.perspectiveScale / SF * objectScale);
     if (this.name != null && showLabels) {
       if (draggingNewObject && (this === draggingOnto || this.pointIn(mouseX, mouseY))) {
         fill('#3adde0');
@@ -119,7 +118,7 @@ class CelObj {
     console.log({planar: this.planar});
     let xP = this.planar.x / SF;
     let yP = this.planar.y / SF;
-    let r = this.radius * this.perspectiveScale / SF * this.scale;
+    let r = this.radius * this.perspectiveScale / SF * objectScale;
     return (square(x - w/2 - xP) + square(y - h/2 - yP)) < square(r + tolerance);
   }
 
@@ -148,7 +147,7 @@ class Orbiter extends CelObj {
     const velMag = Math.sqrt(G * orbiting.mass / position.dist(orbiting.position));
     let velocity = new Vector3(velMag * -Math.sin(angle),
                                velMag * Math.cos(angle),
-                               0);
+                               0).plus(orbiting.velocity);
     super({radius, density, mass, velocity, position, color, name});
     this.trail = new Deque(128);
   }
@@ -166,7 +165,7 @@ class Orbiter extends CelObj {
         let lp = lastPos[i];
         let col = 200 - i*2;
         fill(col);
-        let drawRadius = this.radius / SF * this.scale;
+        let drawRadius = this.radius / SF * objectScale;
         ellipse(lp.x / SF, lp.y / SF, drawRadius * (127 - i) / 200);
     }
   }
@@ -192,7 +191,6 @@ class Orbiter extends CelObj {
 class Planet extends Orbiter {
   constructor(args) {
     super(args);
-    this.scale = planetVisualScale;
   }
 
   canBeOrbitedBy(t) {
@@ -203,7 +201,6 @@ class Planet extends Orbiter {
 class Moon extends Orbiter {
   constructor(args) {
     super(args);
-    this.scale = moonVisualScale;
   }
 
   canBeOrbitedBy(t) {
@@ -221,7 +218,6 @@ class Star extends CelObj {
       velocity = zero3;
     }
     super({radius, density, velocity, mass, position, color, name});
-    this.scale = starVisualScale;
   }
 
   canBeOrbitedBy(t) {
