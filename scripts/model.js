@@ -2,7 +2,7 @@ class Model {
   constructor(objects) {
     this.objects = objects;
     this.updateMomentum();
-    this.origin = zero3;
+    this.origin = new PointObject(zero3);
   }
 
   updateMomentum() {
@@ -106,7 +106,7 @@ class Model {
     if (DRAW_PERSPECTIVE) {
       for (let i = 0; i < this.objects.length; i++) {
         let obj = this.objects[i];
-        obj.project(this.origin);
+        obj.project(this.origin.position);
       }
       this.objects.sort(this.compareScale);
     }

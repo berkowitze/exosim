@@ -66,6 +66,8 @@ let hideButton, timeSlider, fullscreenButton, pauseButton, trailsButton,
 
 let planetClicked, inputSelected;
 let model;
+let model1;
+let model2;
 
 let newObjectDrawRadius;
 

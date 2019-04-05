@@ -131,7 +131,8 @@ function keyTyped() {
       eclipticSlider.increment();
       break;
     case 'm':
-      $('audio').get(0).muted = !$('audio').get(0).muted;
+      let audio = $('audio').get(0);
+      audio.muted = !audio.muted;
       break;
     case 't':
       trailsButton.toggle();
@@ -149,16 +150,15 @@ function newPlanetPress() {
   if (!planetCreator) {
     return false;
   }
-  let dragging = square(mouseX - newPlanetX) + square(mouseY - newPlanetY) <
-                 square(newObjectDrawRadius) * 1.3;
-  return dragging;
+  return square(mouseX - newPlanetX) + square(mouseY - newPlanetY) <
+         square(newObjectDrawRadius) * 1.3;
 }
 
 function createNewObject(orbiting=null) {
   let density = newObjectDensity;
   let radius = newObjectRadius;
   let nameInp = nameInput.val.join('');
-  name = nameInp !== '' ? nameInp : '[Unnamed]';
+  let name = nameInp !== '' ? nameInp : '[Unnamed]';
   let c = color(redSlider.val, greenSlider.val, blueSlider.val);
   let pos = new Vector3((mouseX - w/2) * SF, (mouseY - h/2) * SF, 0);
   let newObj;
@@ -181,7 +181,7 @@ function createNewObject(orbiting=null) {
       color: c,
       name: name,
     };
-    if (creating == "Planet") {
+    if (creating === "Planet") {
       newObj = new Planet(opts);
     }
     else {
@@ -225,13 +225,13 @@ function mousePressed() {
 
 function mouseReleased() {
   if (draggingNewObject && draggingOnto == null) {
-    if (creating == "Star") {
+    if (creating === "Star") {
       createNewObject();
       return;
     }
     let hoveredObjs = model.getHoveredObjects(mouseX, mouseY);
-    if (hoveredObjs.length != 0) {
-      if (!hoveredObjs[0].canBeOrbitedBy(creating)) {
+    if (hoveredObjs.length !== 0) {
+      if (!Planet.canBeOrbitedBy(creating)) {
         draggingOnto = null;
       }
       else {
@@ -319,8 +319,8 @@ function overlays() {
       if (draggingOnto) {
         noFill();
         stroke(255);
-        rv = new Vector3(mouseX-w/2, mouseY-h/2, 0);
-        r = rv.dist(draggingOnto.position.scale(1/SF));
+        const rv = new Vector3(mouseX-w/2, mouseY-h/2, 0);
+        const r = rv.dist(draggingOnto.position.scale(1/SF));
         ellipse(w/2 + draggingOnto.position.x / SF, h/2 + draggingOnto.position.y / SF, r*2, r*2);
         fill(255);
         noStroke();

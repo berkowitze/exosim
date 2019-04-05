@@ -1,7 +1,27 @@
-class CelObj {
+class PointObject {
+  constructor(position) {
+    this.position = position;
+  }
+}
+
+
+class CelObj extends PointObject {
+  /**
+   * celestial object base class - you should not instantiate this
+   * directly but rather use Planet, Star, or Moon
+   * @param radius - radius of object
+   * @param velocity - velocity of object (Vector3)
+   * @param position - position of object (Vector3)
+   * @param mass - mass of object
+   * @param density - density of object
+   * @param color - color of object (acceptable by p5.fill, null default)
+   * @param name - name of object (null default)
+   * must provide either mass or density
+   */
   constructor({radius, velocity, position,
                mass=null, density=null,
                color=null, name=null}) {
+    super(position);
     if ((density == null && mass == null) ||
         (density != null && mass != null)) {
       throw new Error('Must give either mass or density to CelObj');
@@ -21,26 +41,42 @@ class CelObj {
     this.volume = 4/3 * Math.PI * cube(this.radius);
     this.mass = this.volume * this.density;
 
-    this.position = position;
+
     this.velocity = velocity;
 
     this.name = name;
   }
 
   force(other) {
-    let scale = -G * other.mass / square(this.dist(other));
-    return this.position.sub(other.position).normalized().scale(scale);
+    /**
+     * force between this object and another CelObj
+     * @type {number}
+     */
+    let forceMag = -G * other.mass / square(this.dist(other));
+    let forceDir = this.position.sub(other.position).normalized();
+    return forceDir.scale(forceMag);
   }
 
   dist(other) {
+    /**
+     * distance from this object to another CelObj
+     */
     return this.position.dist(other.position);
   }
 
   momentum() {
+    /**
+     * this objects momentum (m * v)
+     */
     return this.velocity.scale(this.mass);
   }
 
   project(origin) {
+    /**
+     * sets projection (perspectiveScale and planar) based on
+     * position and ecliptic angle
+     * @type {Vector3}
+     */
     let focalPlaneNorm = new Vector3(0, sin(ecliptic), -cos(ecliptic)); // points toward the camera
     let cameraDirection = focalPlaneNorm.scale(-1); // points in the direction the camera is looking
     let cameraPosition = focalPlaneNorm.scale(FD); // global position of the camera
@@ -48,8 +84,8 @@ class CelObj {
 
     let cameraToObject = relativePosition.sub(cameraPosition);
     let vecToFocalPlaneThroughObject = cameraToObject.scale(FD/cameraToObject.dot(cameraDirection));
-    let projectedPosition = cameraPosition.plus(vecToFocalPlaneThroughObject); // 3D coordinates in focal plane
-    let planar3d = projectedPosition;
+     // 3D coordinates in focal plane
+    let planar3d = cameraPosition.plus(vecToFocalPlaneThroughObject);
 
     let planarPositiveYAxis = new Vector3(0, cos(ecliptic), sin(ecliptic));
     let ySign = sign(planarPositiveYAxis.dot(relativePosition));
@@ -61,15 +97,19 @@ class CelObj {
   }
 
   occlusion(other) {
-    let focalPlaneNorm = new Vector3(0, Math.sin(ecliptic), -Math.cos(ecliptic));
-    let diff = other.position.sub(this.position);
-    let inlineCoeff = focalPlaneNorm.dot(diff);
+    /**
+     * how much this object is occluded by another CelObj (circle intersection)
+     * @type {Vector3}
+     */
+    const focalPlaneNorm = new Vector3(0, Math.sin(ecliptic), -Math.cos(ecliptic));
+    const diff = other.position.sub(this.position);
+    const inlineCoeff = focalPlaneNorm.dot(diff);
 
     // check to make sure that other is in front of this
     if (inlineCoeff < 0) {
-      let inline = focalPlaneNorm.scale(inlineCoeff);
-      let d = diff.sub(inline).length;
-      let intersection = circleOverlap(this.radius, other.radius, d);
+      const inline = focalPlaneNorm.scale(inlineCoeff);
+      const d = diff.sub(inline).length;
+      const intersection = circleOverlap(this.radius, other.radius, d);
       return intersection/(sq(this.radius)*PI);
     }
     else {
@@ -78,6 +118,9 @@ class CelObj {
   }
 
   draw() {
+    /**
+     * draw this CelObj
+     */
     if (!DRAW_PERSPECTIVE) {
       this.planar = this.position;
     }
@@ -94,43 +137,36 @@ class CelObj {
             this.radius * this.perspectiveScale / SF * objectScale);
     if (this.name != null && showLabels) {
       if (draggingNewObject && (this === draggingOnto || this.pointIn(mouseX, mouseY))) {
-        fill('#3adde0');
+        fill('#47b8e0');
       }
       else {
         fill(255);
       }
-      text(this.name, this.planar.x / SF + 15, this.planar.y / SF + 15);
+      const offset = 12;
+      text(this.name, this.planar.x / SF + offset, this.planar.y / SF + offset);
     }
   }
 
   update(force, DT) {
+    /**
+     * update this object given a force acting on it and a timestep
+     * updates velocity and position
+     */
     let dv = force.scale(DT);
     let dx = this.velocity.scale(DT);
     this.velocity = this.velocity.plus(dv);
     this.position = this.position.plus(dx);
   }
 
-  updatePosition(mx, my) { // what does this do/where is it used
+  updatePosition(mx, my) { // used to set position by mouse coordinate
     this.position = new Vector3((mx - w/2) * SF, (my - h/2) * SF, 0);
   }
 
   pointIn(x, y, tolerance=0) {
-    console.log({planar: this.planar});
     let xP = this.planar.x / SF;
     let yP = this.planar.y / SF;
     let r = this.radius * this.perspectiveScale / SF * objectScale;
     return (square(x - w/2 - xP) + square(y - h/2 - yP)) < square(r + tolerance);
-  }
-
-
-  setDensity(newDensity) {
-    this.density = newDensity;
-    this.updateMassAndVolume();
-  }
-
-  setRadius(newRadius) {
-    this.radius = newRadius;
-    this.updateMassAndVolume();
   }
 
 }
@@ -193,8 +229,8 @@ class Planet extends Orbiter {
     super(args);
   }
 
-  canBeOrbitedBy(t) {
-    return t == "Moon";
+  static canBeOrbitedBy(t) {
+    return t === "Moon";
   }
 }
 
@@ -203,7 +239,7 @@ class Moon extends Orbiter {
     super(args);
   }
 
-  canBeOrbitedBy(t) {
+  static canBeOrbitedBy() {
     return false;
   }
 }
@@ -220,8 +256,8 @@ class Star extends CelObj {
     super({radius, density, velocity, mass, position, color, name});
   }
 
-  canBeOrbitedBy(t) {
-    return t == "Planet";
+  static canBeOrbitedBy(t) {
+    return t === "Planet";
   }
 
 }
