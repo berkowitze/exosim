@@ -106,13 +106,17 @@ function Model(objects) {
   };
 
   this.draw = function() {
-    this.origin = SUN.position;
+    if (track_earth) {
+    	this.origin = earth.position;
+    }
 
     if (DRAW_PERSPECTIVE) {
       for (let i = 0; i < this.objects.length; i++) {
         let obj = this.objects[i];
         obj.project(this.origin);
       }
+
+      // objects must be projected onto focal plane before they can be ordered
       this.objects.sort(compareScale);
     }
 
@@ -120,6 +124,7 @@ function Model(objects) {
       let obj = this.objects[j];
       obj.draw();
     }
+    console.log(SUN.occlusion(jupiter));
   };
 }
 

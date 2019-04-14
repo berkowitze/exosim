@@ -113,16 +113,14 @@ function CelObj({radius, density, orbiting=null,
   };
 
   this.occlusion = function(other) {
-    let focalPlaneNorm = new Vector3(0, Math.sin(ecliptic), -Math.cos(ecliptic));
-    let diff = other.position.sub(this.position);
-    let inlineCoeff = focalPlaneNorm.dot(diff);
-
+    
     // check to make sure that other is in front of this
-    if (inlineCoeff < 0) {
-      let inline = focalPlaneNorm.scale(inlineCoeff);
-      let d = diff.sub(inline).length;
-      let intersection = circleOverlap(this.radius, other.radius, d);
-      return intersection/(sq(this.radius)*PI);
+    if (this.perspectiveScale < other.perspectiveScale) {
+      let d = this.planar.sub(other.planar).length;
+      let intersection = circleOverlap(this.radius * this.perspectiveScale,
+                                      other.radius * other.perspectiveScale, d);
+      // give the occlusion as a percent occluded
+      return intersection/(sq(this.radius * this.perspectiveScale)*PI);
     }
     else {
       return 0;

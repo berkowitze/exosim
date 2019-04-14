@@ -37,6 +37,7 @@ let creating = "Planet";
 let draggingOnto = null;
 
 // initial variables
+var track_earth = false;
 const zero3 = new Vector3(0, 0, 0);
 
 let showLabels = true;
