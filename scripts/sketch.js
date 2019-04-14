@@ -358,7 +358,7 @@ function draw() {
     overlays();
   }
 
-  if (scienceMode) {
+  if (scienceMode && !hideEverything) {
     science();
   }
 }

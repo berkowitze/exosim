@@ -94,6 +94,13 @@ function makeSidebarComponents() {
             },
             val: false
         }),
+        new Button({
+            label: 'Show occlusion graphs',
+            callback: function(checked) {
+                scienceMode = checked;
+            },
+            val: scienceMode
+        }),
         createButton = new Button({
             label: 'Create a Planet',
             callback: function (checked) {

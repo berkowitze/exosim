@@ -30,8 +30,6 @@ class OcclusionGraph {
         fill(255);
         textAlign(LEFT, TOP);
         text(`${this.star.name} occlusion`, x+3, y-textSize()-3);
-        fill(55);
-        // rect(x-2, y-2, this.width+4, this.height+4);
         fill(212, 175, 55);
         for (let i = 0; i < occlusions.length; i++) {
             let occlusion = occlusions[i];

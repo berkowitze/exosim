@@ -143,6 +143,7 @@ class CelObj extends PointObject {
         fill(255);
       }
       const offset = 12;
+      textAlign(CENTER, CENTER);
       text(this.name, this.planar.x / SF + offset, this.planar.y / SF + offset);
     }
   }
