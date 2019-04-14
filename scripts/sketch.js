@@ -199,7 +199,7 @@ function createNewObject(orbiting=null) {
 }
 
 function mousePressed() {
-  if (componentPress()) {
+  if (!hideEverything && componentPress()) {
     for (let i = 0; i < INPUTS.length; i++) {
       let inp = INPUTS[i];
       if (inp === componentClicked) {
