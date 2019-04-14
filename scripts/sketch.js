@@ -233,10 +233,7 @@ function mouseReleased() {
     }
     let hoveredObjs = model.getHoveredObjects(mouseX, mouseY);
     if (hoveredObjs.length !== 0) {
-      if (!Planet.canBeOrbitedBy(creating)) {
-        draggingOnto = null;
-      }
-      else {
+      if (hoveredObjs[0].canBeOrbitedBy(creating)) {
         draggingOnto = hoveredObjs[0];
       }
     }
@@ -245,9 +242,6 @@ function mouseReleased() {
     }
     if (draggingOnto == null) {
       draggingNewObject = false;
-    }
-    else {
-      // runs when new object is dropped onto valid object to orbit
     }
     return;
   }

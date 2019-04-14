@@ -230,7 +230,7 @@ class Planet extends Orbiter {
     super(args);
   }
 
-  static canBeOrbitedBy(t) {
+  canBeOrbitedBy(t) {
     return t === "Moon";
   }
 }
@@ -240,7 +240,7 @@ class Moon extends Orbiter {
     super(args);
   }
 
-  static canBeOrbitedBy() {
+  canBeOrbitedBy() {
     return false;
   }
 }
@@ -257,7 +257,7 @@ class Star extends CelObj {
     super({radius, density, velocity, mass, position, color, name});
   }
 
-  static canBeOrbitedBy(t) {
+  canBeOrbitedBy(t) {
     return t === "Planet";
   }
 
