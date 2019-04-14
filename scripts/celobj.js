@@ -102,20 +102,16 @@ class CelObj extends PointObject {
      * how much this object is occluded by another CelObj (circle intersection)
      * @type {Vector3}
      */
-    const focalPlaneNorm = new Vector3(0, Math.sin(ecliptic), -Math.cos(ecliptic));
-    const diff = other.position.sub(this.position);
-    const inlineCoeff = focalPlaneNorm.dot(diff);
 
-    // check to make sure that other is in front of this
-    if (inlineCoeff >= 0) {
-      const inline = focalPlaneNorm.scale(inlineCoeff);
-      const d = diff.sub(inline).length;
-      const intersection = circleOverlap(this.radius, other.radius, d);
+    if (this.perspectiveScale < other.perspectiveScale) {
+      const d = this.planar.sub(other.planar).length;
+      const intersection = circleOverlap(this.radius * this.perspectiveScale, other.radius * other.perspectiveScale, d);
       return intersection/(sq(this.radius)*PI);
     }
     else {
       return 0;
     }
+
   }
 
   draw() {
@@ -135,7 +131,7 @@ class CelObj extends PointObject {
     fill(this.color);
     ellipse(this.planar.x / SF,
             this.planar.y / SF,
-            this.radius * this.perspectiveScale / SF * objectScale);
+            this.radius * this.perspectiveScale / SF * objectScale * 2);
     if (this.name != null && showLabels) {
       if (draggingNewObject && (this === draggingOnto || this.pointIn(mouseX, mouseY))) {
         fill('#47b8e0');

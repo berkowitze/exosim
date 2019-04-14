@@ -129,13 +129,11 @@ class Model {
   }
 
   draw() {
-    if (DRAW_PERSPECTIVE) {
-      for (let i = 0; i < this.objects.length; i++) {
-        let obj = this.objects[i];
-        obj.project(this.origin.position);
-      }
-      this.objects.sort(this.compareScale);
+    for (let i = 0; i < this.objects.length; i++) {
+      let obj = this.objects[i];
+      obj.project(this.origin.position);
     }
+    this.objects.sort(this.compareScale);
 
     for (let j = 0; j < this.objects.length; j++) {
       let obj = this.objects[j];
