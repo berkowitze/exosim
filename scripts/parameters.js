@@ -1,4 +1,5 @@
 let time = 0;
+let steps = 0;
 
 // let SF = 541169500; // scale factor
 SF = 341169500;
@@ -48,6 +49,7 @@ let hideEverything = false;
 let planetCreatorShowing = false;
 let draggingNewObject = false;
 let trashHover = false;
+let scienceMode = true;
 
 const DRAW_PERSPECTIVE = true;
 

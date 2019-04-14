@@ -106,7 +106,7 @@ class CelObj extends PointObject {
     const inlineCoeff = focalPlaneNorm.dot(diff);
 
     // check to make sure that other is in front of this
-    if (inlineCoeff < 0) {
+    if (inlineCoeff >= 0) {
       const inline = focalPlaneNorm.scale(inlineCoeff);
       const d = diff.sub(inline).length;
       const intersection = circleOverlap(this.radius, other.radius, d);

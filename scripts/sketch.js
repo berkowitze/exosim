@@ -51,6 +51,8 @@ function setup() {
   model1 = new Model(KEPLER89);
   model2 = new Model(OUR_SOLAR_SYSTEM);
   model = model1;
+
+  new OcclusionGraph(KEP89, model);
 }
 
 function keyPressed() {
@@ -188,7 +190,7 @@ function createNewObject(orbiting=null) {
       newObj = new Moon(opts);
     }
   }
-  model.objects.push(newObj);
+  model.addObject(newObj);
   if (model.objects.length > 20 && showTrails) {
     trailsButton.toggle();
   }
@@ -329,6 +331,13 @@ function overlays() {
   }
 }
 
+function science() {
+  for (let i = 0; i < model.graphs.length; i++) {
+    let graph = model.graphs[i];
+    graph.plot(i);
+  }
+}
+
 function draw() {
   interfacePreUpdate();
   translate(w/2, h/2);
@@ -336,16 +345,21 @@ function draw() {
   noStroke();
   fill(0);
   model.draw();
-
   translate(-w/2, -h/2);
 
   if (!paused) {
     // model.updateRungeKutta(DT);
     model.update(DT);
     time += DT;
+    steps += 1;
   }
+  
   if (!hideEverything) {
     overlays();
+  }
+
+  if (scienceMode) {
+    science();
   }
 }
 

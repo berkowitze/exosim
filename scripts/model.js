@@ -3,7 +3,44 @@ class Model {
     this.objects = objects;
     this.updateMomentum();
     this.origin = new PointObject(zero3);
+    this.graphs = objects
+                  .filter(obj => obj instanceof Star)
+                  .map(star => new OcclusionGraph(star, this));
   }
+
+  addObject(object) {
+    if (object instanceof Star) {
+      this.graphs.push(new OcclusionGraph(object, this));
+    }
+    this.objects.push(object);
+  }
+
+  removeObject(object) {
+    let pIndex = model.objects.indexOf(object);
+    if (pIndex >= 0) {
+      model.objects.splice(pIndex, 1);
+    }
+
+    if (object instanceof Star) {
+      let gIndex = -1;
+      for (let i = 0; i < this.graphs.length; i++) {
+        let graph = this.graphs[i];
+        if (graph.star == object) {
+          gIndex = i;
+          break;
+        }
+      }
+      if (gIndex == -1) {
+        return;
+      }
+      model.graphs.splice(gIndex, 1);
+    }
+
+    if (this.origin == object) {
+      this.origin = new PointObject(zero3);
+    }
+  }
+
 
   updateMomentum() {
     let momentum = zero3;
@@ -15,6 +52,9 @@ class Model {
   }
 
   update(dt) {
+    for (let graph of model.graphs) {
+      graph.update();
+    }
     let forces = [];
     for (let i = 0; i < this.objects.length; i++) {
       let obj = this.objects[i];
@@ -77,20 +117,6 @@ class Model {
 
   compareScale(a, b) {
     return a.perspectiveScale - b.perspectiveScale;
-  }
-
-  removeObject(object) {
-    let pIndex = model.objects.indexOf(object);
-    if (pIndex < 0) {
-      return;
-    }
-    model.objects.splice(pIndex, 1);
-
-    let oIndex = model.objects.indexOf(object);
-    if (oIndex < 0) {
-      return;
-    }
-    model.objects.splice(oIndex, 1);
   }
 
   getHoveredObjects(x, y) { // todo rewrite this using CelObj methods

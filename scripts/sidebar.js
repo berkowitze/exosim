@@ -19,7 +19,7 @@ function makeSidebarComponents() {
             options: ['Sun', 'Kepler 89'],
             initIndex: 1,
             callback: function(newV) {
-                console.log(newV);
+                graphs.length = 0;
                 if (newV == 0) {
                     model = model2;
                 }
