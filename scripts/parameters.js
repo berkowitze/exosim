@@ -1,10 +1,12 @@
 let time = 0;
+let steps = 0;
 
-let SF = 541169500; // scale factor
+// let SF = 541169500; // scale factor
+SF = 341169500;
 const SF_MIN_EXP = 5;
 const SF_MAX_EXP = 12;
 
-let DT = 5e3; // time step
+let DT = 250; // time step
 const DT_MIN_EXP = 0;
 const DT_MAX_EXP = 6;
 
@@ -26,9 +28,10 @@ let newObjectDensity = newObjectDensityScales.Planet[1];
 
 let FD = 4e13; // focal distance (camera distance to origin in meters)
 
-let planetVisualScale = 1e3; //1000.0; // visual scale for planets to make them more seeable
-let moonVisualScale = planetVisualScale * 2;
-let starVisualScale = 1e1; // 10.0;
+let objectScale = 8;
+const OBJ_SCALE_MIN = 1;
+const OBJ_SCALE_MAX = 50;
+
 const G = 6.674e-11;
 const SEC_PER_YEAR = 31557600;
 let INPUTS = [];
@@ -41,12 +44,13 @@ var track_earth = false;
 const zero3 = new Vector3(0, 0, 0);
 
 let showLabels = true;
-let showTrails = true;
+let showTrails = false;
 let paused = false;
-let hideSidebar = false;
+let hideEverything = false;
 let planetCreatorShowing = false;
 let draggingNewObject = false;
 let trashHover = false;
+let scienceMode = true;
 
 const DRAW_PERSPECTIVE = true;
 
@@ -65,6 +69,10 @@ let hideButton, timeSlider, fullscreenButton, pauseButton, trailsButton,
 
 let planetClicked, inputSelected;
 let model;
+let model1;
+let model2;
+
+let newObjectDrawRadius;
 
 const colors = [[172, 128, 255],
                 [166, 226, 44],
@@ -72,6 +80,17 @@ const colors = [[172, 128, 255],
                 [253, 150, 33],
                 [249, 36,  114],
                 [231, 219, 116]];
+
+getColor = (function() {
+    let counter = 0;
+    return function() {
+        let col = colors[counter % colors.length];
+        counter += 1;
+        return col;
+    };
+})();
+
+cube = x => x*x*x;
 
 let creationTextOptions = {
     Moon: ['Drag the moon onto its', 'orbiting planet when ready!'],

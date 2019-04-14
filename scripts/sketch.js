@@ -1,132 +1,5 @@
 planets = OUR_SOLAR_SYSTEM;
-// planets = [];
 star = SUN;
-
-function Model(objects) {
-  this.objects = objects;
-  this.origin = new Vector3(0,0,0);
-  this.updateMomentum = function() {
-    let momentum = zero3;
-    for (let i = 0; i < this.objects.length; i++) {
-      let obj = this.objects[i];
-      momentum = momentum.plus(obj.momentum());
-    }
-    this.momentum = momentum;
-  };
-
-  this.updateMomentum();
-
-  this.update = function(DT) {
-    let forces = [];
-    for (let i = 0; i < this.objects.length; i++) {
-      let obj = this.objects[i];
-      let force = new Vector3(0, 0, 0);
-      for (let j = 0; j < this.objects.length; j++) {
-        if (i === j) {
-          continue;
-        }
-        let from = this.objects[j];
-        force = force.plus(obj.force(from));
-      }
-      forces.push(force);
-    }
-
-    for (let i = 0; i < this.objects.length; i++) {
-      let obj = this.objects[i];
-      let force = forces[i];
-      obj.update(force, DT);
-    }
-  };
-
-  this.updateRungeKutta = function(DT) {
-    accels = [];
-    for (var i = 0; i < this.objects.length; i++) {
-      obj = this.objects[i];
-      accel = new Vector3(0, 0, 0);
-      for (var j = 0; j < this.objects.length; j++) {
-        if (i == j) {
-          continue;
-        }
-        other = this.objects[j];
-        tmp = -G * other.mass / Math.pow(obj.dist(other), 3);
-
-        k1 = obj.position.sub(other.position).scale(tmp);
-
-        tmp_vel = obj.velocity.plus(k1.scale(DT/2));
-        tmp_pos = obj.position.plus(tmp_vel.scale(DT/2));
-        k2 = tmp_pos.sub(other.position).scale(tmp);
-
-        tmp_vel = obj.velocity.plus(k2.scale(DT/2));
-        tmp_pos = obj.position.plus(tmp_vel.scale(DT/2));
-        k3 = tmp_pos.sub(other.position).scale(tmp);
-
-        tmp_vel = obj.velocity.plus(k3.scale(DT));
-        tmp_pos = obj.position.plus(tmp_vel.scale(DT));
-        k4 = tmp_pos.sub(other.position).scale(tmp);
-
-        a = k2.plus(k3).scale(2).plus(k1).plus(k4).scale(1/6);
-        accel = accel.plus(a);
-      }
-      accels.push(accel);
-    }
-
-    for (i = 0; i < this.objects.length; i++) {
-      obj = this.objects[i];
-      accel = accels[i];
-      obj.update(accel, DT);
-    }
-  };
-
-  function compareScale(a,b) {
-    return a.perspectiveScale - b.perspectiveScale;
-  }
-
-  this.removeObject = function(object) {
-    let pIndex = model.objects.indexOf(object);
-    if (pIndex < 0) {
-      return;
-    }
-    model.objects.splice(pIndex, 1);
-
-    let oIndex = model.objects.indexOf(object);
-    if (oIndex < 0) {
-      return;
-    }
-    model.objects.splice(oIndex, 1);
-  };
-
-  this.getHoveredObjects = function(x, y) {
-    let scaledMouse = new Vector3(x, y, 0).sub(new Vector3(w/2, h/2, 0)).scale(SF);
-    return this.objects.concat().sort(function(a, b) {
-      let d1 = a.position.dist(scaledMouse);
-      let d2 = b.position.dist(scaledMouse);
-      return d1 - d2;
-    }).filter(obj => obj.position.dist(scaledMouse) / SF < 20);
-    
-  };
-
-  this.draw = function() {
-    if (track_earth) {
-    	this.origin = earth.position;
-    }
-
-    if (DRAW_PERSPECTIVE) {
-      for (let i = 0; i < this.objects.length; i++) {
-        let obj = this.objects[i];
-        obj.project(this.origin);
-      }
-
-      // objects must be projected onto focal plane before they can be ordered
-      this.objects.sort(compareScale);
-    }
-
-    for (let j = 0; j < this.objects.length; j++) {
-      let obj = this.objects[j];
-      obj.draw();
-    }
-    console.log(SUN.occlusion(jupiter));
-  };
-}
 
 function windowResized() {
   w = windowWidth;
@@ -155,7 +28,7 @@ function sizeDependentSetup() { // wrote this so resize works
   );
 
   newPlanetX = w - 150;
-  newPlanetY = planetCreator.y1 + 30;
+  newPlanetY = planetCreator.yEnd + 20;
 
   componentBoxes = [sidebar, planetCreator];
 }
@@ -163,10 +36,10 @@ function sizeDependentSetup() { // wrote this so resize works
 function setup() {
   w = window.innerWidth;
   h = window.innerHeight;
+  createCanvas(w, h);
 
   planetClicked = null;
   inputSelected = null;
-  createCanvas(w, h);
   red = green = blue = 125;
 
   sidebarComponents = makeSidebarComponents();
@@ -175,7 +48,11 @@ function setup() {
 
   sizeDependentSetup();
 
-  model = new Model(planets.concat(star));
+  model1 = new Model(KEPLER89);
+  model2 = new Model(OUR_SOLAR_SYSTEM);
+  model = model1;
+
+  new OcclusionGraph(KEP89, model);
 }
 
 function keyPressed() {
@@ -226,7 +103,7 @@ function componentPress() {
 function celObjPress() {
   let revObjs = model.objects.concat().reverse();
   for (let j = 0; j < revObjs.length; j++) {
-    if (revObjs[j].pointIn(mouseX, mouseY)) {
+    if (revObjs[j].pointIn(mouseX, mouseY, 5)) {
       planetClicked = revObjs[j];
       eclipticSlider.setTo(0);
       return true;
@@ -256,7 +133,8 @@ function keyTyped() {
       eclipticSlider.increment();
       break;
     case 'm':
-      $('audio').get(0).muted = !$('audio').get(0).muted;
+      let audio = $('audio').get(0);
+      audio.muted = !audio.muted;
       break;
     case 't':
       trailsButton.toggle();
@@ -274,44 +152,45 @@ function newPlanetPress() {
   if (!planetCreator) {
     return false;
   }
-  let dragging = square(mouseX - newPlanetX) + square(mouseY - newPlanetY) <
-                 square(newObjectDrawRadius) * 1.3;
-  return dragging;
+  return square(mouseX - newPlanetX) + square(mouseY - newPlanetY) <
+         square(newObjectDrawRadius) * 1.3;
 }
 
 function createNewObject(orbiting=null) {
   let density = newObjectDensity;
   let radius = newObjectRadius;
   let nameInp = nameInput.val.join('');
-  name = nameInp !== '' ? nameInp : '[Unnamed]';
+  let name = nameInp !== '' ? nameInp : '[Unnamed]';
   let c = color(redSlider.val, greenSlider.val, blueSlider.val);
   let pos = new Vector3((mouseX - w/2) * SF, (mouseY - h/2) * SF, 0);
-  // let newObj;
+  let newObj;
   if (orbiting == null) {
-    newObj = new CelObj({
+    newObj = new Star({
       radius: radius,
       density: density,
       color: c,
       name: name,
-      type: 0,
       position: pos
     });
   }
   else {
-    let velMag = Math.sqrt(G * orbiting.mass / pos.dist(orbiting.position));
-    newObj = new CelObj({
+    opts = {
       orbiting: orbiting,
       radius: radius,
       density: density,
-      velocityMagnitude: velMag,
       distanceFromOrbiter: pos.dist(orbiting.position),
-      color: c,
       angle: Math.atan2(pos.y - orbiting.position.y, pos.x - orbiting.position.x),
+      color: c,
       name: name,
-      type: creating == "Planet" ? 1 : 2
-    });
+    };
+    if (creating === "Planet") {
+      newObj = new Planet(opts);
+    }
+    else {
+      newObj = new Moon(opts);
+    }
   }
-  model.objects.push(newObj);
+  model.addObject(newObj);
   if (model.objects.length > 20 && showTrails) {
     trailsButton.toggle();
   }
@@ -320,7 +199,7 @@ function createNewObject(orbiting=null) {
 }
 
 function mousePressed() {
-  if (componentPress()) {
+  if (!hideEverything && componentPress()) {
     for (let i = 0; i < INPUTS.length; i++) {
       let inp = INPUTS[i];
       if (inp === componentClicked) {
@@ -348,31 +227,21 @@ function mousePressed() {
 
 function mouseReleased() {
   if (draggingNewObject && draggingOnto == null) {
-    if (creating == "Star") {
+    if (creating === "Star") {
       createNewObject();
       return;
     }
     let hoveredObjs = model.getHoveredObjects(mouseX, mouseY);
-    draggingOnto = hoveredObjs.length == 0 ? null : hoveredObjs[0];
-    if (draggingOnto != null) {
-      switch (creating) {
-        case "Planet":
-          if (draggingOnto.isPlanet || draggingOnto.isMoon) {
-            draggingOnto = null; // dragged planet onto other planet/moon
-          }
-          break;
-        case "Moon":
-          if (draggingOnto.isStar || draggingOnto.isMoon) {
-            draggingOnto = null; // dragged moon onto other moon/star
-          }
-          break;
+    if (hoveredObjs.length !== 0) {
+      if (hoveredObjs[0].canBeOrbitedBy(creating)) {
+        draggingOnto = hoveredObjs[0];
       }
+    }
+    else {
+      draggingOnto = null;
     }
     if (draggingOnto == null) {
       draggingNewObject = false;
-    }
-    else {
-      // runs when new object is dropped onto valid object to orbit
     }
     return;
   }
@@ -387,17 +256,6 @@ function mouseReleased() {
     model.removeObject(planetClicked);
   }
   planetClicked = null;
-}
-
-function doubleClicked() { // TODO: make this reset orbit around its orbiter/set vel to 0 for star
-  for (let i = 0; i < planets.length; i++) {
-    if (planets[i].pointIn(mouseX, mouseY)) {
-      // planets[i].setOnOrbit(planets[i].orbiting);
-      // TODO : This is broken
-      break;
-    }
-  }
-  return false;
 }
 
 function mouseWheel(event) {
@@ -446,9 +304,9 @@ function overlays() {
   }
   if (planetCreator.showing) {
     fill(color(red, green, blue));
-    newObjectDrawRadius = scaleToRange(newObjectRadius,
-                                       radiusSlider.minVal,
-                                       radiusSlider.maxVal, 5, 30);
+    newObjectDrawRadius = map(newObjectRadius,
+                              radiusSlider.minVal,
+                              radiusSlider.maxVal, 5, 30);
     if (!draggingNewObject) {
       ellipse(newPlanetX, newPlanetY, newObjectDrawRadius);
     }
@@ -457,7 +315,8 @@ function overlays() {
       if (draggingOnto) {
         noFill();
         stroke(255);
-        r = new Vector3(mouseX-w/2, mouseY-h/2, 0).dist(draggingOnto.position.scale(1/SF));
+        const rv = new Vector3(mouseX-w/2, mouseY-h/2, 0);
+        const r = rv.dist(draggingOnto.position.scale(1/SF));
         ellipse(w/2 + draggingOnto.position.x / SF, h/2 + draggingOnto.position.y / SF, r*2, r*2);
         fill(255);
         noStroke();
@@ -466,23 +325,35 @@ function overlays() {
   }
 }
 
+function science() {
+  for (let i = 0; i < model.graphs.length; i++) {
+    let graph = model.graphs[i];
+    graph.plot(i);
+  }
+}
+
 function draw() {
   interfacePreUpdate();
-  // earthPos = ecliptic == 0 ? earth.position.scale(-1/SF) : earth.planar.scale(-1/SF);
   translate(w/2, h/2);
-  // translate(earthPos.x, earthPos.y);
+
   noStroke();
   fill(0);
   model.draw();
   translate(-w/2, -h/2);
-  // translate(-earthPos.x, -earthPos.y);
 
   if (!paused) {
     // model.updateRungeKutta(DT);
     model.update(DT);
     time += DT;
+    steps += 1;
+  }
+  
+  if (!hideEverything) {
+    overlays();
   }
 
-  overlays();
+  if (scienceMode && !hideEverything) {
+    science();
+  }
 }
 

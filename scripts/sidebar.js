@@ -1,21 +1,31 @@
 function makeSidebarComponents() {
     return [
         hideButton = new Button({
-            label: 'Hide Sidebar [h]',
+            label: 'Hide everything [h]',
             callback: function (checked) {
-                hideSidebar = checked;
-                this.label = checked ? 'Show Sidebar [h]' : 'Hide Sidebar [h]';
-                for (let i = 1; i < this.box.components.length; i++) {
-                    this.box.components[i].drawIt = !this.box.components[i].drawIt;
-                }
+                hideEverything = checked;
             },
-            val: hideSidebar
+            val: hideEverything
         }),
         new Button({
             label: 'Clear solar system',
             callback: function(checked) {
                 this.val = false;
                 model.objects = [];
+            }
+        }),
+        new Options({
+            label: 'Solar system',
+            options: ['Sun', 'Kepler 89'],
+            initIndex: 1,
+            callback: function(newV) {
+                graphs.length = 0;
+                if (newV == 0) {
+                    model = model2;
+                }
+                else {
+                    model = model1;
+                }
             }
         }),
         timeSlider = new Slider({
@@ -35,7 +45,17 @@ function makeSidebarComponents() {
             callback: function (newV) {
                 SF = Math.pow(10, newV);
             },
-            label: 'Scale Factor [\u2191 \u2193]'
+            label: 'Zoom [\u2191 \u2193]'
+        }),
+        visSlider = new Slider({
+            minVal: OBJ_SCALE_MIN,
+            maxVal: OBJ_SCALE_MAX,
+            val: objectScale,
+            callback: function(newV) {
+                objectScale = newV;
+                this.label = `Visual Scale (${Number(objectScale).toFixed(0)})`;
+            },
+            label: `Visual Scale (${Number(objectScale).toFixed(0)})`
         }),
         eclipticSlider = new Slider({
             minVal: 0,
@@ -73,6 +93,13 @@ function makeSidebarComponents() {
                 fullscreen(checked);
             },
             val: false
+        }),
+        new Button({
+            label: 'Show occlusion graphs',
+            callback: function(checked) {
+                scienceMode = checked;
+            },
+            val: scienceMode
         }),
         createButton = new Button({
             label: 'Create a Planet',
