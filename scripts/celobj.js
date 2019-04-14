@@ -96,6 +96,7 @@ class CelObj extends PointObject {
     this.planar = new Vector3(planar3d.x, sqrt(sq(planar3d.y) + sq(planar3d.z)) * ySign, 0);
   }
 
+
   occlusion(other) {
     /**
      * how much this object is occluded by another CelObj (circle intersection)
