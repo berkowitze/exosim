@@ -50,6 +50,7 @@ function setup() {
 
   model1 = new Model(KEPLER89);
   model2 = new Model(OUR_SOLAR_SYSTEM);
+  // model3 = new Model(KEPLER47);
   model = model1;
 
   new OcclusionGraph(KEP89, model);

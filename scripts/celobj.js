@@ -49,7 +49,7 @@ class CelObj extends PointObject {
 
   force(other) {
     /**
-     * force between this object and another CelObj
+     * force between this object and another CelObj divided by this objects mass
      * @type {number}
      */
     let forceMag = -G * other.mass / square(this.dist(other));
@@ -94,24 +94,6 @@ class CelObj extends PointObject {
     this.perspectiveScale = vecToFocalPlaneThroughObject.length/cameraToObject.length;
     // and take the 3D projected coordinates and convert them into 2D pixel coordinates in the focal plane
     this.planar = new Vector3(planar3d.x, sqrt(sq(planar3d.y) + sq(planar3d.z)) * ySign, 0);
-  }
-
-
-  occlusion(other) {
-    /**
-     * how much this object is occluded by another CelObj (circle intersection)
-     * @type {Vector3}
-     */
-
-    if (this.perspectiveScale < other.perspectiveScale) {
-      const d = this.planar.sub(other.planar).length;
-      const intersection = circleOverlap(this.radius * this.perspectiveScale, other.radius * other.perspectiveScale, d);
-      return intersection/(sq(this.radius)*PI);
-    }
-    else {
-      return 0;
-    }
-
   }
 
   draw() {
@@ -242,6 +224,22 @@ class Moon extends Orbiter {
   }
 }
 
+class Transit {
+  constructor(startTime, star, planet) {
+    this.startTime = startTime;
+    this.endTime = null;
+    this.star = star;
+    this.planet = planet;
+    this.ended = false;
+  }
+
+  complete(endTime) {
+    this.ended = true;
+    this.endTime = endTime;
+    this.duration = (this.endTime - this.startTime);
+  }
+}
+
 class Star extends CelObj {
   constructor({radius, density=null, mass=null, velocity=null, position=null,
                color=null, name=null}) {
@@ -252,10 +250,45 @@ class Star extends CelObj {
       velocity = zero3;
     }
     super({radius, density, velocity, mass, position, color, name});
+    this.transitTimes = new Map(); // map of object -> previous Transit list
+    this.transits = new Map(); // map of object -> Transit
   }
 
   canBeOrbitedBy(t) {
     return t === "Planet";
   }
 
+  occlusion(other) {
+    /**
+     * fraction of star occluded by another CelObj (circle intersection)
+     * does not work for other being a Star (treats it like a planet)
+     */
+
+    let overlap;
+    if (!(this.transitTimes.has(other))) {
+      this.transitTimes.set(other, []);
+    }
+
+    if (this.perspectiveScale < other.perspectiveScale) {
+      const d = this.planar.sub(other.planar).length;
+      const intersection = circleOverlap(this.radius * this.perspectiveScale, other.radius * other.perspectiveScale, d);
+      overlap = intersection / (sq(this.radius) * PI);
+    }
+    else {
+      overlap = 0.0;
+    }
+
+    if (overlap == 0 && (this.transits.has(other))) {
+      console.log('Ending transit');
+      this.transits.get(other).complete(time);
+      this.transitTimes.get(other).push(this.transits.get(other));
+      this.transits.delete(other);
+    }
+    else if (overlap > 0 && !(this.transits.has(other))) {
+      console.log('Starting transit');
+      this.transits.set(other, new Transit(time, this, other));
+    }
+
+    return overlap;
+  }
 }

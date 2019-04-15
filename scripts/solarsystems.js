@@ -161,3 +161,43 @@ KEPLER89 = [
   KEP89D,
   KEP89E,
 ];
+
+// const kepSemiMajor = 0.0836 * AU;
+
+// KEP47A = new Star({
+//   color: 'orange',
+//   mass: 1.047 * SUN.mass,
+//   radius: 0.964 * SUN.radius,
+//   name: 'Kepler-47A',
+//   position: new Vector3(kepSemiMajor/2, 0, 0)
+// });
+
+// KEP47B = new Star({
+//   color: 'red',
+//   mass: 0.362 * SUN.mass,
+//   radius: 0.3506 * SUN.radius,
+//   name: 'Kepler-47A',
+//   position: new Vector3(-kepSemiMajor/2, 0, 0)
+// });
+
+// let com = new Vector3((KEP47A.position.x * KEP47A.mass + KEP47B.position.x * KEP47B.mass) / (KEP47A.mass + KEP47B.mass), 0, 0);
+// (function(){
+//   let period = 643680;
+//   aDist = KEP47A.position.dist(com);
+//   bDist = KEP47B.position.dist(com);
+//   velMagA = 2 * Math.PI * aDist / period;
+//   velMagB = 2 * Math.PI * bDist / period;
+//   vela = new Vector3(1, 1, 0).normalized().scale(velMagA);
+//   velb = new Vector3(0, -1, 0).normalized().scale(velMagA);
+//   KEP47A.velocity = vela;
+//   KEP47B.velocity = velb;
+// })();
+
+// console.log(com);
+
+// KEPLER47 = [
+//   KEP47A,
+//   KEP47B//,
+//   // KEP47b,
+//   // KEP47c
+// ];

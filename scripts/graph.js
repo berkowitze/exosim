@@ -41,5 +41,4 @@ class OcclusionGraph {
             ellipse(x + i, yc, 2);
         }
     }
-
 }

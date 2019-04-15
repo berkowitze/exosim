@@ -110,7 +110,7 @@ class Slider extends Component {
 
 class Options extends Component {
   constructor({label, callback, options, initIndex}) {
-    super(slideWidth + 50);
+    super(slideWidth + 85);
     this.label = label;
     this.callback = callback;
     this.options = options;
