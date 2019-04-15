@@ -50,7 +50,7 @@ let hideEverything = false;
 let planetCreatorShowing = false;
 let draggingNewObject = false;
 let trashHover = false;
-let scienceMode = true;
+let scienceMode = false;
 
 const DRAW_PERSPECTIVE = true;
 

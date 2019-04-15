@@ -328,7 +328,13 @@ function overlays() {
 function science() {
   for (let i = 0; i < model.graphs.length; i++) {
     let graph = model.graphs[i];
-    graph.plot(i);
+    if (scienceMode) {
+      graph.bigplot(i);
+    }
+    else {
+      graph.miniplot(i);
+    }
+    
   }
 }
 
@@ -350,9 +356,6 @@ function draw() {
   
   if (!hideEverything) {
     overlays();
-  }
-
-  if (scienceMode && !hideEverything) {
     science();
   }
 }
