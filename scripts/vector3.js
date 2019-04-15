@@ -47,4 +47,16 @@ class Vector3 {
                        this.y / this.length,
                        this.z / this.length);
   }
+
+  plusEq(other) {
+    this.x += other.x;
+    this.y += other.y;
+    this.z += other.z;
+  }
+
+  subEq(other) {
+    this.x -= other.x;
+    this.y -= other.y;
+    this.z -= other.z;
+  }
 }

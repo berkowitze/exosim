@@ -16,15 +16,19 @@ function makeSidebarComponents() {
         }),
         new Options({
             label: 'Solar system',
-            options: ['Sun', 'Kepler 89'],
+            options: ['Sun', 'Kepler 89'],//, 'Kepler 47'],
             initIndex: 1,
             callback: function(newV) {
-                graphs.length = 0;
-                if (newV == 0) {
-                    model = model2;
-                }
-                else {
-                    model = model1;
+                switch (newV) {
+                    case 0:
+                        model = model2;
+                        break;
+                    case 1:
+                        model = model1;
+                        break;
+                    case 2:
+                        model = model3;
+                        break;
                 }
             }
         }),

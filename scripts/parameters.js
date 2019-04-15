@@ -28,6 +28,8 @@ let newObjectDensity = newObjectDensityScales.Planet[1];
 
 let FD = 4e13; // focal distance (camera distance to origin in meters)
 
+let AU = 1.496e11; // meters per AU
+
 let objectScale = 8;
 const OBJ_SCALE_MIN = 1;
 const OBJ_SCALE_MAX = 50;
