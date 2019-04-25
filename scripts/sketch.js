@@ -52,8 +52,9 @@ function setup() {
   model2 = new Model(OUR_SOLAR_SYSTEM);
   // model3 = new Model(KEPLER47);
   model = model1;
+  // model.origin = earth;
 
-  new OcclusionGraph(KEP89, model);
+  // new OcclusionGraph(KEP89, model);
 }
 
 function keyPressed() {
@@ -101,13 +102,23 @@ function componentPress() {
   return false;
 }
 
-function celObjPress() {
+function celObjPress(model) {
   let revObjs = model.objects.concat().reverse();
   for (let j = 0; j < revObjs.length; j++) {
-    if (revObjs[j].pointIn(mouseX, mouseY, 5)) {
-      planetClicked = revObjs[j];
-      eclipticSlider.setTo(0);
-      return true;
+    if (revObjs[j].mouseIn(7)) {
+      if (mouseButton == RIGHT) {
+        model.origin = revObjs[j];
+        return false;
+      }
+      else if (mouseButton == LEFT) {
+        model.origin = new PointObject(zero3);
+        planetClicked = revObjs[j];
+        eclipticSlider.setTo(0);
+        return true;
+      }
+      else {
+        return false;
+      }
     }
   }
   planetClicked = null;
@@ -157,13 +168,21 @@ function newPlanetPress() {
          square(newObjectDrawRadius) * 1.3;
 }
 
+function sc() {
+  const op = model.origin.position;
+
+  mxScaled = SF * (mouseX - w/2) + op.x;
+  myScaled = SF * (mouseY - h/2) + op.y;
+}
+
 function createNewObject(orbiting=null) {
-  let density = newObjectDensity;
-  let radius = newObjectRadius;
-  let nameInp = nameInput.val.join('');
-  let name = nameInp !== '' ? nameInp : '[Unnamed]';
-  let c = color(redSlider.val, greenSlider.val, blueSlider.val);
-  let pos = new Vector3((mouseX - w/2) * SF, (mouseY - h/2) * SF, 0);
+  const density = newObjectDensity;
+  const radius = newObjectRadius;
+  const nameInp = nameInput.val.join('');
+  const name = nameInp !== '' ? nameInp : '[Unnamed]';
+  const c = color(redSlider.val, greenSlider.val, blueSlider.val);
+  const pos = new Vector3(mxScaled, myScaled, 0);
+
   let newObj;
   if (orbiting == null) {
     newObj = new Star({
@@ -175,6 +194,7 @@ function createNewObject(orbiting=null) {
     });
   }
   else {
+    console.log(orbiting.name);
     opts = {
       orbiting: orbiting,
       radius: radius,
@@ -218,7 +238,7 @@ function mousePressed() {
   if (draggingNewObject) {
     return;
   }
-  if (celObjPress()) {
+  if (celObjPress(model)) {
     return;
   }
   if (newPlanetPress()) {
@@ -232,10 +252,12 @@ function mouseReleased() {
       createNewObject();
       return;
     }
-    let hoveredObjs = model.getHoveredObjects(mouseX, mouseY);
+    let hoveredObjs = model.getHoveredObjects();
     if (hoveredObjs.length !== 0) {
       if (hoveredObjs[0].canBeOrbitedBy(creating)) {
         draggingOnto = hoveredObjs[0];
+        model.origin = draggingOnto;
+        SF = draggingOnto.radius * 500 / w;
       }
     }
     else {
@@ -316,9 +338,9 @@ function overlays() {
       if (draggingOnto) {
         noFill();
         stroke(255);
-        const rv = new Vector3(mouseX-w/2, mouseY-h/2, 0);
-        const r = rv.dist(draggingOnto.position.scale(1/SF));
-        ellipse(w/2 + draggingOnto.position.x / SF, h/2 + draggingOnto.position.y / SF, r*2, r*2);
+        let m = new Vector3(mxScaled, myScaled, 0);
+        let r = m.dist(model.origin.position) / SF;
+        ellipse(w/2, h/2, r*2, r*2);
         fill(255);
         noStroke();
       }
@@ -340,6 +362,8 @@ function science() {
 }
 
 function draw() {
+  sc();
+
   interfacePreUpdate();
   translate(w/2, h/2);
 

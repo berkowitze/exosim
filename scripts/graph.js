@@ -16,7 +16,6 @@ class OcclusionGraph {
     update() {
         let others = model.objects.filter(obj => obj != star);
         let totalOcclusion = 1 - others.reduce((a, planet) => this.star.occlusion(planet) + a, 0);
-        console.log(totalOcclusion);
         this.max = Math.max(this.max, totalOcclusion);
         this.min = Math.min(this.min, totalOcclusion);
 

@@ -115,7 +115,7 @@ class CelObj extends PointObject {
             this.planar.y / SF,
             this.radius * this.perspectiveScale / SF * objectScale * 2);
     if (this.name != null && showLabels) {
-      if (draggingNewObject && (this === draggingOnto || this.pointIn(mouseX, mouseY))) {
+      if (draggingNewObject && (this === draggingOnto || this.mouseIn(7))) {
         fill('#47b8e0');
       }
       else {
@@ -142,11 +142,11 @@ class CelObj extends PointObject {
     this.position = new Vector3((mx - w/2) * SF, (my - h/2) * SF, 0);
   }
 
-  pointIn(x, y, tolerance=0) {
-    let xP = this.planar.x / SF;
-    let yP = this.planar.y / SF;
-    let r = this.radius * this.perspectiveScale / SF * objectScale;
-    return (square(x - w/2 - xP) + square(y - h/2 - yP)) < square(r + tolerance);
+  mouseIn(pixelTolerance=0) {
+    let tolerance = pixelTolerance * SF;
+    return (square(mxScaled - this.position.x) +
+            square(myScaled - this.position.y)
+            ) < square(this.radius*objectScale + tolerance);
   }
 
 }
@@ -160,10 +160,10 @@ class Orbiter extends CelObj {
     let position = new Vector3(orbiting.position.x + Math.cos(angle)*distanceFromOrbiter,
                                orbiting.position.y + Math.sin(angle)*distanceFromOrbiter,
                                0);
+    console.log(orbiting);
     const velMag = Math.sqrt(G * orbiting.mass / position.dist(orbiting.position));
-    let velocity = new Vector3(velMag * -Math.sin(angle),
-                               velMag * Math.cos(angle),
-                               0).plus(orbiting.velocity);
+    let velDir = new Vector3(-Math.sin(angle), Math.cos(angle), 0).normalized();
+    let velocity = velDir.scale(velMag).plus(orbiting.velocity);
     super({radius, density, mass, velocity, position, color, name});
     this.trail = new Deque(128);
   }

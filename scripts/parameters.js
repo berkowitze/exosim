@@ -100,3 +100,6 @@ let creationTextOptions = {
              'orbiting star when ready!'],
     Star: ['Drag the star into place', 'when you\'re ready!']
 };
+
+let mxScaled;
+let myScaled;

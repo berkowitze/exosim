@@ -119,13 +119,13 @@ class Model {
     return a.perspectiveScale - b.perspectiveScale;
   }
 
-  getHoveredObjects(x, y) { // todo rewrite this using CelObj methods
-    let scaledMouse = new Vector3(x, y, 0).sub(new Vector3(w/2, h/2, 0)).scale(SF);
+  getHoveredObjects() { // todo rewrite this using CelObj methods
+    let scaledMouse = new Vector3(mxScaled, myScaled, 0);
     return this.objects.concat().sort(function(a, b) {
       let d1 = a.position.dist(scaledMouse);
       let d2 = b.position.dist(scaledMouse);
       return d1 - d2;
-    }).filter(obj => obj.position.dist(scaledMouse) / SF < 20); 
+    }).filter(obj => obj.mouseIn(7));
   }
 
   draw() {
