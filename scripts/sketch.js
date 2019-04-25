@@ -194,7 +194,6 @@ function createNewObject(orbiting=null) {
     });
   }
   else {
-    console.log(orbiting.name);
     opts = {
       orbiting: orbiting,
       radius: radius,

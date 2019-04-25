@@ -160,10 +160,12 @@ class Orbiter extends CelObj {
     let position = new Vector3(orbiting.position.x + Math.cos(angle)*distanceFromOrbiter,
                                orbiting.position.y + Math.sin(angle)*distanceFromOrbiter,
                                0);
-    console.log(orbiting);
     const velMag = Math.sqrt(G * orbiting.mass / position.dist(orbiting.position));
     let velDir = new Vector3(-Math.sin(angle), Math.cos(angle), 0).normalized();
     let velocity = velDir.scale(velMag).plus(orbiting.velocity);
+    if (name == 'Earth') {
+      console.log({velMag, velDir, velocity, position});
+    }
     super({radius, density, mass, velocity, position, color, name});
     this.trail = new Deque(128);
   }
