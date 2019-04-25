@@ -3,8 +3,7 @@ class OcclusionGraph {
         this.storeLast = 256;
         this.star = star;
         this.model = model;
-        this.others = model.objects.filter(obj => obj != star);
-
+        
         this.occlusions = new Deque(this.storeLast);
         
         this.max = 1.0;
@@ -15,8 +14,9 @@ class OcclusionGraph {
     }
 
     update() {
-        let totalOcclusion = 1. - this.others.reduce((a, planet) => this.star.occlusion(planet) + a, 0);
-
+        let others = model.objects.filter(obj => obj != star);
+        let totalOcclusion = 1 - others.reduce((a, planet) => this.star.occlusion(planet) + a, 0);
+        console.log(totalOcclusion);
         this.max = Math.max(this.max, totalOcclusion);
         this.min = Math.min(this.min, totalOcclusion);
 

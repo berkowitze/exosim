@@ -11,7 +11,7 @@ function makeSidebarComponents() {
             label: 'Clear solar system',
             callback: function(checked) {
                 this.val = false;
-                model.objects = [];
+                model.clear();
             }
         }),
         new Options({

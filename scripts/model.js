@@ -140,4 +140,10 @@ class Model {
       obj.draw();
     }
   }
+
+  clear() {
+    this.objects = [];
+    this.origin = new PointObject(zero3);
+    this.graphs = [];
+  }
 }
