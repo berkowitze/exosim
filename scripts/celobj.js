@@ -133,8 +133,8 @@ class CelObj extends PointObject {
      * updates velocity and position
      */
     let dv = force.scale(DT);
-    let dx = this.velocity.scale(DT);
     this.velocity = this.velocity.plus(dv);
+    let dx = this.velocity.scale(DT);
     this.position = this.position.plus(dx);
   }
 
