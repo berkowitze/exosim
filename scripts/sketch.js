@@ -148,9 +148,9 @@ function keyTyped() {
       let audio = $('audio').get(0);
       audio.muted = !audio.muted;
       break;
-    case 't':
-      trailsButton.toggle();
-      break;
+    // case 't':
+    //   trailsButton.toggle();
+    //   break;
     case 'l':
       labelsButton.toggle();
       break;

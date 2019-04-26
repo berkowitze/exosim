@@ -167,32 +167,32 @@ class Orbiter extends CelObj {
       console.log({velMag, velDir, velocity, position});
     }
     super({radius, density, mass, velocity, position, color, name});
-    this.trail = new Deque(128);
+    // this.trail = new Deque(128);
   }
 
   draw() {
-    if (showTrails) {
-      this.drawTrail();
-    }
+    // if (showTrails) {
+    //   this.drawTrail();
+    // }
     super.draw();
   }
 
-  drawTrail() {
-    let lastPos = this.trail.toArray();
-    for (let i = 2; i < lastPos.length; i += 3) {
-        let lp = lastPos[i];
-        let col = 200 - i*2;
-        fill(col);
-        let drawRadius = this.radius / SF * objectScale;
-        ellipse(lp.x / SF, lp.y / SF, drawRadius * (127 - i) / 200);
-    }
-  }
+  // drawTrail() {
+  //   let lastPos = this.trail.toArray();
+  //   for (let i = 2; i < lastPos.length; i += 3) {
+  //       let lp = lastPos[i];
+  //       let col = 200 - i*2;
+  //       fill(col);
+  //       let drawRadius = this.radius / SF * objectScale;
+  //       ellipse(lp.x / SF, lp.y / SF, drawRadius * (127 - i) / 200);
+  //   }
+  // }
 
   update(force, DT) {
-    let len = this.trail.insertFront(this.position);
-    if (len > 127) {
-      this.trail.pop();
-    }
+    // let len = this.trail.insertFront(this.position);
+    // if (len > 127) {
+    //   this.trail.pop();
+    // }
     super.update(force, DT);
   }
 

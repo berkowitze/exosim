@@ -77,13 +77,13 @@ function makeSidebarComponents() {
             },
             val: showLabels
         }),
-        trailsButton = new Button({
-            label: 'Show trails [t]',
-            callback: function (checked) {
-                this.val = showTrails = (checked && model.objects.length <= 20);
-            },
-            val: showTrails
-        }),
+        // trailsButton = new Button({
+        //     label: 'Show trails [t]',
+        //     callback: function (checked) {
+        //         this.val = showTrails = (checked && model.objects.length <= 20);
+        //     },
+        //     val: showTrails
+        // }),
         pauseButton = new Button({
             label: 'Pause [space]',
             callback: function (checked) {
