@@ -252,8 +252,9 @@ class Star extends CelObj {
       velocity = zero3;
     }
     super({radius, density, velocity, mass, position, color, name});
+    
     this.transitTimes = new Map(); // map of object -> previous Transit list
-    this.transits = new Map(); // map of object -> Transit
+    this.currentTransits = new Map(); // map of object -> Transit
   }
 
   canBeOrbitedBy(t) {
@@ -267,7 +268,7 @@ class Star extends CelObj {
      */
 
     let overlap;
-    if (!(this.transitTimes.has(other))) {
+    if (!this.transitTimes.has(other)) {
       this.transitTimes.set(other, []);
     }
 
@@ -280,15 +281,15 @@ class Star extends CelObj {
       overlap = 0.0;
     }
 
-    if (overlap == 0 && (this.transits.has(other))) {
+    if (overlap == 0 && this.currentTransits.has(other)) {
       console.log('Ending transit');
-      this.transits.get(other).complete(time);
-      this.transitTimes.get(other).push(this.transits.get(other));
-      this.transits.delete(other);
+      this.currentTransits.get(other).complete(time);
+      this.transitTimes.get(other).push(this.currentTransits.get(other));
+      this.currentTransits.delete(other);
     }
-    else if (overlap > 0 && !(this.transits.has(other))) {
+    else if (overlap > 0 && !(this.currentTransits.has(other))) {
       console.log('Starting transit');
-      this.transits.set(other, new Transit(time, this, other));
+      this.currentTransits.set(other, new Transit(time, this, other));
     }
 
     return overlap;
