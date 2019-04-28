@@ -53,14 +53,31 @@ class OcclusionGraph {
         const plotWidth = w * plotScale;
         const plotHeight = h * plotScale;
         const border = plotHeight * 0.1;
+
+        const textInset = 5;
+        const numTicks = 5;
         
         // draw the background  of the plot
         fill(90, 90, 90, 100);
         rect(topLeftX, topLeftY, plotWidth, plotHeight, 5);
 
+        // draw the title and the scale along the y axis
+        fill(200);
+        textAlign(CENTER, TOP);
+        text(`${this.star.name} occlusion`, topLeftX+plotWidth/2, topLeftY+textInset);
+        textAlign(LEFT, TOP);
+        for (var i=0; i <= numTicks; i++) {
+            let xPos = topLeftX + textInset;
+            let yPos = topLeftY + border + textInset + i*(plotHeight-textInset*2 - textSize() - 2*border)/numTicks;
+            let val = this.max - i*(this.max - this.min)/numTicks
+            text(val.toPrecision(4), xPos, yPos);
+        }
+
         // helpers to get x and y plot coordinates for each data point
         let getxc = i => topLeftX + border + (plotWidth - 2*border) * ( i /occlusions.length);
         let getyc = o => map(o, this.min, this.max, topLeftY+plotHeight - border, topLeftY + border);
+
+
 
         stroke(212, 175, 55);
         var xcp = getxc(0);

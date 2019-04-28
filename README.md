@@ -20,7 +20,7 @@ One of the most fascinating aspects of astronomy is how extreme conclusions are 
  * Changing time-scale
  * Dragging around and removing objects
 
-**Note**: It seems the Kepler system is unstable over long time periods, likely due to inprecise measurements of planetary properties. This is something we are investigating for the final handin.
+**Note**: It seems the Kepler system is unstable over long time periods, likely due to inprecise measurements of planetary properties. 
 
 ### Intended Audience
 
