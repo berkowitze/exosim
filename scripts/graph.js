@@ -18,7 +18,7 @@ class Graph {
         }
     }
 
-    plot() {
+    plot(index) {
         let vals = this.vals.toArray();
 
         const plotScale = 0.6;
@@ -31,14 +31,16 @@ class Graph {
         const textInset = 5;
         const numTicks = 5;
         
-        // draw the background  of the plot
-        fill(90, 90, 90, 100);
-        rect(topLeftX, topLeftY, plotWidth, plotHeight, 5);
+        if (index == 0) {
+            // draw the background  of the plot
+            fill(90, 90, 90, 100);
+            rect(topLeftX, topLeftY, plotWidth, plotHeight, 5);
+        }
 
         // draw the title and the scale along the y axis
         fill(200);
         textAlign(CENTER, TOP);
-        text(this.title, topLeftX+plotWidth/2, topLeftY+textInset);
+        text(this.title, topLeftX+plotWidth/2, topLeftY+textInset + index*(textInset +textSize()));
         textAlign(LEFT, TOP);
         for (var i=0; i <= numTicks; i++) {
             let xPos = topLeftX + textInset;
@@ -120,6 +122,6 @@ class OcclusionGraph {
     }
 
     bigplot(index) {
-        this.bigGraph.plot();
+        this.bigGraph.plot(index);
     }
 }
