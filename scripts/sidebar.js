@@ -102,7 +102,7 @@ function makeSidebarComponents() {
             label: 'Show brightness graphs',
             callback: function(checked) {
                 if (checked) { scienceMode = 'occlusion'; }
-                else { scienceMode = False; }
+                else { scienceMode = false; }
             },
             val: scienceMode
         }),
@@ -110,7 +110,7 @@ function makeSidebarComponents() {
             label: 'Show TTV graphs',
             callback: function(checked) {
                 if (checked) { scienceMode = 'TTV'; }
-                else { scienceMode = False; }
+                else { scienceMode = false; }
             },
             val: scienceMode
         }),
