@@ -284,7 +284,7 @@ class Star extends CelObj {
 
     let overlap;
     if (!this.transitTimeGraphs.has(other)) {
-      this.transitTimeGraphs.set(other, new Graph(other.name + 'transit duration', 256));
+      this.transitTimeGraphs.set(other, new Graph(other.name + ' transit duration', 256));
     }
 
     if (this.perspectiveScale < other.perspectiveScale) {

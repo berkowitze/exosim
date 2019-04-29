@@ -41,6 +41,7 @@ class Graph {
 
         // draw the title and the scale along the y axis
         fill(plotColor);
+        noStroke();
         textAlign(CENTER, TOP);
         text(this.title, topLeftX+plotWidth/2, topLeftY+textInset + index*(textInset +textSize()));
         textAlign(LEFT, TOP);
