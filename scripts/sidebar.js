@@ -101,7 +101,16 @@ function makeSidebarComponents() {
         new Button({
             label: 'Show brightness graphs',
             callback: function(checked) {
-                scienceMode = checked;
+                if (checked) { scienceMode = 'occlusion'; }
+                else { scienceMode = False; }
+            },
+            val: scienceMode
+        }),
+        new Button({
+            label: 'Show TTV graphs',
+            callback: function(checked) {
+                if (checked) { scienceMode = 'TTV'; }
+                else { scienceMode = False; }
             },
             val: scienceMode
         }),

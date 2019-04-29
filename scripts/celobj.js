@@ -268,7 +268,7 @@ class Star extends CelObj {
     }
     super({radius, density, velocity, mass, position, color, name});
 
-    this.transitTimes = new Map(); // map of object -> previous Transit list
+    this.transitTimeGraphs = new Map(); // map of object -> Graph
     this.currentTransits = new Map(); // map of object -> Transit
   }
 
@@ -283,8 +283,8 @@ class Star extends CelObj {
      */
 
     let overlap;
-    if (!this.transitTimes.has(other)) {
-      this.transitTimes.set(other, []);
+    if (!this.transitTimeGraphs.has(other)) {
+      this.transitTimeGraphs.set(other, new Graph(other.name + 'transit duration', 256));
     }
 
     if (this.perspectiveScale < other.perspectiveScale) {
@@ -297,13 +297,13 @@ class Star extends CelObj {
     }
 
     if (overlap == 0 && this.currentTransits.has(other)) {
-      console.log('Ending transit');
+      // console.log('Ending transit');
       this.currentTransits.get(other).complete(time);
-      this.transitTimes.get(other).push(this.currentTransits.get(other));
+      this.transitTimeGraphs.get(other).addVal(this.currentTransits.get(other).duration);
       this.currentTransits.delete(other);
     }
     else if (overlap > 0 && !(this.currentTransits.has(other))) {
-      console.log('Starting transit');
+      // console.log('Starting transit');
       this.currentTransits.set(other, new Transit(time, this, other));
     }
 

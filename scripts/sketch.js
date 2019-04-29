@@ -348,15 +348,33 @@ function overlays() {
 }
 
 function science() {
-  for (let i = 0; i < model.graphs.length; i++) {
-    let graph = model.graphs[i];
-    if (scienceMode) {
-      graph.bigplot(i);
+  if (scienceMode == 'TTV') {
+    drawTTVGraphs();
+  }
+  else {
+    for (let i = 0; i < model.graphs.length; i++) {
+      let graph = model.graphs[i];
+      if (scienceMode == 'occlusion') {
+        graph.bigplot(i);
+      }
+      else {
+        graph.miniplot(i);
+      }
     }
-    else {
-      graph.miniplot(i);
+  }
+}
+
+function drawTTVGraphs() {
+  for (let i =0; i< model.objects.length; i++) {
+    if (model.objects[i] instanceof Star) {
+      var j = 0;
+      model.objects[i].transitTimeGraphs.forEach(
+        function(graph) {
+          graph.plot(j);
+          j = j + 1;
+        }
+      );
     }
-    
   }
 }
 
