@@ -30,6 +30,8 @@ class Graph {
 
         const textInset = 5;
         const numTicks = 5;
+
+        const plotColor = colors[index];
         
         if (index == 0) {
             // draw the background  of the plot
@@ -38,7 +40,7 @@ class Graph {
         }
 
         // draw the title and the scale along the y axis
-        fill(200);
+        fill(plotColor);
         textAlign(CENTER, TOP);
         text(this.title, topLeftX+plotWidth/2, topLeftY+textInset + index*(textInset +textSize()));
         textAlign(LEFT, TOP);
@@ -53,7 +55,7 @@ class Graph {
         let getxc = i => topLeftX + border + (plotWidth - 2*border) * ( i /vals.length);
         let getyc = o => map(o, this.min, this.max, topLeftY+plotHeight - border, topLeftY + border);
 
-        stroke(212, 175, 55);
+        stroke(plotColor);
         var xcp = getxc(0);
         var ycp = getyc(vals[0]);
         for (let i = 1; i < vals.length; i++) {
