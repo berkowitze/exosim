@@ -13,14 +13,22 @@ One of the most fascinating aspects of astronomy is how extreme conclusions are 
 
 ## Functionality Overview
 
- * Real pre-built solar systems
- * Real-time, real-scale simulation
- * Interface for user specified bodies
- * 3D rendering allows for different viewing angles
- * Changing time-scale
- * Dragging around and removing objects
+ * Real pre-built solar systems.
+ * Real-time, real-scale simulation.
+ * Creating user-specified bodies.
+ * 3D rendering.
+ * Live measurements of star brightness.
 
-**Note**: It seems the Kepler system is unstable over long time periods, likely due to inprecise measurements of planetary properties. 
+
+### User Interface
+ * Drag a body to move it around.
+ * Right click a body to focus the camera on it.
+ * Change the ecliptic angle to view the solar system at different angles. At ~90 degrees, you can observe transits!
+ * Use the sidebar to tweak the model parameters, including visual drawing scale and time scale.
+ * Listen to relaxing music as you go (M to mute if you need).
+ * Dynamic interface to create new bodies (stars, planets, moons).
+ * Dragging around and removing objects.
+ * Live graph of every star's brightness.
 
 ### Intended Audience
 
@@ -28,19 +36,25 @@ This project is intended to be used by students and enthusiasts. We specifically
 
 ### Technical Details
 
-The entire project is built in Javascript. We use simple Euler integration to model the dynamics in 3D. In the future we plan to upgrade to Runge-Kutta. The 3D positions of the planets are projected into 2D based on the position of the camera.
+The entire project is built in Javascript. We use simple backward Euler integration to model the dynamics in 3D. The 3D positions of the planets are projected into 2D based on the position of the camera.
 
-An explanation of the mathematics of the system can be found in `/math.pdf`.
+The mathematics for the dynamics are a set of two nonlinear ODEs:
+
+$$
+\begin{cases}
+\dot{\vec{x_i}} = \vec{v} \\
+\dot{\vec{v_i}} = \frac{1}{M_i}\sum\limits_{j \neq i} \vec{F}_{ij}
+\end{cases}
+$$
+
+Here, $v_i$ is the velocity of the planet and $x_i$ is its position (both in three dimensions).
+
+The force between two planets is:
+$$\vec{F_{ij}} = G\frac{M_iM_j}{r_{ij}^3} (\vec{x_i} - \vec{x_j})$$
+with $M$ the mass of the planet, and $r_{ij} = |\vec{x_i} - \vec{x_j}|$.
 
 ### Code layout
-All relevant code can be found in the `/scripts` folder. The overall program logic is within `sketch.js`. The simulation logic can be found in `model.js`. Constants can be found in `parameters.js` and `solarsystems.js`. Most other files are for rendering or setup work.
-
-### Upcoming features
-
- * Transit curves
- * Radial velocity curves
- * Transit timing variation
- * Loading real systems from the [exoplanet.eu](exoplanet.eu) database
+All relevant code can be found in the `/scripts` folder. The overall program logic is within `sketch.js`. The simulation logic can be found in `model.js`. Constants can be found in `parameters.js` and `solarsystems.js`. Most other files are for rendering, user interface, or setup work.
 
 
 ### References
@@ -57,10 +71,9 @@ C.J. Voesenek, 2008, _Implementing a Fourth Order Runge-Kutta Method for Orbit S
 
 
 
-### Upcoming features
+### Upcoming features (before presentation Wednesday)
 
- * Transit curves
- * Radial velocity curves
  * Transit timing variation
  * Loading real systems from the [exoplanet.eu](exoplanet.eu) database
+
 

@@ -1,9 +1,24 @@
+class Transit {
+  constructor(startTime, star, planet) {
+    this.startTime = startTime;
+    this.endTime = null;
+    this.star = star;
+    this.planet = planet;
+    this.ended = false;
+  }
+
+  complete(endTime) {
+    this.ended = true;
+    this.endTime = endTime;
+    this.duration = (this.endTime - this.startTime);
+  }
+}
+
 class PointObject {
   constructor(position) {
     this.position = position;
   }
 }
-
 
 class CelObj extends PointObject {
   /**
@@ -115,15 +130,7 @@ class CelObj extends PointObject {
             this.planar.y / SF,
             this.radius * this.perspectiveScale / SF * objectScale * 2);
     if (this.name != null && showLabels) {
-      if (draggingNewObject && (this === draggingOnto || this.mouseIn(7))) {
-        fill('#47b8e0');
-      }
-      else {
-        fill(255);
-      }
-      const offset = 12;
-      textAlign(CENTER, CENTER);
-      text(this.name, this.planar.x / SF + offset, this.planar.y / SF + offset);
+      this.drawLabel();
     }
   }
 
@@ -214,6 +221,18 @@ class Planet extends Orbiter {
   canBeOrbitedBy(t) {
     return t === "Moon";
   }
+
+  drawLabel() {
+    if (draggingNewObject && (this === draggingOnto || this.mouseIn(7))) {
+      fill('#47b8e0');
+    }
+    else {
+      fill(255);
+    }
+    const offset = 12;
+    textAlign(CENTER, CENTER);
+    text(this.name, this.planar.x / SF + offset, this.planar.y / SF + offset);
+  }
 }
 
 class Moon extends Orbiter {
@@ -224,21 +243,17 @@ class Moon extends Orbiter {
   canBeOrbitedBy() {
     return false;
   }
-}
 
-class Transit {
-  constructor(startTime, star, planet) {
-    this.startTime = startTime;
-    this.endTime = null;
-    this.star = star;
-    this.planet = planet;
-    this.ended = false;
-  }
-
-  complete(endTime) {
-    this.ended = true;
-    this.endTime = endTime;
-    this.duration = (this.endTime - this.startTime);
+  drawLabel() {
+    if (draggingNewObject && (this === draggingOnto || this.mouseIn(7))) {
+      fill('#47b8e0');
+    }
+    else {
+      fill(255);
+    }
+    const offset = -12;
+    textAlign(CENTER, CENTER);
+    text(this.name, this.planar.x / SF + offset, this.planar.y / SF + offset);
   }
 }
 
@@ -252,7 +267,7 @@ class Star extends CelObj {
       velocity = zero3;
     }
     super({radius, density, velocity, mass, position, color, name});
-    
+
     this.transitTimes = new Map(); // map of object -> previous Transit list
     this.currentTransits = new Map(); // map of object -> Transit
   }
@@ -293,5 +308,17 @@ class Star extends CelObj {
     }
 
     return overlap;
+  }
+
+  drawLabel() {
+    if (draggingNewObject && (this === draggingOnto || this.mouseIn(7))) {
+      fill('#47b8e0');
+    }
+    else {
+      fill(255);
+    }
+    const offset = 12;
+    textAlign(CENTER, CENTER);
+    text(this.name, this.planar.x / SF + offset, this.planar.y / SF + offset);
   }
 }

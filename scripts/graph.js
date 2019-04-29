@@ -85,7 +85,7 @@ class OcclusionGraph {
         this.height = 30;
         this.width = this.storeLast;
 
-        this.bigGraph = new Graph(`${this.star.name} occlusion`, this.storeLast);
+        this.bigGraph = new Graph(`${this.star.name} brightness`, this.storeLast);
     }
 
     update() {
@@ -108,7 +108,7 @@ class OcclusionGraph {
         let y = h - ((this.height - 10) * (index + 2)) - this.height * index;
         fill(255);
         textAlign(LEFT, TOP);
-        text(`${this.star.name} occlusion`, x+3, y-textSize()-3);
+        text(`${this.star.name} brightness`, x+3, y-textSize()-3);
         fill(212, 175, 55);
         for (let i = 0; i < occlusions.length; i++) {
             let occlusion = occlusions[i];

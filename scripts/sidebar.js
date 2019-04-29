@@ -99,7 +99,7 @@ function makeSidebarComponents() {
             val: false
         }),
         new Button({
-            label: 'Show occlusion graphs',
+            label: 'Show brightness graphs',
             callback: function(checked) {
                 scienceMode = checked;
             },
