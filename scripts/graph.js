@@ -1,7 +1,8 @@
 class Graph {
-    constructor(title, storeLast) {
+    constructor(title, storeLast, color=null) {
         this.storeLast = storeLast;
         this.vals = new Deque(this.storeLast);
+        this.color = color;
 
         this.max = 1.0;
         this.min = 1.0;
@@ -30,8 +31,10 @@ class Graph {
 
         const textInset = 5;
         const numTicks = 5;
-
-        const plotColor = colors[index];
+        
+        if (this.color == null) {
+            this.color = colors[index % colors.length];
+        }
         
         if (index == 0) {
             // draw the background  of the plot
@@ -40,7 +43,7 @@ class Graph {
         }
 
         // draw the title and the scale along the y axis
-        fill(plotColor);
+        fill(this.color);
         noStroke();
         textAlign(CENTER, TOP);
         text(this.title, topLeftX+plotWidth/2, topLeftY+textInset + index*(textInset +textSize()));
@@ -48,7 +51,8 @@ class Graph {
         for (var i=0; i <= numTicks; i++) {
             let xPos = topLeftX + textInset;
             let yPos = topLeftY + border + textInset + i*(plotHeight-textInset*2 - textSize() - 2*border)/numTicks;
-            let val = this.max - i*(this.max - this.min)/numTicks
+            let val = this.max - i*(this.max - this.min)/numTicks;
+            noStroke();
             text(val.toPrecision(4), xPos, yPos);
         }
 
@@ -56,7 +60,7 @@ class Graph {
         let getxc = i => topLeftX + border + (plotWidth - 2*border) * ( i /vals.length);
         let getyc = o => map(o, this.min, this.max, topLeftY+plotHeight - border, topLeftY + border);
 
-        stroke(plotColor);
+        stroke(this.color);
         var xcp = getxc(0);
         var ycp = getyc(vals[0]);
         for (let i = 1; i < vals.length; i++) {

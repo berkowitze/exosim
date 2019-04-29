@@ -98,18 +98,18 @@ function makeSidebarComponents() {
             },
             val: false
         }),
-        new Button({
+        brightnessButton = new Button({
             label: 'Show brightness graphs',
             callback: function(checked) {
-                if (checked) { scienceMode = 'occlusion'; }
+                if (checked) { scienceMode = 'occlusion'; ttvButton.off(); }
                 else { scienceMode = false; }
             },
             val: scienceMode
         }),
-        new Button({
+        ttvButton = new Button({
             label: 'Show TTV graphs',
             callback: function(checked) {
-                if (checked) { scienceMode = 'TTV'; }
+                if (checked) { scienceMode = 'TTV'; brightnessButton.off()}
                 else { scienceMode = false; }
             },
             val: scienceMode

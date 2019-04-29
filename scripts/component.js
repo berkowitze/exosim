@@ -175,6 +175,11 @@ class Button extends Component {
     this.callback(this.val);
     return null;
   }
+
+ off() {
+    this.val = false;
+    return null;
+  }
 }
 
 class Input extends Component {
