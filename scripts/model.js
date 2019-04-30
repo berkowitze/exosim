@@ -1,5 +1,6 @@
 class Model {
   constructor(objects) {
+    this.time = 0;
     this.objects = objects;
     this.updateMomentum();
     this.origin = new PointObject(zero3);
@@ -74,6 +75,9 @@ class Model {
       let force = forces[i];
       obj.update(force, dt);
     }
+
+    this.time += dt;
+
   }
 
   updateRungeKutta(dt) {
@@ -113,6 +117,8 @@ class Model {
       accel = accels[i];
       obj.update(accel, DT);
     }
+
+    this.time += dt;
   }
 
   compareScale(a, b) {

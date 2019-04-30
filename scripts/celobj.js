@@ -298,7 +298,7 @@ class Star extends CelObj {
 
     if (overlap == 0 && this.currentTransits.has(other)) {
       // console.log('Ending transit');
-      this.currentTransits.get(other).complete(time);
+      this.currentTransits.get(other).complete(model.time);
       this.transitTimeGraphs.get(other).addVal(this.currentTransits.get(other).duration);
       this.currentTransits.delete(other);
     }

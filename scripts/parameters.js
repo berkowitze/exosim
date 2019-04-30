@@ -1,6 +1,3 @@
-let time = 0;
-let steps = 0;
-
 // let SF = 541169500; // scale factor
 SF = 341169500;
 const SF_MIN_EXP = 5;
