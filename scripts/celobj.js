@@ -304,7 +304,7 @@ class Star extends CelObj {
     }
     else if (overlap > 0 && !(this.currentTransits.has(other))) {
       // console.log('Starting transit');
-      this.currentTransits.set(other, new Transit(time, this, other));
+      this.currentTransits.set(other, new Transit(model.time, this, other));
     }
 
     return overlap;
