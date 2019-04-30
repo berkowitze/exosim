@@ -312,7 +312,7 @@ function interfacePreUpdate() {
 function timeOverlay() {
   fill(255);
   textAlign(LEFT, CENTER);
-  text((time / SEC_PER_YEAR).toFixed(3) + ' years', 13, h - 20);
+  text((model.time / SEC_PER_YEAR).toFixed(3) + ' years', 13, h - 20);
 }
 
 function overlays() {
@@ -392,8 +392,6 @@ function draw() {
   if (!paused) {
     // model.updateRungeKutta(DT);
     model.update(DT);
-    time += DT;
-    steps += 1;
   }
   
   if (!hideEverything) {
