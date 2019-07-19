@@ -1,0 +1,13 @@
+./scripts/graph.js
+./scripts/solarsystems.js
+./scripts/vector3.js
+./scripts/sidebar.js
+./scripts/transit.js
+./scripts/component.js
+./scripts/creator.js
+./scripts/helpers.js
+./scripts/sketch.js
+./scripts/trash.js
+./scripts/model.js
+./scripts/celobj.js
+./scripts/parameters.js
