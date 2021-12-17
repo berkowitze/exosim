@@ -27,9 +27,13 @@ let FD = 4e13; // focal distance (camera distance to origin in meters)
 
 let AU = 1.496e11; // meters per AU
 
-let objectScale = 6;
-const OBJ_SCALE_MIN = 1;
-const OBJ_SCALE_MAX = 50;
+let objectSolarScale = 6;
+const OBJ_SOLAR_SCALE_MIN = 1;
+const OBJ_SOLAR_SCALE_MAX = 50;
+
+let objectPlanetScale = 150;
+const OBJ_PLANET_SCALE_MIN = 1;
+const OBJ_PLANET_SCALE_MAX = 1000;
 
 const G = 6.674e-11;
 const SEC_PER_YEAR = 31557600;

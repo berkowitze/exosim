@@ -51,15 +51,25 @@ function makeSidebarComponents() {
             },
             label: 'Zoom [\u2191 \u2193]'
         }),
-        visSlider = new Slider({
-            minVal: OBJ_SCALE_MIN,
-            maxVal: OBJ_SCALE_MAX,
-            val: objectScale,
+        visSolarSlider = new Slider({
+            minVal: OBJ_SOLAR_SCALE_MIN,
+            maxVal: OBJ_SOLAR_SCALE_MAX,
+            val: objectSolarScale,
             callback: function(newV) {
-                objectScale = newV;
-                this.label = `Visual Scale (${Number(objectScale).toFixed(0)})`;
+                objectSolarScale = newV;
+                this.label = `Visual Scale (solar) (${Number(objectSolarScale).toFixed(0)})`;
             },
-            label: `Visual Scale (${Number(objectScale).toFixed(0)})`
+            label: `Visual Scale (solar) (${Number(objectSolarScale).toFixed(0)})`
+        }),
+        visPlanetSlider = new Slider({
+            minVal: OBJ_PLANET_SCALE_MIN,
+            maxVal: OBJ_PLANET_SCALE_MAX,
+            val: objectPlanetScale,
+            callback: function(newV) {
+                objectPlanetScale = newV;
+                this.label = `Visual Scale (other) (${Number(objectPlanetScale).toFixed(0)})`;
+            },
+            label: `Visual Scale (other) (${Number(objectPlanetScale).toFixed(0)})`
         }),
         eclipticSlider = new Slider({
             minVal: 0,

@@ -111,7 +111,7 @@ class CelObj extends PointObject {
     this.planar = new Vector3(planar3d.x, sqrt(sq(planar3d.y) + sq(planar3d.z)) * ySign, 0);
   }
 
-  draw() {
+  draw(scale = objectSolarScale) {
     /**
      * draw this CelObj
      */
@@ -128,7 +128,7 @@ class CelObj extends PointObject {
     fill(this.color);
     ellipse(this.planar.x / SF,
             this.planar.y / SF,
-            this.radius * this.perspectiveScale / SF * objectScale * 2);
+            this.radius * this.perspectiveScale / SF * scale * 2);
     if (this.name != null && showLabels) {
       this.drawLabel();
     }
@@ -153,7 +153,7 @@ class CelObj extends PointObject {
     let tolerance = pixelTolerance * SF;
     return (square(mxScaled - this.position.x) +
             square(myScaled - this.position.y)
-            ) < square(this.radius*objectScale + tolerance);
+            ) < square(this.radius*objectSolarScale + tolerance);
   }
 
 }
@@ -170,9 +170,6 @@ class Orbiter extends CelObj {
     const velMag = Math.sqrt(G * orbiting.mass / position.dist(orbiting.position));
     let velDir = new Vector3(-Math.sin(angle), Math.cos(angle), 0).normalized();
     let velocity = velDir.scale(velMag).plus(orbiting.velocity);
-    if (name == 'Earth') {
-      console.log({velMag, velDir, velocity, position});
-    }
     super({radius, density, mass, velocity, position, color, name});
     // this.trail = new Deque(128);
   }
@@ -181,7 +178,7 @@ class Orbiter extends CelObj {
     // if (showTrails) {
     //   this.drawTrail();
     // }
-    super.draw();
+    super.draw(objectPlanetScale);
   }
 
   // drawTrail() {
@@ -229,7 +226,7 @@ class Planet extends Orbiter {
     else {
       fill(255);
     }
-    const offset = 12;
+    const offset = 10;
     textAlign(CENTER, CENTER);
     text(this.name, this.planar.x / SF + offset, this.planar.y / SF + offset);
   }
