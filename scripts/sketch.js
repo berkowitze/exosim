@@ -8,24 +8,21 @@ function windowResized() {
   resizeCanvas(w, h);
 }
 
-function sizeDependentSetup() { // wrote this so resize works
-  sidebar = new ComponentBox(
-    {
-      xStart: 13,
-      yStart: 13,
-      components: sidebarComponents,
-      showing: sidebar == null ? true : sidebar.showing
-    }
-  );
+function sizeDependentSetup() {
+  // wrote this so resize works
+  sidebar = new ComponentBox({
+    xStart: 13,
+    yStart: 13,
+    components: sidebarComponents,
+    showing: sidebar == null ? true : sidebar.showing,
+  });
 
-  planetCreator = new ComponentBox(
-    {
-      xStart: w - 200,
-      yStart: 13,
-      components: planetCreatorComponents,
-      showing: planetCreator == null ? false : planetCreator.showing
-    }
-  );
+  planetCreator = new ComponentBox({
+    xStart: w - 200,
+    yStart: 13,
+    components: planetCreatorComponents,
+    showing: planetCreator == null ? false : planetCreator.showing,
+  });
 
   newPlanetX = w - 150;
   newPlanetY = planetCreator.yEnd + 20;
@@ -51,7 +48,7 @@ function setup() {
   model1 = new Model(KEPLER89);
   model2 = new Model(OUR_SOLAR_SYSTEM);
   // model3 = new Model(KEPLER47);
-  model = model2;
+  model = model1;
   // model.origin = earth;
 
   // new OcclusionGraph(KEP89, model);
@@ -109,14 +106,12 @@ function celObjPress(model) {
       if (mouseButton == RIGHT) {
         model.origin = revObjs[j];
         return false;
-      }
-      else if (mouseButton == LEFT) {
+      } else if (mouseButton == LEFT) {
         model.origin = new PointObject(zero3);
         planetClicked = revObjs[j];
         eclipticSlider.setTo(0);
         return true;
-      }
-      else {
+      } else {
         return false;
       }
     }
@@ -126,35 +121,34 @@ function celObjPress(model) {
 }
 
 function keyTyped() {
-
   if (inputSelected != null) {
     inputSelected.keyPress(key);
     return;
   }
   switch (key) {
-    case ' ':
+    case " ":
       pauseButton.toggle();
       break;
-    case 'h':
+    case "h":
       hideButton.toggle();
       break;
-    case 'w':
+    case "w":
       eclipticSlider.decrement();
       break;
-    case 's':
+    case "s":
       eclipticSlider.increment();
       break;
-    case 'm':
-      let audio = $('audio').get(0);
+    case "m":
+      let audio = $("audio").get(0);
       audio.muted = !audio.muted;
       break;
     // case 't':
     //   trailsButton.toggle();
     //   break;
-    case 'l':
+    case "l":
       labelsButton.toggle();
       break;
-    case 'f':
+    case "f":
       fullscreenButton.toggle();
       break;
   }
@@ -164,22 +158,24 @@ function newPlanetPress() {
   if (!planetCreator) {
     return false;
   }
-  return square(mouseX - newPlanetX) + square(mouseY - newPlanetY) <
-         square(newObjectDrawRadius) * 1.3;
+  return (
+    square(mouseX - newPlanetX) + square(mouseY - newPlanetY) <
+    square(newObjectDrawRadius) * 1.3
+  );
 }
 
 function sc() {
   const op = model.origin.position;
 
-  mxScaled = SF * (mouseX - w/2) + op.x;
-  myScaled = SF * (mouseY - h/2) + op.y;
+  mxScaled = SF * (mouseX - w / 2) + op.x;
+  myScaled = SF * (mouseY - h / 2) + op.y;
 }
 
-function createNewObject(orbiting=null) {
+function createNewObject(orbiting = null) {
   const density = newObjectDensity;
   const radius = newObjectRadius;
-  const nameInp = nameInput.val.join('');
-  const name = nameInp !== '' ? nameInp : '[Unnamed]';
+  const nameInp = nameInput.val.join("");
+  const name = nameInp !== "" ? nameInp : "[Unnamed]";
   const c = color(redSlider.val, greenSlider.val, blueSlider.val);
   const pos = new Vector3(mxScaled, myScaled, 0);
 
@@ -190,23 +186,24 @@ function createNewObject(orbiting=null) {
       density: density,
       color: c,
       name: name,
-      position: pos
+      position: pos,
     });
-  }
-  else {
+  } else {
     opts = {
       orbiting: orbiting,
       radius: radius,
       density: density,
       distanceFromOrbiter: pos.dist(orbiting.position),
-      angle: Math.atan2(pos.y - orbiting.position.y, pos.x - orbiting.position.x),
+      angle: Math.atan2(
+        pos.y - orbiting.position.y,
+        pos.x - orbiting.position.x
+      ),
       color: c,
       name: name,
     };
     if (creating === "Planet") {
       newObj = new Planet(opts);
-    }
-    else {
+    } else {
       newObj = new Moon(opts);
     }
   }
@@ -256,18 +253,17 @@ function mouseReleased() {
       if (hoveredObjs[0].canBeOrbitedBy(creating)) {
         draggingOnto = hoveredObjs[0];
         model.origin = draggingOnto;
-        SF = draggingOnto.radius * 500 / w;
+        SF = (draggingOnto.radius * 500) / w;
       }
-    }
-    else {
+    } else {
       draggingOnto = null;
     }
     if (draggingOnto == null) {
       draggingNewObject = false;
     }
     return;
-  }
-  else if (draggingNewObject) { // runs when new object has valid orbiter and is placed
+  } else if (draggingNewObject) {
+    // runs when new object has valid orbiter and is placed
     createNewObject(draggingOnto);
   }
 
@@ -286,7 +282,11 @@ function mouseWheel(event) {
   }
 
   let newSF = Math.log10(SF + event.delta * 1e8);
-  if (isNaN(newSF) || newSF < scaleSlider.minVal || newSF > scaleSlider.maxVal) {
+  if (
+    isNaN(newSF) ||
+    newSF < scaleSlider.minVal ||
+    newSF > scaleSlider.maxVal
+  ) {
     return false;
   }
   scaleSlider.setTo(newSF);
@@ -312,7 +312,7 @@ function interfacePreUpdate() {
 function timeOverlay() {
   fill(255);
   textAlign(LEFT, CENTER);
-  text((model.time / SEC_PER_YEAR).toFixed(3) + ' years', 13, h - 20);
+  text((model.time / SEC_PER_YEAR).toFixed(3) + " years", 13, h - 20);
 }
 
 function overlays() {
@@ -326,20 +326,23 @@ function overlays() {
   }
   if (planetCreator.showing) {
     fill(color(red, green, blue));
-    newObjectDrawRadius = map(newObjectRadius,
-                              radiusSlider.minVal,
-                              radiusSlider.maxVal, 5, 30);
+    newObjectDrawRadius = map(
+      newObjectRadius,
+      radiusSlider.minVal,
+      radiusSlider.maxVal,
+      5,
+      30
+    );
     if (!draggingNewObject) {
       ellipse(newPlanetX, newPlanetY, newObjectDrawRadius);
-    }
-    else {
+    } else {
       ellipse(mouseX, mouseY, newObjectDrawRadius);
       if (draggingOnto) {
         noFill();
         stroke(255);
         let m = new Vector3(mxScaled, myScaled, 0);
         let r = m.dist(model.origin.position) / SF;
-        ellipse(w/2, h/2, r*2, r*2);
+        ellipse(w / 2, h / 2, r * 2, r * 2);
         fill(255);
         noStroke();
       }
@@ -348,16 +351,14 @@ function overlays() {
 }
 
 function science() {
-  if (scienceMode == 'TTV') {
+  if (scienceMode == "TTV") {
     drawTTVGraphs();
-  }
-  else {
+  } else {
     for (let i = 0; i < model.graphs.length; i++) {
       let graph = model.graphs[i];
-      if (scienceMode == 'occlusion') {
+      if (scienceMode == "occlusion") {
         graph.bigplot(i);
-      }
-      else {
+      } else {
         graph.miniplot(i);
       }
     }
@@ -365,15 +366,13 @@ function science() {
 }
 
 function drawTTVGraphs() {
-  for (let i =0; i< model.objects.length; i++) {
+  for (let i = 0; i < model.objects.length; i++) {
     if (model.objects[i] instanceof Star) {
       var j = 0;
-      model.objects[i].transitTimeGraphs.forEach(
-        function(graph) {
-          graph.plot(j);
-          j = j + 1;
-        }
-      );
+      model.objects[i].transitTimeGraphs.forEach(function (graph) {
+        graph.plot(j);
+        j = j + 1;
+      });
     }
   }
 }
@@ -382,21 +381,20 @@ function draw() {
   sc();
 
   interfacePreUpdate();
-  translate(w/2, h/2);
+  translate(w / 2, h / 2);
 
   noStroke();
   fill(0);
   model.draw();
-  translate(-w/2, -h/2);
+  translate(-w / 2, -h / 2);
 
   if (!paused) {
     // model.updateRungeKutta(DT);
     model.update(DT);
   }
-  
+
   if (!hideEverything) {
     overlays();
     science();
   }
 }
-
