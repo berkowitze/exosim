@@ -1,7 +1,7 @@
 const isForEliWebsite = location.search.includes("eli");
 
 // let SF = 541169500; // scale factor
-SF = isForEliWebsite ? 127318425 : 341169500;
+SF = 127318425;
 const SF_MIN_EXP = 5;
 const SF_MAX_EXP = 12;
 
@@ -29,11 +29,11 @@ let FD = 4e13; // focal distance (camera distance to origin in meters)
 
 let AU = 1.496e11; // meters per AU
 
-let objectSolarScale = isForEliWebsite ? 3 : 6;
+let objectSolarScale = 3;
 const OBJ_SOLAR_SCALE_MIN = 1;
 const OBJ_SOLAR_SCALE_MAX = 50;
 
-let objectPlanetScale = isForEliWebsite ? 60 : 150;
+let objectPlanetScale = 60;
 const OBJ_PLANET_SCALE_MIN = 1;
 const OBJ_PLANET_SCALE_MAX = 1000;
 
